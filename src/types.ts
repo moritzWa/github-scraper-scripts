@@ -66,6 +66,12 @@ export interface GraphUser {
   depth: number;
 }
 
+export interface DbGraphUser extends Omit<GraphUser, "login"> {
+  _id: string; // username
+  status: "pending" | "processing" | "processed" | "ignored";
+  depth: number;
+}
+
 export interface GraphData {
   users: GraphUser[];
   edges: Array<{
