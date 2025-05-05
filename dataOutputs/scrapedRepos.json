@@ -1,0 +1,9281 @@
+[
+  {
+    "repoUrl": "https://github.com/farcasterxyz/protocol",
+    "scrapedTypes": [
+      "watcher",
+      "forker",
+      "contributor",
+      "stargazer"
+    ]
+  },
+  {
+    "repoUrl": "https://github.com/fal-ai/dbt-fal",
+    "scrapedTypes": [
+      "watcher",
+      "forker",
+      "contributor",
+      "stargazer"
+    ]
+  },
+  {
+    "repoUrl": "https://github.com/sentient-agi/OML-1.0-Fingerprinting",
+    "scrapedTypes": [
+      "watcher",
+      "forker",
+      "contributor",
+      "stargazer"
+    ]
+  },
+  {
+    "repoUrl": "https://github.com/SalesforceAIResearch/LaTRO",
+    "scrapedTypes": [
+      "watcher",
+      "forker",
+      "contributor",
+      "stargazer"
+    ]
+  },
+  {
+    "repoUrl": "https://github.com/leptonai/gpud",
+    "scrapedTypes": [
+      "watcher",
+      "forker",
+      "contributor",
+      "stargazer"
+    ]
+  },
+  {
+    "repoUrl": "https://github.com/PrimeIntellect-ai/genesys",
+    "scrapedTypes": [
+      "watcher",
+      "forker",
+      "contributor",
+      "stargazer"
+    ]
+  },
+  {
+    "repoUrl": "https://github.com/PrimeIntellect-ai/smart-contracts",
+    "scrapedTypes": [
+      "watcher",
+      "forker",
+      "contributor",
+      "stargazer"
+    ]
+  },
+  {
+    "repoUrl": "https://github.com/deepseek-ai/open-infra-index",
+    "scrapedTypes": [
+      "watcher",
+      "forker",
+      "contributor",
+      "stargazer"
+    ]
+  },
+  {
+    "repoUrl": "https://github.com/willccbb/verifiers",
+    "scrapedTypes": [
+      "watcher",
+      "forker",
+      "contributor",
+      "stargazer"
+    ]
+  },
+  {
+    "repoUrl": "https://github.com/SynthLabsAI/big-math",
+    "scrapedTypes": [
+      "watcher",
+      "forker",
+      "contributor",
+      "stargazer"
+    ]
+  },
+  {
+    "repoUrl": "https://github.com/PrimeIntellect-ai/OpenDiloco",
+    "scrapedTypes": [
+      "watcher",
+      "forker",
+      "contributor",
+      "stargazer"
+    ]
+  },
+  {
+    "repoUrl": "https://github.com/NousResearch/DisTrO",
+    "scrapedTypes": [
+      "watcher",
+      "forker",
+      "contributor",
+      "stargazer"
+    ]
+  },
+  {
+    "repoUrl": "https://github.com/NousResearch/finetuning-subnet",
+    "scrapedTypes": [
+      "watcher",
+      "forker",
+      "contributor",
+      "stargazer"
+    ]
+  },
+  {
+    "repoUrl": "https://github.com/BlinkDL/fast.c",
+    "scrapedTypes": [
+      "watcher",
+      "forker",
+      "contributor",
+      "stargazer"
+    ]
+  },
+  {
+    "repoUrl": "https://github.com/deepseek-ai/DeepEP",
+    "scrapedTypes": [
+      "watcher",
+      "forker",
+      "contributor",
+      "stargazer"
+    ]
+  },
+  {
+    "repoUrl": "https://github.com/open-thought/tiny-grpo",
+    "scrapedTypes": [
+      "watcher",
+      "forker",
+      "contributor",
+      "stargazer"
+    ]
+  },
+  {
+    "repoUrl": "https://github.com/openreasoner/openr",
+    "scrapedTypes": [
+      "watcher",
+      "forker",
+      "contributor",
+      "stargazer"
+    ]
+  },
+  {
+    "repoUrl": "https://github.com/PrimeIntellect-ai/gpu-challenge",
+    "scrapedTypes": [
+      "watcher",
+      "forker",
+      "contributor",
+      "stargazer"
+    ]
+  },
+  {
+    "repoUrl": "https://github.com/SamuelSchmidgall/AgentLaboratory",
+    "scrapedTypes": [
+      "watcher",
+      "forker",
+      "contributor",
+      "stargazer"
+    ]
+  },
+  {
+    "repoUrl": "https://github.com/arcprize/ARC-AGI-2",
+    "scrapedTypes": [
+      "watcher",
+      "forker",
+      "contributor",
+      "stargazer"
+    ]
+  },
+  {
+    "repoUrl": "https://github.com/sail-sg/understand-r1-zero",
+    "scrapedTypes": [
+      "watcher",
+      "forker",
+      "contributor",
+      "stargazer"
+    ]
+  },
+  {
+    "repoUrl": "https://github.com/r3yc0n1c/tappin-core",
+    "scrapedTypes": [
+      "watcher",
+      "forker",
+      "contributor",
+      "stargazer"
+    ]
+  },
+  {
+    "repoUrl": "https://github.com/jzhang38/EasyContext",
+    "scrapedTypes": [
+      "watcher",
+      "forker",
+      "contributor",
+      "stargazer"
+    ]
+  },
+  {
+    "repoUrl": "https://github.com/mosaicml/llm-foundry",
+    "scrapedTypes": [
+      "watcher",
+      "forker",
+      "stargazer",
+      "contributor"
+    ]
+  },
+  {
+    "repoUrl": "https://github.com/tensorchord/Awesome-LLMOps",
+    "scrapedTypes": [
+      "stargazer"
+    ]
+  },
+  {
+    "repoUrl": "https://github.com/chaoyanghe/Awesome-Federated-Learning",
+    "scrapedTypes": [
+      "stargazer",
+      "watcher",
+      "forker",
+      "contributor"
+    ]
+  },
+  {
+    "repoUrl": "https://github.com/SymbioticLab/FedScale",
+    "scrapedTypes": [
+      "stargazer",
+      "watcher",
+      "forker",
+      "contributor"
+    ]
+  },
+  {
+    "repoUrl": "https://github.com/fuzzylabs/awesome-open-mlops",
+    "scrapedTypes": [
+      "stargazer",
+      "watcher",
+      "forker",
+      "contributor"
+    ]
+  },
+  {
+    "repoUrl": "https://github.com/kubeflow/katib",
+    "scrapedTypes": [
+      "stargazer",
+      "watcher",
+      "forker",
+      "contributor"
+    ]
+  },
+  {
+    "repoUrl": "https://github.com/kubeflow/trainer",
+    "scrapedTypes": [
+      "stargazer",
+      "watcher",
+      "forker",
+      "contributor"
+    ]
+  },
+  {
+    "repoUrl": "https://github.com/kubeflow/kubeflow",
+    "scrapedTypes": [
+      "stargazer"
+    ]
+  },
+  {
+    "repoUrl": "https://github.com/kubeflow/pipelines",
+    "scrapedTypes": [
+      "stargazer"
+    ]
+  },
+  {
+    "repoUrl": "https://github.com/Netflix/metaflow",
+    "scrapedTypes": [
+      "stargazer"
+    ]
+  },
+  {
+    "repoUrl": "https://github.com/fetchai/uAgents",
+    "scrapedTypes": [
+      "stargazer",
+      "watcher",
+      "forker",
+      "contributor"
+    ]
+  },
+  {
+    "repoUrl": "https://github.com/OpenMined/PySyft",
+    "scrapedTypes": [
+      "stargazer",
+      "watcher",
+      "forker",
+      "contributor"
+    ]
+  },
+  {
+    "repoUrl": "https://github.com/opentensor/validators",
+    "scrapedTypes": [
+      "stargazer",
+      "watcher",
+      "forker",
+      "contributor"
+    ]
+  },
+  {
+    "repoUrl": "https://github.com/opentensor/bittensor-delegates",
+    "scrapedTypes": [
+      "stargazer",
+      "watcher",
+      "forker",
+      "contributor"
+    ]
+  },
+  {
+    "repoUrl": "https://github.com/opentensor/btcli",
+    "scrapedTypes": [
+      "stargazer",
+      "watcher",
+      "forker",
+      "contributor"
+    ]
+  },
+  {
+    "repoUrl": "https://github.com/opentensor/text-prompting",
+    "scrapedTypes": [
+      "stargazer",
+      "watcher",
+      "forker",
+      "contributor"
+    ]
+  },
+  {
+    "repoUrl": "https://github.com/opentensor/bittensor-subnet-template",
+    "scrapedTypes": [
+      "stargazer",
+      "watcher",
+      "forker",
+      "contributor"
+    ]
+  },
+  {
+    "repoUrl": "https://github.com/opentensor/subtensor",
+    "scrapedTypes": [
+      "stargazer",
+      "watcher",
+      "forker",
+      "contributor"
+    ]
+  },
+  {
+    "repoUrl": "https://github.com/opentensor/bittensor",
+    "scrapedTypes": [
+      "stargazer",
+      "watcher",
+      "forker",
+      "contributor"
+    ]
+  },
+  {
+    "repoUrl": "https://github.com/Phala-Network/khala-parachain",
+    "scrapedTypes": [
+      "stargazer",
+      "watcher",
+      "forker",
+      "contributor"
+    ]
+  },
+  {
+    "repoUrl": "https://github.com/Phala-Network/solo-mining-scripts",
+    "scrapedTypes": [
+      "stargazer",
+      "watcher",
+      "forker",
+      "contributor"
+    ]
+  },
+  {
+    "repoUrl": "https://github.com/Phala-Network/phala-blockchain",
+    "scrapedTypes": [
+      "stargazer",
+      "watcher",
+      "forker",
+      "contributor"
+    ]
+  },
+  {
+    "repoUrl": "https://github.com/numerai/numerai-tools",
+    "scrapedTypes": [
+      "stargazer",
+      "watcher",
+      "forker",
+      "contributor"
+    ]
+  },
+  {
+    "repoUrl": "https://github.com/numerai/numerai-cli",
+    "scrapedTypes": [
+      "stargazer",
+      "watcher",
+      "forker",
+      "contributor"
+    ]
+  },
+  {
+    "repoUrl": "https://github.com/numerai/example-scripts",
+    "scrapedTypes": [
+      "stargazer",
+      "watcher",
+      "forker",
+      "contributor"
+    ]
+  },
+  {
+    "repoUrl": "https://github.com/BitMind-AI/game-python",
+    "scrapedTypes": [
+      "stargazer",
+      "watcher",
+      "forker",
+      "contributor"
+    ]
+  },
+  {
+    "repoUrl": "https://github.com/BitMind-AI/bitmind-subnet",
+    "scrapedTypes": [
+      "stargazer",
+      "watcher",
+      "forker",
+      "contributor"
+    ]
+  },
+  {
+    "repoUrl": "https://github.com/learning-at-home/hivemind",
+    "scrapedTypes": [
+      "stargazer",
+      "watcher",
+      "forker",
+      "contributor"
+    ]
+  },
+  {
+    "repoUrl": "https://github.com/mosecorg/mosec",
+    "scrapedTypes": [
+      "stargazer",
+      "watcher",
+      "forker",
+      "contributor"
+    ]
+  },
+  {
+    "repoUrl": "https://github.com/bentoml/BentoML",
+    "scrapedTypes": [
+      "stargazer",
+      "watcher",
+      "forker",
+      "contributor"
+    ]
+  },
+  {
+    "repoUrl": "https://github.com/ray-project/ray-llm",
+    "scrapedTypes": [
+      "stargazer",
+      "watcher",
+      "forker",
+      "contributor"
+    ]
+  },
+  {
+    "repoUrl": "https://github.com/triton-inference-server/server",
+    "scrapedTypes": [
+      "stargazer"
+    ]
+  },
+  {
+    "repoUrl": "https://github.com/FMInference/FlexLLMGen",
+    "scrapedTypes": [
+      "stargazer"
+    ],
+    "lastProcessedPage": {
+      "stargazer": 80
+    }
+  },
+  {
+    "repoUrl": "https://github.com/safellama/plexiglass",
+    "scrapedTypes": [
+      "stargazer",
+      "watcher",
+      "forker"
+    ],
+    "lastProcessedPage": {
+      "stargazer": 2,
+      "watcher": 1,
+      "forker": 1
+    }
+  },
+  {
+    "repoUrl": "https://github.com/michaelfeil/infinity",
+    "scrapedTypes": [
+      "stargazer",
+      "watcher",
+      "forker"
+    ],
+    "lastProcessedPage": {
+      "stargazer": 21,
+      "watcher": 1,
+      "forker": 2
+    }
+  },
+  {
+    "repoUrl": "https://github.com/vllm-project/vllm",
+    "scrapedTypes": [
+      "stargazer"
+    ],
+    "lastProcessedPage": {
+      "stargazer": 23
+    }
+  },
+  {
+    "repoUrl": "https://github.com/adap/flower",
+    "scrapedTypes": [
+      "stargazer",
+      "watcher",
+      "forker"
+    ],
+    "lastProcessedPage": {
+      "stargazer": 57,
+      "watcher": 1,
+      "forker": 10
+    }
+  },
+  {
+    "repoUrl": "https://github.com/FederatedAI/FATE",
+    "scrapedTypes": [
+      "stargazer",
+      "watcher",
+      "forker"
+    ],
+    "lastProcessedPage": {
+      "stargazer": 59,
+      "watcher": 2,
+      "forker": 16
+    }
+  },
+  {
+    "repoUrl": "https://github.com/EasyFL-AI/EasyFL",
+    "scrapedTypes": [
+      "stargazer",
+      "forker"
+    ],
+    "lastProcessedPage": {
+      "stargazer": 1,
+      "forker": 1
+    }
+  },
+  {
+    "repoUrl": "https://github.com/FedML-AI/FedML",
+    "scrapedTypes": [
+      "stargazer",
+      "watcher",
+      "forker"
+    ],
+    "lastProcessedPage": {
+      "stargazer": 39,
+      "watcher": 1,
+      "forker": 8
+    }
+  },
+  {
+    "repoUrl": "https://github.com/openlit/openlit",
+    "scrapedTypes": [
+      "stargazer",
+      "watcher",
+      "forker"
+    ],
+    "lastProcessedPage": {
+      "stargazer": 14,
+      "watcher": 1,
+      "forker": 2
+    }
+  },
+  {
+    "repoUrl": "https://github.com/great-expectations/great_expectations",
+    "scrapedTypes": [
+      "stargazer",
+      "watcher",
+      "forker",
+      "contributor"
+    ],
+    "lastProcessedPage": {
+      "stargazer": 104,
+      "watcher": 1,
+      "forker": 16
+    }
+  },
+  {
+    "repoUrl": "https://github.com/MorpheusAIs/Morpheus",
+    "scrapedTypes": [
+      "stargazer",
+      "watcher",
+      "forker",
+      "contributor"
+    ],
+    "lastProcessedPage": {
+      "stargazer": 2,
+      "watcher": 1,
+      "forker": 2
+    }
+  },
+  {
+    "repoUrl": "https://github.com/deepspeedai/DeepSpeed",
+    "scrapedTypes": [
+      "watcher",
+      "forker",
+      "contributor"
+    ],
+    "lastProcessedPage": {
+      "watcher": 4,
+      "forker": 44,
+      "contributor": 4
+    }
+  },
+  {
+    "repoUrl": "https://github.com/gensyn-ai/rl-swarm",
+    "scrapedTypes": [
+      "stargazer",
+      "watcher",
+      "forker",
+      "contributor"
+    ],
+    "lastProcessedPage": {
+      "stargazer": 4,
+      "watcher": 1,
+      "forker": 2
+    }
+  },
+  {
+    "repoUrl": "https://github.com/MorpheusAIs/Docs",
+    "scrapedTypes": [
+      "stargazer",
+      "watcher",
+      "forker",
+      "contributor"
+    ],
+    "lastProcessedPage": {
+      "stargazer": 1,
+      "watcher": 1,
+      "forker": 2
+    }
+  },
+  {
+    "repoUrl": "https://github.com/MorpheusAIs/MySuperAgent",
+    "scrapedTypes": [
+      "stargazer",
+      "watcher",
+      "forker",
+      "contributor"
+    ],
+    "lastProcessedPage": {
+      "stargazer": 1,
+      "watcher": 1,
+      "forker": 1
+    }
+  },
+  {
+    "repoUrl": "https://github.com/MorpheusAIs/SmartContracts",
+    "scrapedTypes": [
+      "stargazer",
+      "watcher",
+      "forker",
+      "contributor"
+    ],
+    "lastProcessedPage": {
+      "stargazer": 1,
+      "watcher": 1,
+      "forker": 1
+    }
+  },
+  {
+    "repoUrl": "https://github.com/MorpheusAIs/Morpheus-Lumerin-Node",
+    "scrapedTypes": [
+      "stargazer",
+      "watcher",
+      "forker",
+      "contributor"
+    ],
+    "lastProcessedPage": {
+      "stargazer": 1,
+      "watcher": 1,
+      "forker": 1
+    }
+  },
+  {
+    "repoUrl": "https://github.com/MorpheusAIs/Lite-Client",
+    "scrapedTypes": [
+      "stargazer",
+      "watcher",
+      "forker",
+      "contributor"
+    ],
+    "lastProcessedPage": {
+      "stargazer": 1,
+      "watcher": 1,
+      "forker": 1
+    }
+  },
+  {
+    "repoUrl": "https://github.com/NousResearch/Hermes-Function-Calling",
+    "scrapedTypes": [
+      "stargazer",
+      "watcher",
+      "forker",
+      "contributor"
+    ],
+    "lastProcessedPage": {
+      "stargazer": 9,
+      "watcher": 1,
+      "forker": 2
+    }
+  },
+  {
+    "repoUrl": "https://github.com/NousResearch/Open-Reasoning-Tasks",
+    "scrapedTypes": [
+      "stargazer",
+      "watcher",
+      "forker",
+      "contributor"
+    ],
+    "lastProcessedPage": {
+      "stargazer": 5,
+      "watcher": 1,
+      "forker": 1
+    }
+  },
+  {
+    "repoUrl": "https://github.com/NousResearch/Obsidian",
+    "scrapedTypes": [
+      "stargazer",
+      "watcher",
+      "forker",
+      "contributor"
+    ],
+    "lastProcessedPage": {
+      "stargazer": 2,
+      "watcher": 1,
+      "forker": 1
+    }
+  },
+  {
+    "repoUrl": "https://github.com/NousResearch/nousflash-agents",
+    "scrapedTypes": [
+      "stargazer",
+      "watcher",
+      "forker",
+      "contributor"
+    ],
+    "lastProcessedPage": {
+      "stargazer": 1,
+      "watcher": 1,
+      "forker": 1
+    }
+  },
+  {
+    "repoUrl": "https://github.com/NousResearch/StripedHyenaTrainer",
+    "scrapedTypes": [
+      "stargazer",
+      "watcher",
+      "forker",
+      "contributor"
+    ],
+    "lastProcessedPage": {
+      "stargazer": 1,
+      "watcher": 1,
+      "forker": 1
+    }
+  },
+  {
+    "repoUrl": "https://github.com/NousResearch/local_generative_agents",
+    "scrapedTypes": [
+      "stargazer",
+      "forker",
+      "contributor"
+    ],
+    "lastProcessedPage": {
+      "stargazer": 1,
+      "forker": 1
+    }
+  },
+  {
+    "repoUrl": "https://github.com/NousResearch/llm-chain",
+    "scrapedTypes": [
+      "stargazer",
+      "watcher",
+      "forker",
+      "contributor"
+    ],
+    "lastProcessedPage": {
+      "stargazer": 1,
+      "watcher": 1,
+      "forker": 1
+    }
+  },
+  {
+    "repoUrl": "https://github.com/NousResearch/nanotron",
+    "scrapedTypes": [
+      "stargazer",
+      "contributor"
+    ],
+    "lastProcessedPage": {
+      "stargazer": 1
+    }
+  },
+  {
+    "repoUrl": "https://github.com/NousResearch/datatrove",
+    "scrapedTypes": [
+      "stargazer",
+      "contributor"
+    ],
+    "lastProcessedPage": {
+      "stargazer": 1
+    }
+  },
+  {
+    "repoUrl": "https://github.com/NousResearch/torchtitan",
+    "scrapedTypes": [
+      "stargazer",
+      "forker",
+      "contributor"
+    ],
+    "lastProcessedPage": {
+      "stargazer": 1,
+      "forker": 1
+    }
+  },
+  {
+    "repoUrl": "https://github.com/NousResearch/hf-hub",
+    "scrapedTypes": [
+      "stargazer",
+      "forker",
+      "contributor"
+    ],
+    "lastProcessedPage": {
+      "stargazer": 1,
+      "forker": 1
+    }
+  },
+  {
+    "repoUrl": "https://github.com/NousResearch/iroh",
+    "scrapedTypes": [
+      "contributor"
+    ]
+  },
+  {
+    "repoUrl": "https://github.com/CarperAI/trlx",
+    "scrapedTypes": [
+      "stargazer",
+      "watcher",
+      "forker",
+      "contributor"
+    ],
+    "lastProcessedPage": {
+      "stargazer": 47,
+      "watcher": 1,
+      "forker": 5
+    }
+  },
+  {
+    "repoUrl": "https://github.com/jquesnelle/yarn",
+    "scrapedTypes": [
+      "stargazer",
+      "watcher",
+      "forker",
+      "contributor"
+    ],
+    "lastProcessedPage": {
+      "stargazer": 15,
+      "watcher": 1,
+      "forker": 2
+    }
+  },
+  {
+    "repoUrl": "https://github.com/PsycheFoundation/psyche",
+    "scrapedTypes": [
+      "stargazer",
+      "watcher",
+      "forker",
+      "contributor"
+    ],
+    "lastProcessedPage": {
+      "stargazer": 3,
+      "watcher": 1,
+      "forker": 1
+    }
+  },
+  {
+    "repoUrl": "https://github.com/dagger/dagger",
+    "scrapedTypes": [
+      "stargazer",
+      "watcher",
+      "forker",
+      "contributor"
+    ],
+    "lastProcessedPage": {
+      "stargazer": 135,
+      "watcher": 3,
+      "forker": 8,
+      "contributor": 3
+    }
+  },
+  {
+    "repoUrl": "https://github.com/oceanprotocol/ocean.py",
+    "scrapedTypes": [
+      "stargazer",
+      "watcher",
+      "forker",
+      "contributor"
+    ],
+    "lastProcessedPage": {
+      "stargazer": 2,
+      "watcher": 1,
+      "forker": 1
+    }
+  },
+  {
+    "repoUrl": "https://github.com/DeepBrainChain/DeepBrainChain-MainChain",
+    "scrapedTypes": [
+      "stargazer",
+      "watcher",
+      "forker",
+      "contributor"
+    ],
+    "lastProcessedPage": {
+      "stargazer": 1,
+      "watcher": 1,
+      "forker": 1
+    }
+  },
+  {
+    "repoUrl": "https://github.com/singnet/snet-daemon",
+    "scrapedTypes": [
+      "stargazer",
+      "watcher",
+      "forker",
+      "contributor"
+    ],
+    "lastProcessedPage": {
+      "stargazer": 1,
+      "watcher": 1,
+      "forker": 1
+    }
+  },
+  {
+    "repoUrl": "https://github.com/fetchai/agents-aea",
+    "scrapedTypes": [
+      "stargazer",
+      "watcher",
+      "forker",
+      "contributor"
+    ],
+    "lastProcessedPage": {
+      "stargazer": 3,
+      "watcher": 1,
+      "forker": 1
+    }
+  },
+  {
+    "repoUrl": "https://github.com/CortexFoundation/CortexTheseus",
+    "scrapedTypes": [
+      "stargazer",
+      "watcher",
+      "forker",
+      "contributor"
+    ],
+    "lastProcessedPage": {
+      "stargazer": 2,
+      "watcher": 1,
+      "forker": 1,
+      "contributor": 4
+    }
+  },
+  {
+    "repoUrl": "https://github.com/morph-labs/gpt-engineer",
+    "scrapedTypes": [
+      "stargazer",
+      "watcher",
+      "forker",
+      "contributor"
+    ],
+    "lastProcessedPage": {
+      "stargazer": 1,
+      "watcher": 1,
+      "forker": 1
+    }
+  },
+  {
+    "repoUrl": "https://github.com/morph-labs/llm-verified-with-monte-carlo-tree-search",
+    "scrapedTypes": [
+      "stargazer",
+      "watcher",
+      "contributor"
+    ],
+    "lastProcessedPage": {
+      "stargazer": 1,
+      "watcher": 1
+    }
+  },
+  {
+    "repoUrl": "https://github.com/TrueBitFoundation/truebit-os",
+    "scrapedTypes": [
+      "stargazer",
+      "watcher",
+      "forker",
+      "contributor"
+    ],
+    "lastProcessedPage": {
+      "stargazer": 1,
+      "watcher": 1,
+      "forker": 1
+    }
+  },
+  {
+    "repoUrl": "https://github.com/secretflow/secretflow",
+    "scrapedTypes": [
+      "stargazer",
+      "watcher",
+      "forker",
+      "contributor"
+    ],
+    "lastProcessedPage": {
+      "stargazer": 25,
+      "watcher": 1,
+      "forker": 5
+    }
+  },
+  {
+    "repoUrl": "https://github.com/ScopeLift/umbra-protocol",
+    "scrapedTypes": [
+      "stargazer",
+      "watcher",
+      "forker",
+      "contributor"
+    ],
+    "lastProcessedPage": {
+      "stargazer": 4,
+      "watcher": 1,
+      "forker": 1
+    }
+  },
+  {
+    "repoUrl": "https://github.com/0xbow-io/privacy-pools-core",
+    "scrapedTypes": [
+      "stargazer",
+      "watcher",
+      "forker",
+      "contributor"
+    ],
+    "lastProcessedPage": {
+      "stargazer": 1,
+      "watcher": 1,
+      "forker": 1
+    }
+  },
+  {
+    "repoUrl": "https://github.com/ldsec/unlynx",
+    "scrapedTypes": [
+      "stargazer",
+      "watcher",
+      "forker",
+      "contributor"
+    ],
+    "lastProcessedPage": {
+      "stargazer": 1,
+      "watcher": 1,
+      "forker": 1
+    }
+  },
+  {
+    "repoUrl": "https://github.com/CyberDataLab/nebula",
+    "scrapedTypes": [
+      "stargazer",
+      "watcher",
+      "forker",
+      "contributor"
+    ],
+    "lastProcessedPage": {
+      "stargazer": 1,
+      "watcher": 1,
+      "forker": 1
+    }
+  },
+  {
+    "repoUrl": "https://github.com/APPFL/APPFL",
+    "scrapedTypes": [
+      "stargazer",
+      "watcher",
+      "forker",
+      "contributor"
+    ],
+    "lastProcessedPage": {
+      "stargazer": 2,
+      "watcher": 1,
+      "forker": 1
+    }
+  },
+  {
+    "repoUrl": "https://github.com/LayerXcom/zero-chain",
+    "scrapedTypes": [
+      "stargazer",
+      "watcher",
+      "forker",
+      "contributor"
+    ],
+    "lastProcessedPage": {
+      "stargazer": 3,
+      "watcher": 1,
+      "forker": 1
+    }
+  },
+  {
+    "repoUrl": "https://github.com/HewlettPackard/swarm-learning",
+    "scrapedTypes": [
+      "stargazer",
+      "watcher",
+      "forker",
+      "contributor"
+    ],
+    "lastProcessedPage": {
+      "stargazer": 4,
+      "watcher": 1,
+      "forker": 1
+    }
+  },
+  {
+    "repoUrl": "https://github.com/DP-3T/documents",
+    "scrapedTypes": [
+      "stargazer",
+      "watcher",
+      "forker",
+      "contributor"
+    ],
+    "lastProcessedPage": {
+      "stargazer": 23,
+      "watcher": 2,
+      "forker": 2
+    }
+  },
+  {
+    "repoUrl": "https://github.com/primihub/primihub",
+    "scrapedTypes": [
+      "stargazer",
+      "watcher",
+      "forker",
+      "contributor"
+    ],
+    "lastProcessedPage": {
+      "stargazer": 14,
+      "watcher": 1,
+      "forker": 2
+    }
+  },
+  {
+    "repoUrl": "https://github.com/modular/max",
+    "scrapedTypes": [
+      "watcher",
+      "forker",
+      "contributor"
+    ],
+    "lastProcessedPage": {
+      "watcher": 3,
+      "forker": 26,
+      "contributor": 3
+    }
+  },
+  {
+    "repoUrl": "https://github.com/atoma-network/atoma-agents",
+    "scrapedTypes": [
+      "stargazer",
+      "watcher",
+      "forker",
+      "contributor"
+    ],
+    "lastProcessedPage": {
+      "stargazer": 1,
+      "watcher": 1,
+      "forker": 1
+    }
+  },
+  {
+    "repoUrl": "https://github.com/atoma-network/atoma-contracts",
+    "scrapedTypes": [
+      "stargazer",
+      "watcher",
+      "forker",
+      "contributor"
+    ],
+    "lastProcessedPage": {
+      "stargazer": 1,
+      "watcher": 1,
+      "forker": 1
+    }
+  },
+  {
+    "repoUrl": "https://github.com/atoma-network/open-webui",
+    "scrapedTypes": [
+      "stargazer",
+      "forker",
+      "contributor"
+    ],
+    "lastProcessedPage": {
+      "stargazer": 1,
+      "forker": 1,
+      "contributor": 4
+    }
+  },
+  {
+    "repoUrl": "https://github.com/atoma-network/atoma-docs",
+    "scrapedTypes": [
+      "stargazer",
+      "watcher",
+      "forker",
+      "contributor"
+    ],
+    "lastProcessedPage": {
+      "stargazer": 1,
+      "watcher": 1,
+      "forker": 1
+    }
+  },
+  {
+    "repoUrl": "https://github.com/atoma-network/atoma-node",
+    "scrapedTypes": [
+      "stargazer",
+      "watcher",
+      "forker",
+      "contributor"
+    ],
+    "lastProcessedPage": {
+      "stargazer": 1,
+      "watcher": 1,
+      "forker": 1
+    }
+  },
+  {
+    "repoUrl": "https://github.com/atoma-network/atoma-infer",
+    "scrapedTypes": [
+      "stargazer",
+      "watcher",
+      "forker",
+      "contributor"
+    ],
+    "lastProcessedPage": {
+      "stargazer": 1,
+      "watcher": 1,
+      "forker": 1
+    }
+  },
+  {
+    "repoUrl": "https://github.com/google-parfait/tensorflow-federated",
+    "scrapedTypes": [
+      "stargazer",
+      "watcher",
+      "forker",
+      "contributor"
+    ],
+    "lastProcessedPage": {
+      "stargazer": 24,
+      "watcher": 1,
+      "forker": 6,
+      "contributor": 2
+    }
+  },
+  {
+    "repoUrl": "https://github.com/KOSASIH/eulers-shield",
+    "scrapedTypes": [
+      "stargazer",
+      "watcher",
+      "forker",
+      "contributor"
+    ],
+    "lastProcessedPage": {
+      "stargazer": 2,
+      "watcher": 1,
+      "forker": 1
+    }
+  },
+  {
+    "repoUrl": "https://github.com/openmined/PipelineDP",
+    "scrapedTypes": [
+      "stargazer",
+      "watcher",
+      "forker",
+      "contributor"
+    ],
+    "lastProcessedPage": {
+      "stargazer": 3,
+      "watcher": 1,
+      "forker": 1
+    }
+  },
+  {
+    "repoUrl": "https://github.com/microsoft/PersonalizedFL",
+    "scrapedTypes": [
+      "stargazer",
+      "watcher",
+      "forker",
+      "contributor"
+    ],
+    "lastProcessedPage": {
+      "stargazer": 4,
+      "watcher": 1,
+      "forker": 1
+    }
+  },
+  {
+    "repoUrl": "https://github.com/FedML-AI/FedGraphNN",
+    "scrapedTypes": [
+      "stargazer",
+      "watcher",
+      "forker",
+      "contributor"
+    ],
+    "lastProcessedPage": {
+      "stargazer": 2,
+      "watcher": 1,
+      "forker": 1
+    }
+  },
+  {
+    "repoUrl": "https://github.com/bit-current/DistributedTraining",
+    "scrapedTypes": [
+      "stargazer",
+      "watcher",
+      "forker",
+      "contributor"
+    ],
+    "lastProcessedPage": {
+      "stargazer": 1,
+      "watcher": 1,
+      "forker": 1
+    }
+  },
+  {
+    "repoUrl": "https://github.com/horovod/horovod",
+    "scrapedTypes": [],
+    "lastProcessedPage": {
+      "stargazer": 45
+    }
+  },
+  {
+    "repoUrl": "https://github.com/sfcompute/cluster-health",
+    "scrapedTypes": [
+      "contributor"
+    ]
+  },
+  {
+    "repoUrl": "https://github.com/dstackai/dstack",
+    "scrapedTypes": [
+      "stargazer",
+      "watcher",
+      "forker",
+      "contributor"
+    ],
+    "lastProcessedPage": {
+      "stargazer": 18,
+      "watcher": 1,
+      "forker": 2
+    }
+  },
+  {
+    "repoUrl": "https://github.com/dstackai/gpuhunt",
+    "scrapedTypes": [
+      "stargazer",
+      "watcher",
+      "forker",
+      "contributor"
+    ],
+    "lastProcessedPage": {
+      "stargazer": 1,
+      "watcher": 1,
+      "forker": 1
+    }
+  },
+  {
+    "repoUrl": "https://github.com/dstackai/dstack-enterprise",
+    "scrapedTypes": [
+      "stargazer",
+      "watcher",
+      "contributor"
+    ],
+    "lastProcessedPage": {
+      "stargazer": 1,
+      "watcher": 1
+    }
+  },
+  {
+    "repoUrl": "https://github.com/dstackai/llm-weaver",
+    "scrapedTypes": [
+      "stargazer",
+      "watcher",
+      "forker",
+      "contributor"
+    ],
+    "lastProcessedPage": {
+      "stargazer": 1,
+      "watcher": 1,
+      "forker": 1
+    }
+  },
+  {
+    "repoUrl": "https://github.com/dstackai/benchmarks",
+    "scrapedTypes": [
+      "stargazer",
+      "watcher",
+      "contributor"
+    ],
+    "lastProcessedPage": {
+      "stargazer": 1,
+      "watcher": 1
+    }
+  },
+  {
+    "repoUrl": "https://github.com/dstackai/LLM-As-Chatbot",
+    "scrapedTypes": [
+      "stargazer",
+      "watcher",
+      "forker",
+      "contributor"
+    ],
+    "lastProcessedPage": {
+      "stargazer": 1,
+      "watcher": 1,
+      "forker": 1
+    }
+  },
+  {
+    "repoUrl": "https://github.com/dstackai/dstack-examples",
+    "scrapedTypes": [
+      "stargazer",
+      "watcher",
+      "forker",
+      "contributor"
+    ],
+    "lastProcessedPage": {
+      "stargazer": 1,
+      "watcher": 1,
+      "forker": 1
+    }
+  },
+  {
+    "repoUrl": "https://github.com/dstackai/gpuhunt-demo",
+    "scrapedTypes": [
+      "stargazer",
+      "watcher",
+      "contributor"
+    ],
+    "lastProcessedPage": {
+      "stargazer": 1,
+      "watcher": 1
+    }
+  },
+  {
+    "repoUrl": "https://github.com/lambdal/deeplearning-benchmark",
+    "scrapedTypes": [
+      "stargazer",
+      "watcher",
+      "forker",
+      "contributor"
+    ],
+    "lastProcessedPage": {
+      "stargazer": 3,
+      "watcher": 1,
+      "forker": 1
+    }
+  },
+  {
+    "repoUrl": "https://github.com/lambdal/lambda-stack-dockerfiles",
+    "scrapedTypes": [
+      "stargazer",
+      "watcher",
+      "forker",
+      "contributor"
+    ],
+    "lastProcessedPage": {
+      "stargazer": 3,
+      "watcher": 1,
+      "forker": 1
+    }
+  },
+  {
+    "repoUrl": "https://github.com/lambdal/bert",
+    "scrapedTypes": [
+      "stargazer",
+      "watcher",
+      "forker",
+      "contributor"
+    ],
+    "lastProcessedPage": {
+      "stargazer": 2,
+      "watcher": 1,
+      "forker": 1
+    }
+  },
+  {
+    "repoUrl": "https://github.com/lambdal/imagenet18",
+    "scrapedTypes": [
+      "stargazer",
+      "watcher",
+      "forker",
+      "contributor"
+    ],
+    "lastProcessedPage": {
+      "stargazer": 1,
+      "watcher": 1,
+      "forker": 1
+    }
+  },
+  {
+    "repoUrl": "https://github.com/brevdev/notebooks",
+    "scrapedTypes": [
+      "stargazer",
+      "watcher",
+      "forker",
+      "contributor"
+    ],
+    "lastProcessedPage": {
+      "stargazer": 18,
+      "watcher": 1,
+      "forker": 4
+    }
+  },
+  {
+    "repoUrl": "https://github.com/brevdev/brev-cli",
+    "scrapedTypes": [
+      "stargazer",
+      "watcher",
+      "forker",
+      "contributor"
+    ],
+    "lastProcessedPage": {
+      "stargazer": 3,
+      "watcher": 1,
+      "forker": 1
+    }
+  },
+  {
+    "repoUrl": "https://github.com/brevdev/assets",
+    "scrapedTypes": [
+      "stargazer",
+      "watcher",
+      "contributor"
+    ],
+    "lastProcessedPage": {
+      "stargazer": 1,
+      "watcher": 1
+    }
+  },
+  {
+    "repoUrl": "https://github.com/brevdev/brev-mcp",
+    "scrapedTypes": [
+      "stargazer",
+      "watcher",
+      "forker",
+      "contributor"
+    ],
+    "lastProcessedPage": {
+      "stargazer": 1,
+      "watcher": 1,
+      "forker": 1
+    }
+  },
+  {
+    "repoUrl": "https://github.com/brevdev/nvcf",
+    "scrapedTypes": [
+      "stargazer",
+      "watcher",
+      "contributor"
+    ],
+    "lastProcessedPage": {
+      "stargazer": 1,
+      "watcher": 1
+    }
+  },
+  {
+    "repoUrl": "https://github.com/brevdev/Stable-Diffusion-Fast-Api",
+    "scrapedTypes": [
+      "stargazer",
+      "watcher",
+      "contributor"
+    ],
+    "lastProcessedPage": {
+      "stargazer": 1,
+      "watcher": 1
+    }
+  },
+  {
+    "repoUrl": "https://github.com/brevdev/seed",
+    "scrapedTypes": [
+      "stargazer",
+      "watcher",
+      "forker",
+      "contributor"
+    ],
+    "lastProcessedPage": {
+      "stargazer": 1,
+      "watcher": 1,
+      "forker": 1
+    }
+  },
+  {
+    "repoUrl": "https://github.com/brevdev/AUTOMATIC1111-civitai-notebook",
+    "scrapedTypes": [
+      "stargazer",
+      "watcher",
+      "contributor"
+    ],
+    "lastProcessedPage": {
+      "stargazer": 1,
+      "watcher": 1
+    }
+  },
+  {
+    "repoUrl": "https://github.com/brevdev/react-starter-app",
+    "scrapedTypes": [
+      "stargazer",
+      "watcher",
+      "forker",
+      "contributor"
+    ],
+    "lastProcessedPage": {
+      "stargazer": 1,
+      "watcher": 1,
+      "forker": 1
+    }
+  },
+  {
+    "repoUrl": "https://github.com/brevdev/simple-dreambooth-api",
+    "scrapedTypes": [
+      "stargazer",
+      "watcher",
+      "forker",
+      "contributor"
+    ],
+    "lastProcessedPage": {
+      "stargazer": 1,
+      "watcher": 1,
+      "forker": 1
+    }
+  },
+  {
+    "repoUrl": "https://github.com/brevdev/stable-diffusion-v2",
+    "scrapedTypes": [
+      "stargazer",
+      "watcher",
+      "forker",
+      "contributor"
+    ],
+    "lastProcessedPage": {
+      "stargazer": 1,
+      "watcher": 1,
+      "forker": 1
+    }
+  },
+  {
+    "repoUrl": "https://github.com/runpod/go-sdk",
+    "scrapedTypes": [
+      "stargazer",
+      "watcher",
+      "forker",
+      "contributor"
+    ],
+    "lastProcessedPage": {
+      "stargazer": 1,
+      "watcher": 1,
+      "forker": 1
+    }
+  },
+  {
+    "repoUrl": "https://github.com/runpod/runpod-python",
+    "scrapedTypes": [
+      "stargazer",
+      "watcher",
+      "forker",
+      "contributor"
+    ],
+    "lastProcessedPage": {
+      "stargazer": 3,
+      "watcher": 1,
+      "forker": 1
+    }
+  },
+  {
+    "repoUrl": "https://github.com/runpod/runpodctl",
+    "scrapedTypes": [
+      "stargazer",
+      "watcher",
+      "forker",
+      "contributor"
+    ],
+    "lastProcessedPage": {
+      "stargazer": 3,
+      "watcher": 1,
+      "forker": 1
+    }
+  },
+  {
+    "repoUrl": "https://github.com/runpod/docs",
+    "scrapedTypes": [
+      "stargazer",
+      "watcher",
+      "forker",
+      "contributor"
+    ],
+    "lastProcessedPage": {
+      "stargazer": 1,
+      "watcher": 1,
+      "forker": 1
+    }
+  },
+  {
+    "repoUrl": "https://github.com/runpod/serverless-workers",
+    "scrapedTypes": [
+      "stargazer",
+      "watcher",
+      "forker",
+      "contributor"
+    ],
+    "lastProcessedPage": {
+      "stargazer": 1,
+      "watcher": 1,
+      "forker": 1
+    }
+  },
+  {
+    "repoUrl": "https://github.com/runpod/serverless-ckpt-template",
+    "scrapedTypes": [
+      "stargazer",
+      "watcher",
+      "forker",
+      "contributor"
+    ],
+    "lastProcessedPage": {
+      "stargazer": 1,
+      "watcher": 1,
+      "forker": 1
+    }
+  },
+  {
+    "repoUrl": "https://github.com/runpod/containers",
+    "scrapedTypes": [
+      "stargazer",
+      "watcher",
+      "forker",
+      "contributor"
+    ],
+    "lastProcessedPage": {
+      "stargazer": 2,
+      "watcher": 1,
+      "forker": 1
+    }
+  },
+  {
+    "repoUrl": "https://github.com/runpod/js-sdk",
+    "scrapedTypes": [
+      "stargazer",
+      "watcher",
+      "forker",
+      "contributor"
+    ],
+    "lastProcessedPage": {
+      "stargazer": 1,
+      "watcher": 1,
+      "forker": 1
+    }
+  },
+  {
+    "repoUrl": "https://github.com/runpod/vllm",
+    "scrapedTypes": [
+      "stargazer",
+      "contributor"
+    ],
+    "lastProcessedPage": {
+      "stargazer": 1
+    }
+  },
+  {
+    "repoUrl": "https://github.com/runpod/openv",
+    "scrapedTypes": [
+      "stargazer",
+      "watcher",
+      "contributor"
+    ],
+    "lastProcessedPage": {
+      "stargazer": 1,
+      "watcher": 1
+    }
+  },
+  {
+    "repoUrl": "https://github.com/runpod/notebooks",
+    "scrapedTypes": [
+      "stargazer",
+      "watcher",
+      "forker",
+      "contributor"
+    ],
+    "lastProcessedPage": {
+      "stargazer": 1,
+      "watcher": 1,
+      "forker": 1
+    }
+  },
+  {
+    "repoUrl": "https://github.com/runpod/discoart-ui",
+    "scrapedTypes": [
+      "stargazer",
+      "watcher",
+      "forker",
+      "contributor"
+    ],
+    "lastProcessedPage": {
+      "stargazer": 1,
+      "watcher": 1,
+      "forker": 1
+    }
+  },
+  {
+    "repoUrl": "https://github.com/runpod/skypilot",
+    "scrapedTypes": [
+      "stargazer",
+      "forker",
+      "contributor"
+    ],
+    "lastProcessedPage": {
+      "stargazer": 1,
+      "forker": 1
+    }
+  },
+  {
+    "repoUrl": "https://github.com/runpod/test-runner",
+    "scrapedTypes": [
+      "stargazer",
+      "watcher",
+      "forker",
+      "contributor"
+    ],
+    "lastProcessedPage": {
+      "stargazer": 1,
+      "watcher": 1,
+      "forker": 1
+    }
+  },
+  {
+    "repoUrl": "https://github.com/runpod/pulumi-runpod-native",
+    "scrapedTypes": [
+      "stargazer",
+      "watcher",
+      "forker",
+      "contributor"
+    ],
+    "lastProcessedPage": {
+      "stargazer": 1,
+      "watcher": 1,
+      "forker": 1
+    }
+  },
+  {
+    "repoUrl": "https://github.com/runpod/vllm-fork-for-sls-worker",
+    "scrapedTypes": [
+      "stargazer",
+      "forker",
+      "contributor"
+    ],
+    "lastProcessedPage": {
+      "stargazer": 1,
+      "forker": 1,
+      "contributor": 4
+    }
+  },
+  {
+    "repoUrl": "https://github.com/Cerebras/cerebras-cloud-sdk-node",
+    "scrapedTypes": [
+      "stargazer",
+      "watcher",
+      "forker",
+      "contributor"
+    ],
+    "lastProcessedPage": {
+      "stargazer": 1,
+      "watcher": 1,
+      "forker": 1
+    }
+  },
+  {
+    "repoUrl": "https://github.com/Cerebras/cerebras-cloud-sdk-python",
+    "scrapedTypes": [
+      "stargazer",
+      "watcher",
+      "forker",
+      "contributor"
+    ],
+    "lastProcessedPage": {
+      "stargazer": 1,
+      "watcher": 1,
+      "forker": 1
+    }
+  },
+  {
+    "repoUrl": "https://github.com/Cerebras/modelzoo",
+    "scrapedTypes": [
+      "stargazer",
+      "watcher",
+      "forker",
+      "contributor"
+    ],
+    "lastProcessedPage": {
+      "stargazer": 11,
+      "watcher": 1,
+      "forker": 2
+    }
+  },
+  {
+    "repoUrl": "https://github.com/Cerebras/csl-examples",
+    "scrapedTypes": [
+      "stargazer",
+      "watcher",
+      "forker",
+      "contributor"
+    ],
+    "lastProcessedPage": {
+      "stargazer": 1,
+      "watcher": 1,
+      "forker": 1
+    }
+  },
+  {
+    "repoUrl": "https://github.com/Cerebras/gigaGPT",
+    "scrapedTypes": [
+      "stargazer",
+      "watcher",
+      "forker",
+      "contributor"
+    ],
+    "lastProcessedPage": {
+      "stargazer": 3,
+      "watcher": 1,
+      "forker": 1
+    }
+  },
+  {
+    "repoUrl": "https://github.com/Cerebras/inference-examples",
+    "scrapedTypes": [
+      "stargazer",
+      "watcher",
+      "forker",
+      "contributor"
+    ],
+    "lastProcessedPage": {
+      "stargazer": 1,
+      "watcher": 1,
+      "forker": 1
+    }
+  },
+  {
+    "repoUrl": "https://github.com/Cerebras/online-normalization",
+    "scrapedTypes": [
+      "stargazer",
+      "watcher",
+      "forker",
+      "contributor"
+    ],
+    "lastProcessedPage": {
+      "stargazer": 1,
+      "watcher": 1,
+      "forker": 1
+    }
+  },
+  {
+    "repoUrl": "https://github.com/Cerebras/DocChat",
+    "scrapedTypes": [
+      "stargazer",
+      "watcher",
+      "forker",
+      "contributor"
+    ],
+    "lastProcessedPage": {
+      "stargazer": 1,
+      "watcher": 1,
+      "forker": 1
+    }
+  },
+  {
+    "repoUrl": "https://github.com/Cerebras/libtins",
+    "scrapedTypes": [
+      "stargazer",
+      "watcher",
+      "forker",
+      "contributor"
+    ],
+    "lastProcessedPage": {
+      "stargazer": 1,
+      "watcher": 1,
+      "forker": 1
+    }
+  },
+  {
+    "repoUrl": "https://github.com/Cerebras/ispd2021",
+    "scrapedTypes": [
+      "stargazer",
+      "watcher",
+      "forker",
+      "contributor"
+    ],
+    "lastProcessedPage": {
+      "stargazer": 1,
+      "watcher": 1,
+      "forker": 1
+    }
+  },
+  {
+    "repoUrl": "https://github.com/cartesia-ai/cartesia-js",
+    "scrapedTypes": [
+      "stargazer",
+      "watcher",
+      "forker",
+      "contributor"
+    ],
+    "lastProcessedPage": {
+      "stargazer": 1,
+      "watcher": 1,
+      "forker": 1
+    }
+  },
+  {
+    "repoUrl": "https://github.com/cartesia-ai/edge",
+    "scrapedTypes": [
+      "stargazer",
+      "watcher",
+      "forker",
+      "contributor"
+    ],
+    "lastProcessedPage": {
+      "stargazer": 4,
+      "watcher": 1,
+      "forker": 1
+    }
+  },
+  {
+    "repoUrl": "https://github.com/cartesia-ai/cartesia-python",
+    "scrapedTypes": [
+      "stargazer",
+      "watcher",
+      "forker",
+      "contributor"
+    ],
+    "lastProcessedPage": {
+      "stargazer": 1,
+      "watcher": 1,
+      "forker": 1
+    }
+  },
+  {
+    "repoUrl": "https://github.com/cartesia-ai/cartesia-livekit-voice-agent",
+    "scrapedTypes": [
+      "stargazer",
+      "watcher",
+      "forker",
+      "contributor"
+    ],
+    "lastProcessedPage": {
+      "stargazer": 1,
+      "watcher": 1,
+      "forker": 1
+    }
+  },
+  {
+    "repoUrl": "https://github.com/cartesia-ai/dev-showcase",
+    "scrapedTypes": [
+      "stargazer",
+      "watcher",
+      "forker",
+      "contributor"
+    ],
+    "lastProcessedPage": {
+      "stargazer": 1,
+      "watcher": 1,
+      "forker": 1
+    }
+  },
+  {
+    "repoUrl": "https://github.com/cartesia-ai/calhacks2024",
+    "scrapedTypes": [
+      "stargazer",
+      "watcher",
+      "contributor"
+    ],
+    "lastProcessedPage": {
+      "stargazer": 1,
+      "watcher": 1
+    }
+  },
+  {
+    "repoUrl": "https://github.com/basetenlabs/truss-examples",
+    "scrapedTypes": [
+      "stargazer",
+      "watcher",
+      "forker",
+      "contributor"
+    ],
+    "lastProcessedPage": {
+      "stargazer": 2,
+      "watcher": 1,
+      "forker": 1
+    }
+  },
+  {
+    "repoUrl": "https://github.com/basetenlabs/truss",
+    "scrapedTypes": [
+      "stargazer",
+      "watcher",
+      "forker",
+      "contributor"
+    ],
+    "lastProcessedPage": {
+      "stargazer": 10,
+      "watcher": 1,
+      "forker": 1
+    }
+  },
+  {
+    "repoUrl": "https://github.com/basetenlabs/Workshop-TRT-LLM",
+    "scrapedTypes": [
+      "stargazer",
+      "watcher",
+      "forker",
+      "contributor"
+    ],
+    "lastProcessedPage": {
+      "stargazer": 1,
+      "watcher": 1,
+      "forker": 1
+    }
+  },
+  {
+    "repoUrl": "https://github.com/basetenlabs/infrastructure-take-home",
+    "scrapedTypes": [
+      "stargazer",
+      "watcher",
+      "contributor"
+    ],
+    "lastProcessedPage": {
+      "stargazer": 1,
+      "watcher": 1
+    }
+  },
+  {
+    "repoUrl": "https://github.com/basetenlabs/wizardlm-truss",
+    "scrapedTypes": [
+      "stargazer",
+      "watcher",
+      "forker",
+      "contributor"
+    ],
+    "lastProcessedPage": {
+      "stargazer": 1,
+      "watcher": 1,
+      "forker": 1
+    }
+  },
+  {
+    "repoUrl": "https://github.com/basetenlabs/stablelm-truss",
+    "scrapedTypes": [
+      "stargazer",
+      "watcher",
+      "forker",
+      "contributor"
+    ],
+    "lastProcessedPage": {
+      "stargazer": 1,
+      "watcher": 1,
+      "forker": 1
+    }
+  },
+  {
+    "repoUrl": "https://github.com/basetenlabs/starcoder-truss",
+    "scrapedTypes": [
+      "stargazer",
+      "watcher",
+      "contributor"
+    ],
+    "lastProcessedPage": {
+      "stargazer": 1,
+      "watcher": 1
+    }
+  },
+  {
+    "repoUrl": "https://github.com/basetenlabs/falcon-7b-truss",
+    "scrapedTypes": [
+      "stargazer",
+      "watcher",
+      "forker",
+      "contributor"
+    ],
+    "lastProcessedPage": {
+      "stargazer": 1,
+      "watcher": 1,
+      "forker": 1
+    }
+  },
+  {
+    "repoUrl": "https://github.com/basetenlabs/frontend-take-home",
+    "scrapedTypes": [
+      "stargazer",
+      "watcher",
+      "forker",
+      "contributor"
+    ],
+    "lastProcessedPage": {
+      "stargazer": 1,
+      "watcher": 1,
+      "forker": 1
+    }
+  },
+  {
+    "repoUrl": "https://github.com/basetenlabs/avatar-generation-app-tutorial",
+    "scrapedTypes": [
+      "stargazer",
+      "watcher",
+      "forker",
+      "contributor"
+    ],
+    "lastProcessedPage": {
+      "stargazer": 1,
+      "watcher": 1,
+      "forker": 1
+    }
+  },
+  {
+    "repoUrl": "https://github.com/basetenlabs/demos",
+    "scrapedTypes": [
+      "stargazer",
+      "watcher",
+      "forker",
+      "contributor"
+    ],
+    "lastProcessedPage": {
+      "stargazer": 1,
+      "watcher": 1,
+      "forker": 1
+    }
+  },
+  {
+    "repoUrl": "https://github.com/superfly/fly",
+    "scrapedTypes": [
+      "stargazer",
+      "watcher",
+      "forker",
+      "contributor"
+    ],
+    "lastProcessedPage": {
+      "stargazer": 10,
+      "watcher": 1,
+      "forker": 1
+    }
+  },
+  {
+    "repoUrl": "https://github.com/superfly/flyctl",
+    "scrapedTypes": [
+      "stargazer",
+      "watcher",
+      "forker",
+      "contributor"
+    ],
+    "lastProcessedPage": {
+      "stargazer": 15,
+      "watcher": 1,
+      "forker": 3,
+      "contributor": 2
+    }
+  },
+  {
+    "repoUrl": "https://github.com/superfly/corrosion",
+    "scrapedTypes": [
+      "stargazer",
+      "watcher",
+      "forker",
+      "contributor"
+    ],
+    "lastProcessedPage": {
+      "stargazer": 9,
+      "watcher": 1,
+      "forker": 1
+    }
+  },
+  {
+    "repoUrl": "https://github.com/superfly/litefs",
+    "scrapedTypes": [
+      "stargazer",
+      "watcher",
+      "forker",
+      "contributor"
+    ],
+    "lastProcessedPage": {
+      "stargazer": 44,
+      "watcher": 1,
+      "forker": 2
+    }
+  },
+  {
+    "repoUrl": "https://github.com/superfly/fly-go",
+    "scrapedTypes": [
+      "stargazer",
+      "watcher",
+      "forker",
+      "contributor"
+    ],
+    "lastProcessedPage": {
+      "stargazer": 1,
+      "watcher": 1,
+      "forker": 1
+    }
+  },
+  {
+    "repoUrl": "https://github.com/superfly/ssokenizer",
+    "scrapedTypes": [
+      "stargazer",
+      "watcher",
+      "forker",
+      "contributor"
+    ],
+    "lastProcessedPage": {
+      "stargazer": 1,
+      "watcher": 1,
+      "forker": 1
+    }
+  },
+  {
+    "repoUrl": "https://github.com/superfly/tokenizer",
+    "scrapedTypes": [
+      "stargazer",
+      "watcher",
+      "forker",
+      "contributor"
+    ],
+    "lastProcessedPage": {
+      "stargazer": 3,
+      "watcher": 1,
+      "forker": 1
+    }
+  },
+  {
+    "repoUrl": "https://github.com/superfly/docs",
+    "scrapedTypes": [
+      "stargazer",
+      "watcher",
+      "forker",
+      "contributor"
+    ],
+    "lastProcessedPage": {
+      "stargazer": 2,
+      "watcher": 1,
+      "forker": 12,
+      "contributor": 4
+    }
+  },
+  {
+    "repoUrl": "https://github.com/superfly/macaroon",
+    "scrapedTypes": [
+      "stargazer",
+      "watcher",
+      "forker",
+      "contributor"
+    ],
+    "lastProcessedPage": {
+      "stargazer": 1,
+      "watcher": 1,
+      "forker": 1
+    }
+  },
+  {
+    "repoUrl": "https://github.com/superfly/litevfs",
+    "scrapedTypes": [
+      "stargazer",
+      "watcher",
+      "forker",
+      "contributor"
+    ],
+    "lastProcessedPage": {
+      "stargazer": 1,
+      "watcher": 1,
+      "forker": 1
+    }
+  },
+  {
+    "repoUrl": "https://github.com/superfly/fly-pr-review-apps",
+    "scrapedTypes": [
+      "stargazer",
+      "watcher",
+      "forker",
+      "contributor"
+    ],
+    "lastProcessedPage": {
+      "stargazer": 2,
+      "watcher": 1,
+      "forker": 1
+    }
+  },
+  {
+    "repoUrl": "https://github.com/superfly/fly-openapi-sdk",
+    "scrapedTypes": [
+      "stargazer",
+      "watcher",
+      "forker",
+      "contributor"
+    ],
+    "lastProcessedPage": {
+      "stargazer": 1,
+      "watcher": 1,
+      "forker": 1
+    }
+  },
+  {
+    "repoUrl": "https://github.com/superfly/flyctl-actions",
+    "scrapedTypes": [
+      "stargazer",
+      "watcher",
+      "forker",
+      "contributor"
+    ],
+    "lastProcessedPage": {
+      "stargazer": 3,
+      "watcher": 1,
+      "forker": 1
+    }
+  },
+  {
+    "repoUrl": "https://github.com/superfly/fly-autoscaler",
+    "scrapedTypes": [
+      "stargazer",
+      "watcher",
+      "forker",
+      "contributor"
+    ],
+    "lastProcessedPage": {
+      "stargazer": 1,
+      "watcher": 1,
+      "forker": 1
+    }
+  },
+  {
+    "repoUrl": "https://github.com/superfly/init-snapshot",
+    "scrapedTypes": [
+      "stargazer",
+      "watcher",
+      "forker",
+      "contributor"
+    ],
+    "lastProcessedPage": {
+      "stargazer": 3,
+      "watcher": 1,
+      "forker": 1
+    }
+  },
+  {
+    "repoUrl": "https://github.com/superfly/dashboards",
+    "scrapedTypes": [
+      "stargazer",
+      "watcher",
+      "contributor"
+    ],
+    "lastProcessedPage": {
+      "stargazer": 1,
+      "watcher": 1
+    }
+  },
+  {
+    "repoUrl": "https://github.com/superfly/flyssh",
+    "scrapedTypes": [
+      "stargazer",
+      "watcher",
+      "contributor"
+    ],
+    "lastProcessedPage": {
+      "stargazer": 1,
+      "watcher": 1
+    }
+  },
+  {
+    "repoUrl": "https://github.com/superfly/fly-checks",
+    "scrapedTypes": [
+      "stargazer",
+      "watcher",
+      "forker",
+      "contributor"
+    ],
+    "lastProcessedPage": {
+      "stargazer": 1,
+      "watcher": 1,
+      "forker": 1
+    }
+  },
+  {
+    "repoUrl": "https://github.com/superfly/fly-log-shipper",
+    "scrapedTypes": [
+      "stargazer",
+      "watcher",
+      "forker",
+      "contributor"
+    ],
+    "lastProcessedPage": {
+      "stargazer": 3,
+      "watcher": 1,
+      "forker": 2
+    }
+  },
+  {
+    "repoUrl": "https://github.com/superfly/rust-templates",
+    "scrapedTypes": [
+      "stargazer",
+      "watcher",
+      "forker",
+      "contributor"
+    ],
+    "lastProcessedPage": {
+      "stargazer": 1,
+      "watcher": 1,
+      "forker": 1
+    }
+  },
+  {
+    "repoUrl": "https://github.com/superfly/rchab",
+    "scrapedTypes": [
+      "stargazer",
+      "watcher",
+      "forker",
+      "contributor"
+    ],
+    "lastProcessedPage": {
+      "stargazer": 1,
+      "watcher": 1,
+      "forker": 1
+    }
+  },
+  {
+    "repoUrl": "https://github.com/superfly/wormhole",
+    "scrapedTypes": [
+      "stargazer",
+      "watcher",
+      "forker",
+      "contributor"
+    ],
+    "lastProcessedPage": {
+      "stargazer": 3,
+      "watcher": 1,
+      "forker": 1
+    }
+  },
+  {
+    "repoUrl": "https://github.com/superfly/macaroon-elixir",
+    "scrapedTypes": [
+      "stargazer",
+      "watcher",
+      "contributor"
+    ],
+    "lastProcessedPage": {
+      "stargazer": 1,
+      "watcher": 1
+    }
+  },
+  {
+    "repoUrl": "https://github.com/superfly/llm-describer",
+    "scrapedTypes": [
+      "stargazer",
+      "watcher",
+      "forker",
+      "contributor"
+    ],
+    "lastProcessedPage": {
+      "stargazer": 1,
+      "watcher": 1,
+      "forker": 1
+    }
+  },
+  {
+    "repoUrl": "https://github.com/superfly/fly_rpc_elixir",
+    "scrapedTypes": [
+      "stargazer",
+      "watcher",
+      "forker",
+      "contributor"
+    ],
+    "lastProcessedPage": {
+      "stargazer": 1,
+      "watcher": 1,
+      "forker": 1
+    }
+  },
+  {
+    "repoUrl": "https://github.com/superfly/ltx",
+    "scrapedTypes": [
+      "stargazer",
+      "watcher",
+      "forker",
+      "contributor"
+    ],
+    "lastProcessedPage": {
+      "stargazer": 2,
+      "watcher": 1,
+      "forker": 1
+    }
+  },
+  {
+    "repoUrl": "https://github.com/superfly/litefs-example",
+    "scrapedTypes": [
+      "stargazer",
+      "watcher",
+      "forker",
+      "contributor"
+    ],
+    "lastProcessedPage": {
+      "stargazer": 1,
+      "watcher": 1,
+      "forker": 1
+    }
+  },
+  {
+    "repoUrl": "https://github.com/superfly/tokenizer-elixir",
+    "scrapedTypes": [
+      "stargazer",
+      "watcher",
+      "contributor"
+    ],
+    "lastProcessedPage": {
+      "stargazer": 1,
+      "watcher": 1
+    }
+  },
+  {
+    "repoUrl": "https://github.com/superfly/fly_postgres_elixir",
+    "scrapedTypes": [
+      "stargazer",
+      "watcher",
+      "forker",
+      "contributor"
+    ],
+    "lastProcessedPage": {
+      "stargazer": 2,
+      "watcher": 1,
+      "forker": 1
+    }
+  },
+  {
+    "repoUrl": "https://github.com/superfly/bfaas",
+    "scrapedTypes": [
+      "stargazer",
+      "watcher",
+      "forker",
+      "contributor"
+    ],
+    "lastProcessedPage": {
+      "stargazer": 1,
+      "watcher": 1,
+      "forker": 1
+    }
+  },
+  {
+    "repoUrl": "https://github.com/superfly/anti-roadmap",
+    "scrapedTypes": [
+      "stargazer",
+      "watcher",
+      "contributor"
+    ],
+    "lastProcessedPage": {
+      "stargazer": 1,
+      "watcher": 1
+    }
+  },
+  {
+    "repoUrl": "https://github.com/superfly/rant2outline",
+    "scrapedTypes": [
+      "stargazer",
+      "watcher",
+      "forker",
+      "contributor"
+    ],
+    "lastProcessedPage": {
+      "stargazer": 1,
+      "watcher": 1,
+      "forker": 1
+    }
+  },
+  {
+    "repoUrl": "https://github.com/superfly/dropspy",
+    "scrapedTypes": [
+      "stargazer",
+      "watcher",
+      "forker",
+      "contributor"
+    ],
+    "lastProcessedPage": {
+      "stargazer": 1,
+      "watcher": 1,
+      "forker": 1
+    }
+  },
+  {
+    "repoUrl": "https://github.com/superfly/elixir-hiring-project",
+    "scrapedTypes": [
+      "stargazer",
+      "watcher",
+      "forker",
+      "contributor"
+    ],
+    "lastProcessedPage": {
+      "stargazer": 1,
+      "watcher": 1,
+      "forker": 1
+    }
+  },
+  {
+    "repoUrl": "https://github.com/superfly/litefs-go",
+    "scrapedTypes": [
+      "stargazer",
+      "watcher",
+      "forker",
+      "contributor"
+    ],
+    "lastProcessedPage": {
+      "stargazer": 1,
+      "watcher": 1,
+      "forker": 1
+    }
+  },
+  {
+    "repoUrl": "https://github.com/superfly/fly.cr",
+    "scrapedTypes": [
+      "stargazer",
+      "watcher",
+      "contributor"
+    ],
+    "lastProcessedPage": {
+      "stargazer": 1,
+      "watcher": 1
+    }
+  },
+  {
+    "repoUrl": "https://github.com/superfly/tired-proxy",
+    "scrapedTypes": [
+      "stargazer",
+      "watcher",
+      "forker",
+      "contributor"
+    ],
+    "lastProcessedPage": {
+      "stargazer": 1,
+      "watcher": 1,
+      "forker": 1
+    }
+  },
+  {
+    "repoUrl": "https://github.com/superfly/firecracker",
+    "scrapedTypes": [
+      "stargazer",
+      "watcher",
+      "forker",
+      "contributor"
+    ],
+    "lastProcessedPage": {
+      "stargazer": 1,
+      "watcher": 1,
+      "forker": 1,
+      "contributor": 2
+    }
+  },
+  {
+    "repoUrl": "https://github.com/superfly/fly-ruby",
+    "scrapedTypes": [
+      "stargazer",
+      "watcher",
+      "forker",
+      "contributor"
+    ],
+    "lastProcessedPage": {
+      "stargazer": 1,
+      "watcher": 1,
+      "forker": 1
+    }
+  },
+  {
+    "repoUrl": "https://github.com/superfly/edge",
+    "scrapedTypes": [
+      "stargazer",
+      "watcher",
+      "forker",
+      "contributor"
+    ],
+    "lastProcessedPage": {
+      "stargazer": 2,
+      "watcher": 1,
+      "forker": 1
+    }
+  },
+  {
+    "repoUrl": "https://github.com/superfly/burn",
+    "scrapedTypes": [
+      "stargazer",
+      "watcher",
+      "forker",
+      "contributor"
+    ],
+    "lastProcessedPage": {
+      "stargazer": 1,
+      "watcher": 1,
+      "forker": 1
+    }
+  },
+  {
+    "repoUrl": "https://github.com/superfly/multi-cloud-haproxy",
+    "scrapedTypes": [
+      "stargazer",
+      "watcher",
+      "forker",
+      "contributor"
+    ],
+    "lastProcessedPage": {
+      "stargazer": 1,
+      "watcher": 1,
+      "forker": 1
+    }
+  },
+  {
+    "repoUrl": "https://github.com/superfly/fly-heroku-buildpack",
+    "scrapedTypes": [
+      "stargazer",
+      "watcher",
+      "contributor"
+    ],
+    "lastProcessedPage": {
+      "stargazer": 1,
+      "watcher": 1
+    }
+  },
+  {
+    "repoUrl": "https://github.com/superfly/shout",
+    "scrapedTypes": [
+      "stargazer",
+      "watcher",
+      "forker",
+      "contributor"
+    ],
+    "lastProcessedPage": {
+      "stargazer": 1,
+      "watcher": 1,
+      "forker": 1
+    }
+  },
+  {
+    "repoUrl": "https://github.com/superfly/flyjs",
+    "scrapedTypes": [
+      "stargazer",
+      "watcher",
+      "forker",
+      "contributor"
+    ],
+    "lastProcessedPage": {
+      "stargazer": 1,
+      "watcher": 1,
+      "forker": 1
+    }
+  },
+  {
+    "repoUrl": "https://github.com/superfly/homebrew-tap",
+    "scrapedTypes": [
+      "stargazer",
+      "watcher",
+      "forker",
+      "contributor"
+    ],
+    "lastProcessedPage": {
+      "stargazer": 1,
+      "watcher": 1,
+      "forker": 1
+    }
+  },
+  {
+    "repoUrl": "https://github.com/superfly/machine-proxy",
+    "scrapedTypes": [
+      "stargazer",
+      "watcher",
+      "contributor"
+    ],
+    "lastProcessedPage": {
+      "stargazer": 1,
+      "watcher": 1
+    }
+  },
+  {
+    "repoUrl": "https://github.com/superfly/sqlite3-restore",
+    "scrapedTypes": [
+      "stargazer",
+      "watcher",
+      "contributor"
+    ],
+    "lastProcessedPage": {
+      "stargazer": 1,
+      "watcher": 1
+    }
+  },
+  {
+    "repoUrl": "https://github.com/superfly/isolated-vm",
+    "scrapedTypes": [
+      "stargazer",
+      "watcher",
+      "contributor"
+    ],
+    "lastProcessedPage": {
+      "stargazer": 1,
+      "watcher": 1
+    }
+  },
+  {
+    "repoUrl": "https://github.com/superfly/recco",
+    "scrapedTypes": [
+      "stargazer",
+      "watcher",
+      "contributor"
+    ],
+    "lastProcessedPage": {
+      "stargazer": 1,
+      "watcher": 1
+    }
+  },
+  {
+    "repoUrl": "https://github.com/superfly/stimulus-live-elements",
+    "scrapedTypes": [
+      "stargazer",
+      "watcher",
+      "contributor"
+    ],
+    "lastProcessedPage": {
+      "stargazer": 1,
+      "watcher": 1
+    }
+  },
+  {
+    "repoUrl": "https://github.com/superfly/dns-help",
+    "scrapedTypes": [
+      "stargazer",
+      "watcher",
+      "forker",
+      "contributor"
+    ],
+    "lastProcessedPage": {
+      "stargazer": 1,
+      "watcher": 1,
+      "forker": 1
+    }
+  },
+  {
+    "repoUrl": "https://github.com/superfly/anycable-rails",
+    "scrapedTypes": [
+      "stargazer",
+      "watcher",
+      "contributor"
+    ],
+    "lastProcessedPage": {
+      "stargazer": 1,
+      "watcher": 1
+    }
+  },
+  {
+    "repoUrl": "https://github.com/superfly/flygit",
+    "scrapedTypes": [
+      "stargazer",
+      "watcher",
+      "forker",
+      "contributor"
+    ],
+    "lastProcessedPage": {
+      "stargazer": 1,
+      "watcher": 1,
+      "forker": 1
+    }
+  },
+  {
+    "repoUrl": "https://github.com/superfly/gravitas",
+    "scrapedTypes": [
+      "stargazer",
+      "watcher",
+      "contributor"
+    ],
+    "lastProcessedPage": {
+      "stargazer": 1,
+      "watcher": 1
+    }
+  },
+  {
+    "repoUrl": "https://github.com/superfly/wordpress-image-optimizer",
+    "scrapedTypes": [
+      "stargazer",
+      "watcher",
+      "forker",
+      "contributor"
+    ],
+    "lastProcessedPage": {
+      "stargazer": 1,
+      "watcher": 1,
+      "forker": 1
+    }
+  },
+  {
+    "repoUrl": "https://github.com/superfly/ghost-accelerator",
+    "scrapedTypes": [
+      "stargazer",
+      "watcher",
+      "forker",
+      "contributor"
+    ],
+    "lastProcessedPage": {
+      "stargazer": 1,
+      "watcher": 1,
+      "forker": 1
+    }
+  },
+  {
+    "repoUrl": "https://github.com/superfly/fly.rs",
+    "scrapedTypes": [
+      "stargazer",
+      "watcher",
+      "forker",
+      "contributor"
+    ],
+    "lastProcessedPage": {
+      "stargazer": 1,
+      "watcher": 1,
+      "forker": 1
+    }
+  },
+  {
+    "repoUrl": "https://github.com/superfly/glitch-domains",
+    "scrapedTypes": [
+      "stargazer",
+      "watcher",
+      "forker",
+      "contributor"
+    ],
+    "lastProcessedPage": {
+      "stargazer": 1,
+      "watcher": 1,
+      "forker": 1
+    }
+  },
+  {
+    "repoUrl": "https://github.com/superfly/doh-proxy",
+    "scrapedTypes": [
+      "stargazer",
+      "watcher",
+      "forker",
+      "contributor"
+    ],
+    "lastProcessedPage": {
+      "stargazer": 1,
+      "watcher": 1,
+      "forker": 1
+    }
+  },
+  {
+    "repoUrl": "https://github.com/superfly/fly-node",
+    "scrapedTypes": [
+      "stargazer",
+      "watcher",
+      "forker",
+      "contributor"
+    ],
+    "lastProcessedPage": {
+      "stargazer": 1,
+      "watcher": 1,
+      "forker": 1
+    }
+  },
+  {
+    "repoUrl": "https://github.com/superfly/dis",
+    "scrapedTypes": [
+      "stargazer",
+      "watcher",
+      "contributor"
+    ],
+    "lastProcessedPage": {
+      "stargazer": 1,
+      "watcher": 1
+    }
+  },
+  {
+    "repoUrl": "https://github.com/superfly/ltx-rs",
+    "scrapedTypes": [
+      "stargazer",
+      "watcher",
+      "contributor"
+    ],
+    "lastProcessedPage": {
+      "stargazer": 1,
+      "watcher": 1
+    }
+  },
+  {
+    "repoUrl": "https://github.com/superfly/litefs-ruby",
+    "scrapedTypes": [
+      "stargazer",
+      "watcher",
+      "forker",
+      "contributor"
+    ],
+    "lastProcessedPage": {
+      "stargazer": 1,
+      "watcher": 1,
+      "forker": 1
+    }
+  },
+  {
+    "repoUrl": "https://github.com/superfly/litefs-node",
+    "scrapedTypes": [
+      "stargazer",
+      "watcher",
+      "forker",
+      "contributor"
+    ],
+    "lastProcessedPage": {
+      "stargazer": 1,
+      "watcher": 1,
+      "forker": 1
+    }
+  },
+  {
+    "repoUrl": "https://github.com/superfly/pixelfly",
+    "scrapedTypes": [
+      "stargazer",
+      "watcher",
+      "forker",
+      "contributor"
+    ],
+    "lastProcessedPage": {
+      "stargazer": 1,
+      "watcher": 1,
+      "forker": 1
+    }
+  },
+  {
+    "repoUrl": "https://github.com/superfly/onehostname",
+    "scrapedTypes": [
+      "stargazer",
+      "watcher",
+      "forker",
+      "contributor"
+    ],
+    "lastProcessedPage": {
+      "stargazer": 1,
+      "watcher": 1,
+      "forker": 1
+    }
+  },
+  {
+    "repoUrl": "https://github.com/superfly/nats-pure.rb",
+    "scrapedTypes": [
+      "stargazer",
+      "watcher",
+      "contributor"
+    ],
+    "lastProcessedPage": {
+      "stargazer": 1,
+      "watcher": 1
+    }
+  },
+  {
+    "repoUrl": "https://github.com/superfly/fly-builders",
+    "scrapedTypes": [
+      "stargazer",
+      "watcher",
+      "forker",
+      "contributor"
+    ],
+    "lastProcessedPage": {
+      "stargazer": 1,
+      "watcher": 1,
+      "forker": 1
+    }
+  },
+  {
+    "repoUrl": "https://github.com/superfly/image-processing",
+    "scrapedTypes": [
+      "stargazer",
+      "watcher",
+      "forker",
+      "contributor"
+    ],
+    "lastProcessedPage": {
+      "stargazer": 1,
+      "watcher": 1,
+      "forker": 1
+    }
+  },
+  {
+    "repoUrl": "https://github.com/superfly/autowire",
+    "scrapedTypes": [
+      "stargazer",
+      "watcher",
+      "forker",
+      "contributor"
+    ],
+    "lastProcessedPage": {
+      "stargazer": 1,
+      "watcher": 1,
+      "forker": 1
+    }
+  },
+  {
+    "repoUrl": "https://github.com/superfly/fly-rails",
+    "scrapedTypes": [
+      "stargazer",
+      "watcher",
+      "forker",
+      "contributor"
+    ],
+    "lastProcessedPage": {
+      "stargazer": 1,
+      "watcher": 1,
+      "forker": 1
+    }
+  },
+  {
+    "repoUrl": "https://github.com/superfly/imaginary",
+    "scrapedTypes": [
+      "stargazer",
+      "watcher",
+      "contributor"
+    ],
+    "lastProcessedPage": {
+      "stargazer": 1,
+      "watcher": 1
+    }
+  },
+  {
+    "repoUrl": "https://github.com/superfly/load-balancer",
+    "scrapedTypes": [
+      "stargazer",
+      "watcher",
+      "forker",
+      "contributor"
+    ],
+    "lastProcessedPage": {
+      "stargazer": 1,
+      "watcher": 1,
+      "forker": 1
+    }
+  },
+  {
+    "repoUrl": "https://github.com/superfly/accept-encoding",
+    "scrapedTypes": [
+      "stargazer",
+      "watcher",
+      "forker",
+      "contributor"
+    ],
+    "lastProcessedPage": {
+      "stargazer": 1,
+      "watcher": 1,
+      "forker": 1
+    }
+  },
+  {
+    "repoUrl": "https://github.com/superfly/nomad",
+    "scrapedTypes": [
+      "stargazer",
+      "watcher",
+      "forker",
+      "contributor"
+    ],
+    "lastProcessedPage": {
+      "stargazer": 1,
+      "watcher": 1,
+      "forker": 1,
+      "contributor": 4
+    }
+  },
+  {
+    "repoUrl": "https://github.com/superfly/lvmd",
+    "scrapedTypes": [
+      "stargazer",
+      "watcher",
+      "forker",
+      "contributor"
+    ],
+    "lastProcessedPage": {
+      "stargazer": 1,
+      "watcher": 1,
+      "forker": 1
+    }
+  },
+  {
+    "repoUrl": "https://github.com/superfly/ppp",
+    "scrapedTypes": [
+      "stargazer",
+      "watcher",
+      "forker",
+      "contributor"
+    ],
+    "lastProcessedPage": {
+      "stargazer": 1,
+      "watcher": 1,
+      "forker": 1
+    }
+  },
+  {
+    "repoUrl": "https://github.com/superfly/embedding-v8-talk",
+    "scrapedTypes": [
+      "stargazer",
+      "watcher",
+      "forker",
+      "contributor"
+    ],
+    "lastProcessedPage": {
+      "stargazer": 1,
+      "watcher": 1,
+      "forker": 1
+    }
+  },
+  {
+    "repoUrl": "https://github.com/superfly/cee-dee-en",
+    "scrapedTypes": [
+      "stargazer",
+      "watcher",
+      "forker",
+      "contributor"
+    ],
+    "lastProcessedPage": {
+      "stargazer": 1,
+      "watcher": 1,
+      "forker": 1
+    }
+  },
+  {
+    "repoUrl": "https://github.com/fw-ai/cookbook",
+    "scrapedTypes": [
+      "stargazer",
+      "watcher",
+      "forker",
+      "contributor"
+    ],
+    "lastProcessedPage": {
+      "stargazer": 2,
+      "watcher": 1,
+      "forker": 1
+    }
+  },
+  {
+    "repoUrl": "https://github.com/fw-ai/forge",
+    "scrapedTypes": [
+      "stargazer",
+      "watcher",
+      "forker",
+      "contributor"
+    ],
+    "lastProcessedPage": {
+      "stargazer": 1,
+      "watcher": 1,
+      "forker": 1
+    }
+  },
+  {
+    "repoUrl": "https://github.com/fw-ai/benchmark",
+    "scrapedTypes": [
+      "stargazer",
+      "watcher",
+      "forker",
+      "contributor"
+    ],
+    "lastProcessedPage": {
+      "stargazer": 1,
+      "watcher": 1,
+      "forker": 1
+    }
+  },
+  {
+    "repoUrl": "https://github.com/fw-ai/llama-cuda-graph-example",
+    "scrapedTypes": [
+      "stargazer",
+      "forker",
+      "contributor"
+    ],
+    "lastProcessedPage": {
+      "stargazer": 1,
+      "forker": 1
+    }
+  },
+  {
+    "repoUrl": "https://github.com/fw-ai/ai-starter-kits",
+    "scrapedTypes": [
+      "stargazer",
+      "watcher",
+      "forker",
+      "contributor"
+    ],
+    "lastProcessedPage": {
+      "stargazer": 1,
+      "watcher": 1,
+      "forker": 1
+    }
+  },
+  {
+    "repoUrl": "https://github.com/fw-ai/fireworks_poe_bot",
+    "scrapedTypes": [
+      "stargazer",
+      "watcher",
+      "forker",
+      "contributor"
+    ],
+    "lastProcessedPage": {
+      "stargazer": 1,
+      "watcher": 1,
+      "forker": 1
+    }
+  },
+  {
+    "repoUrl": "https://github.com/fw-ai/langchain",
+    "scrapedTypes": [
+      "stargazer",
+      "contributor"
+    ],
+    "lastProcessedPage": {
+      "stargazer": 1,
+      "contributor": 5
+    }
+  },
+  {
+    "repoUrl": "https://github.com/exa-labs/company-researcher",
+    "scrapedTypes": [
+      "stargazer",
+      "watcher",
+      "forker",
+      "contributor"
+    ],
+    "lastProcessedPage": {
+      "stargazer": 12,
+      "watcher": 1,
+      "forker": 2
+    }
+  },
+  {
+    "repoUrl": "https://github.com/exa-labs/exa-deepseek-chat",
+    "scrapedTypes": [
+      "stargazer",
+      "watcher",
+      "forker",
+      "contributor"
+    ],
+    "lastProcessedPage": {
+      "stargazer": 7,
+      "watcher": 1,
+      "forker": 1
+    }
+  },
+  {
+    "repoUrl": "https://github.com/exa-labs/exa-mcp-server",
+    "scrapedTypes": [
+      "stargazer",
+      "watcher",
+      "forker",
+      "contributor"
+    ],
+    "lastProcessedPage": {
+      "stargazer": 5,
+      "watcher": 1,
+      "forker": 1
+    }
+  },
+  {
+    "repoUrl": "https://github.com/exa-labs/exa-py",
+    "scrapedTypes": [
+      "stargazer",
+      "watcher",
+      "forker",
+      "contributor"
+    ],
+    "lastProcessedPage": {
+      "stargazer": 2,
+      "watcher": 1,
+      "forker": 1
+    }
+  },
+  {
+    "repoUrl": "https://github.com/exa-labs/exa-js",
+    "scrapedTypes": [
+      "stargazer",
+      "watcher",
+      "forker",
+      "contributor"
+    ],
+    "lastProcessedPage": {
+      "stargazer": 1,
+      "watcher": 1,
+      "forker": 1
+    }
+  },
+  {
+    "repoUrl": "https://github.com/exa-labs/jfk-files-app",
+    "scrapedTypes": [
+      "stargazer",
+      "watcher",
+      "forker",
+      "contributor"
+    ],
+    "lastProcessedPage": {
+      "stargazer": 1,
+      "watcher": 1,
+      "forker": 1
+    }
+  },
+  {
+    "repoUrl": "https://github.com/exa-labs/answer-chat-app",
+    "scrapedTypes": [
+      "stargazer",
+      "watcher",
+      "forker",
+      "contributor"
+    ],
+    "lastProcessedPage": {
+      "stargazer": 1,
+      "watcher": 1,
+      "forker": 1
+    }
+  },
+  {
+    "repoUrl": "https://github.com/exa-labs/exa-hallucination-detector",
+    "scrapedTypes": [
+      "stargazer",
+      "watcher",
+      "forker",
+      "contributor"
+    ],
+    "lastProcessedPage": {
+      "stargazer": 2,
+      "watcher": 1,
+      "forker": 1
+    }
+  },
+  {
+    "repoUrl": "https://github.com/exa-labs/exa-writing-assist",
+    "scrapedTypes": [
+      "stargazer",
+      "watcher",
+      "forker",
+      "contributor"
+    ],
+    "lastProcessedPage": {
+      "stargazer": 1,
+      "watcher": 1,
+      "forker": 1
+    }
+  },
+  {
+    "repoUrl": "https://github.com/exa-labs/exa-o3mini-chat",
+    "scrapedTypes": [
+      "stargazer",
+      "watcher",
+      "forker",
+      "contributor"
+    ],
+    "lastProcessedPage": {
+      "stargazer": 1,
+      "watcher": 1,
+      "forker": 1
+    }
+  },
+  {
+    "repoUrl": "https://github.com/exa-labs/BetterChatGPT",
+    "scrapedTypes": [
+      "stargazer",
+      "watcher",
+      "forker",
+      "contributor"
+    ],
+    "lastProcessedPage": {
+      "stargazer": 1,
+      "watcher": 1,
+      "forker": 1
+    }
+  },
+  {
+    "repoUrl": "https://github.com/crusoecloud/crusoe-cookbook",
+    "scrapedTypes": [
+      "stargazer",
+      "watcher",
+      "forker",
+      "contributor"
+    ],
+    "lastProcessedPage": {
+      "stargazer": 1,
+      "watcher": 1,
+      "forker": 1
+    }
+  },
+  {
+    "repoUrl": "https://github.com/crusoecloud/slurm",
+    "scrapedTypes": [
+      "stargazer",
+      "watcher",
+      "forker",
+      "contributor"
+    ],
+    "lastProcessedPage": {
+      "stargazer": 1,
+      "watcher": 1,
+      "forker": 1
+    }
+  },
+  {
+    "repoUrl": "https://github.com/crusoecloud/client-go",
+    "scrapedTypes": [
+      "stargazer",
+      "watcher",
+      "forker",
+      "contributor"
+    ],
+    "lastProcessedPage": {
+      "stargazer": 1,
+      "watcher": 1,
+      "forker": 1
+    }
+  },
+  {
+    "repoUrl": "https://github.com/crusoecloud/cli",
+    "scrapedTypes": [
+      "stargazer",
+      "watcher",
+      "forker",
+      "contributor"
+    ],
+    "lastProcessedPage": {
+      "stargazer": 1,
+      "watcher": 1,
+      "forker": 1
+    }
+  },
+  {
+    "repoUrl": "https://github.com/crusoecloud/terraform-provider-crusoe",
+    "scrapedTypes": [
+      "stargazer",
+      "watcher",
+      "forker",
+      "contributor"
+    ],
+    "lastProcessedPage": {
+      "stargazer": 1,
+      "watcher": 1,
+      "forker": 1
+    }
+  },
+  {
+    "repoUrl": "https://github.com/crusoecloud/crusoe-hpc-slurm",
+    "scrapedTypes": [
+      "stargazer",
+      "watcher",
+      "forker",
+      "contributor"
+    ],
+    "lastProcessedPage": {
+      "stargazer": 1,
+      "watcher": 1,
+      "forker": 1
+    }
+  },
+  {
+    "repoUrl": "https://github.com/coreweave/nccl-tests",
+    "scrapedTypes": [
+      "stargazer",
+      "watcher",
+      "forker",
+      "contributor"
+    ],
+    "lastProcessedPage": {
+      "stargazer": 1,
+      "watcher": 1,
+      "forker": 1
+    }
+  },
+  {
+    "repoUrl": "https://github.com/coreweave/tensorizer",
+    "scrapedTypes": [
+      "stargazer",
+      "watcher",
+      "forker",
+      "contributor"
+    ],
+    "lastProcessedPage": {
+      "stargazer": 3,
+      "watcher": 1,
+      "forker": 1
+    }
+  },
+  {
+    "repoUrl": "https://github.com/coreweave/terraform-provider-coreweave",
+    "scrapedTypes": [
+      "stargazer",
+      "watcher",
+      "forker",
+      "contributor"
+    ],
+    "lastProcessedPage": {
+      "stargazer": 1,
+      "watcher": 1,
+      "forker": 1
+    }
+  },
+  {
+    "repoUrl": "https://github.com/coreweave/kubernetes-cloud",
+    "scrapedTypes": [
+      "stargazer",
+      "watcher",
+      "forker",
+      "contributor"
+    ],
+    "lastProcessedPage": {
+      "stargazer": 1,
+      "watcher": 1,
+      "forker": 1
+    }
+  },
+  {
+    "repoUrl": "https://github.com/coreweave/ml-containers",
+    "scrapedTypes": [
+      "stargazer",
+      "watcher",
+      "forker",
+      "contributor"
+    ],
+    "lastProcessedPage": {
+      "stargazer": 1,
+      "watcher": 1,
+      "forker": 1
+    }
+  },
+  {
+    "repoUrl": "https://github.com/coreweave/docker-registry-proxy",
+    "scrapedTypes": [
+      "stargazer",
+      "watcher",
+      "forker",
+      "contributor"
+    ],
+    "lastProcessedPage": {
+      "stargazer": 1,
+      "watcher": 1,
+      "forker": 1
+    }
+  },
+  {
+    "repoUrl": "https://github.com/coreweave/blender-source",
+    "scrapedTypes": [
+      "stargazer",
+      "watcher",
+      "forker",
+      "contributor"
+    ],
+    "lastProcessedPage": {
+      "stargazer": 1,
+      "watcher": 1,
+      "forker": 1,
+      "contributor": 2
+    }
+  },
+  {
+    "repoUrl": "https://github.com/coreweave/doc-examples",
+    "scrapedTypes": [
+      "stargazer",
+      "watcher",
+      "forker",
+      "contributor"
+    ],
+    "lastProcessedPage": {
+      "stargazer": 1,
+      "watcher": 1,
+      "forker": 1
+    }
+  },
+  {
+    "repoUrl": "https://github.com/coreweave/fah-docker",
+    "scrapedTypes": [
+      "stargazer",
+      "watcher",
+      "forker",
+      "contributor"
+    ],
+    "lastProcessedPage": {
+      "stargazer": 1,
+      "watcher": 1,
+      "forker": 1
+    }
+  },
+  {
+    "repoUrl": "https://github.com/coreweave/gutenberg-epub",
+    "scrapedTypes": [
+      "stargazer",
+      "watcher",
+      "contributor"
+    ],
+    "lastProcessedPage": {
+      "stargazer": 1,
+      "watcher": 1
+    }
+  },
+  {
+    "repoUrl": "https://github.com/coreweave/kubeapps",
+    "scrapedTypes": [
+      "stargazer",
+      "watcher",
+      "forker",
+      "contributor"
+    ],
+    "lastProcessedPage": {
+      "stargazer": 1,
+      "watcher": 1,
+      "forker": 1
+    }
+  },
+  {
+    "repoUrl": "https://github.com/coiled/benchmarks",
+    "scrapedTypes": [
+      "stargazer",
+      "watcher",
+      "forker",
+      "contributor"
+    ],
+    "lastProcessedPage": {
+      "stargazer": 1,
+      "watcher": 1,
+      "forker": 1
+    }
+  },
+  {
+    "repoUrl": "https://github.com/coiled/dask-bigquery",
+    "scrapedTypes": [
+      "stargazer",
+      "watcher",
+      "forker",
+      "contributor"
+    ],
+    "lastProcessedPage": {
+      "stargazer": 1,
+      "watcher": 1,
+      "forker": 1
+    }
+  },
+  {
+    "repoUrl": "https://github.com/coiled/etl-tpch",
+    "scrapedTypes": [
+      "stargazer",
+      "watcher",
+      "forker",
+      "contributor"
+    ],
+    "lastProcessedPage": {
+      "stargazer": 1,
+      "watcher": 1,
+      "forker": 1
+    }
+  },
+  {
+    "repoUrl": "https://github.com/coiled/dask-snowflake",
+    "scrapedTypes": [
+      "stargazer",
+      "watcher",
+      "forker",
+      "contributor"
+    ],
+    "lastProcessedPage": {
+      "stargazer": 1,
+      "watcher": 1,
+      "forker": 1
+    }
+  },
+  {
+    "repoUrl": "https://github.com/coiled/dask-xgboost-nyctaxi",
+    "scrapedTypes": [
+      "stargazer",
+      "watcher",
+      "forker",
+      "contributor"
+    ],
+    "lastProcessedPage": {
+      "stargazer": 1,
+      "watcher": 1,
+      "forker": 1
+    }
+  },
+  {
+    "repoUrl": "https://github.com/coiled/feedback",
+    "scrapedTypes": [
+      "stargazer",
+      "watcher",
+      "forker",
+      "contributor"
+    ],
+    "lastProcessedPage": {
+      "stargazer": 1,
+      "watcher": 1,
+      "forker": 1
+    }
+  },
+  {
+    "repoUrl": "https://github.com/coiled/data-science-at-scale",
+    "scrapedTypes": [
+      "stargazer",
+      "watcher",
+      "forker",
+      "contributor"
+    ],
+    "lastProcessedPage": {
+      "stargazer": 2,
+      "watcher": 1,
+      "forker": 1
+    }
+  },
+  {
+    "repoUrl": "https://github.com/coiled/coiled-resources",
+    "scrapedTypes": [
+      "stargazer",
+      "watcher",
+      "forker",
+      "contributor"
+    ],
+    "lastProcessedPage": {
+      "stargazer": 1,
+      "watcher": 1,
+      "forker": 1
+    }
+  },
+  {
+    "repoUrl": "https://github.com/coiled/examples",
+    "scrapedTypes": [
+      "stargazer",
+      "watcher",
+      "forker",
+      "contributor"
+    ],
+    "lastProcessedPage": {
+      "stargazer": 1,
+      "watcher": 1,
+      "forker": 1
+    }
+  },
+  {
+    "repoUrl": "https://github.com/coiled/dask-tutorial",
+    "scrapedTypes": [
+      "stargazer",
+      "watcher",
+      "forker",
+      "contributor"
+    ],
+    "lastProcessedPage": {
+      "stargazer": 1,
+      "watcher": 1,
+      "forker": 1
+    }
+  },
+  {
+    "repoUrl": "https://github.com/coiled/1trc",
+    "scrapedTypes": [
+      "stargazer",
+      "watcher",
+      "forker",
+      "contributor"
+    ],
+    "lastProcessedPage": {
+      "stargazer": 1,
+      "watcher": 1,
+      "forker": 1
+    }
+  },
+  {
+    "repoUrl": "https://github.com/coiled/dask-elearning",
+    "scrapedTypes": [
+      "stargazer",
+      "watcher",
+      "forker",
+      "contributor"
+    ],
+    "lastProcessedPage": {
+      "stargazer": 1,
+      "watcher": 1,
+      "forker": 1
+    }
+  },
+  {
+    "repoUrl": "https://github.com/coiled/dask-mongo",
+    "scrapedTypes": [
+      "stargazer",
+      "watcher",
+      "forker",
+      "contributor"
+    ],
+    "lastProcessedPage": {
+      "stargazer": 1,
+      "watcher": 1,
+      "forker": 1
+    }
+  },
+  {
+    "repoUrl": "https://github.com/coiled/tpch",
+    "scrapedTypes": [
+      "stargazer",
+      "watcher",
+      "forker",
+      "contributor"
+    ],
+    "lastProcessedPage": {
+      "stargazer": 1,
+      "watcher": 1,
+      "forker": 1
+    }
+  },
+  {
+    "repoUrl": "https://github.com/coiled/coiled-terraform-template",
+    "scrapedTypes": [
+      "stargazer",
+      "watcher",
+      "forker",
+      "contributor"
+    ],
+    "lastProcessedPage": {
+      "stargazer": 1,
+      "watcher": 1,
+      "forker": 1
+    }
+  },
+  {
+    "repoUrl": "https://github.com/coiled/dask-mini-tutorial",
+    "scrapedTypes": [
+      "stargazer",
+      "watcher",
+      "forker",
+      "contributor"
+    ],
+    "lastProcessedPage": {
+      "stargazer": 1,
+      "watcher": 1,
+      "forker": 1
+    }
+  },
+  {
+    "repoUrl": "https://github.com/coiled/talkpython-getting-started-with-dask",
+    "scrapedTypes": [
+      "stargazer",
+      "watcher",
+      "forker",
+      "contributor"
+    ],
+    "lastProcessedPage": {
+      "stargazer": 1,
+      "watcher": 1,
+      "forker": 1
+    }
+  },
+  {
+    "repoUrl": "https://github.com/coiled/dask-tutorial-pyconDE22",
+    "scrapedTypes": [
+      "stargazer",
+      "watcher",
+      "forker",
+      "contributor"
+    ],
+    "lastProcessedPage": {
+      "stargazer": 1,
+      "watcher": 1,
+      "forker": 1
+    }
+  },
+  {
+    "repoUrl": "https://github.com/coiled/talkpython-fundamentals-of-dask",
+    "scrapedTypes": [
+      "stargazer",
+      "watcher",
+      "forker",
+      "contributor"
+    ],
+    "lastProcessedPage": {
+      "stargazer": 1,
+      "watcher": 1,
+      "forker": 1
+    }
+  },
+  {
+    "repoUrl": "https://github.com/coiled/coiled-datasets",
+    "scrapedTypes": [
+      "stargazer",
+      "watcher",
+      "forker",
+      "contributor"
+    ],
+    "lastProcessedPage": {
+      "stargazer": 1,
+      "watcher": 1,
+      "forker": 1
+    }
+  },
+  {
+    "repoUrl": "https://github.com/coiled/coiled-examples",
+    "scrapedTypes": [
+      "stargazer",
+      "watcher",
+      "forker",
+      "contributor"
+    ],
+    "lastProcessedPage": {
+      "stargazer": 1,
+      "watcher": 1,
+      "forker": 1
+    }
+  },
+  {
+    "repoUrl": "https://github.com/coiled/notebooks",
+    "scrapedTypes": [
+      "stargazer",
+      "watcher",
+      "forker",
+      "contributor"
+    ],
+    "lastProcessedPage": {
+      "stargazer": 1,
+      "watcher": 1,
+      "forker": 1
+    }
+  },
+  {
+    "repoUrl": "https://github.com/coiled/github-actions-with-coiled",
+    "scrapedTypes": [
+      "stargazer",
+      "watcher",
+      "forker",
+      "contributor"
+    ],
+    "lastProcessedPage": {
+      "stargazer": 1,
+      "watcher": 1,
+      "forker": 1
+    }
+  },
+  {
+    "repoUrl": "https://github.com/coiled/notebooks-blog",
+    "scrapedTypes": [
+      "stargazer",
+      "watcher",
+      "contributor"
+    ],
+    "lastProcessedPage": {
+      "stargazer": 1,
+      "watcher": 1
+    }
+  },
+  {
+    "repoUrl": "https://github.com/coiled/live-coding",
+    "scrapedTypes": [
+      "stargazer",
+      "watcher",
+      "forker",
+      "contributor"
+    ],
+    "lastProcessedPage": {
+      "stargazer": 1,
+      "watcher": 1,
+      "forker": 1
+    }
+  },
+  {
+    "repoUrl": "https://github.com/coiled/blog-notebooks",
+    "scrapedTypes": [
+      "stargazer",
+      "watcher",
+      "forker",
+      "contributor"
+    ],
+    "lastProcessedPage": {
+      "stargazer": 1,
+      "watcher": 1,
+      "forker": 1
+    }
+  },
+  {
+    "repoUrl": "https://github.com/modal-labs/quillman",
+    "scrapedTypes": [
+      "stargazer",
+      "watcher",
+      "forker",
+      "contributor"
+    ],
+    "lastProcessedPage": {
+      "stargazer": 12,
+      "watcher": 1,
+      "forker": 2
+    }
+  },
+  {
+    "repoUrl": "https://github.com/modal-labs/llm-finetuning",
+    "scrapedTypes": [
+      "stargazer",
+      "watcher",
+      "forker",
+      "contributor"
+    ],
+    "lastProcessedPage": {
+      "stargazer": 6,
+      "watcher": 1,
+      "forker": 1
+    }
+  },
+  {
+    "repoUrl": "https://github.com/modal-labs/music-video-gen",
+    "scrapedTypes": [
+      "stargazer",
+      "watcher",
+      "forker",
+      "contributor"
+    ],
+    "lastProcessedPage": {
+      "stargazer": 1,
+      "watcher": 1,
+      "forker": 1
+    }
+  },
+  {
+    "repoUrl": "https://github.com/modal-labs/synchronicity",
+    "scrapedTypes": [
+      "stargazer",
+      "watcher",
+      "forker",
+      "contributor"
+    ],
+    "lastProcessedPage": {
+      "stargazer": 2,
+      "watcher": 1,
+      "forker": 1
+    }
+  },
+  {
+    "repoUrl": "https://github.com/modal-labs/pytest-markdown-docs",
+    "scrapedTypes": [
+      "stargazer",
+      "watcher",
+      "forker",
+      "contributor"
+    ],
+    "lastProcessedPage": {
+      "stargazer": 1,
+      "watcher": 1,
+      "forker": 1
+    }
+  },
+  {
+    "repoUrl": "https://github.com/modal-labs/gpu-glossary",
+    "scrapedTypes": [
+      "stargazer",
+      "watcher",
+      "forker",
+      "contributor"
+    ],
+    "lastProcessedPage": {
+      "stargazer": 1,
+      "watcher": 1,
+      "forker": 1
+    }
+  },
+  {
+    "repoUrl": "https://github.com/modal-labs/dockerfile-parser-rs",
+    "scrapedTypes": [
+      "stargazer",
+      "watcher",
+      "contributor"
+    ],
+    "lastProcessedPage": {
+      "stargazer": 1,
+      "watcher": 1
+    }
+  },
+  {
+    "repoUrl": "https://github.com/modal-labs/cuda_ioctl_sniffer",
+    "scrapedTypes": [
+      "stargazer",
+      "watcher",
+      "forker",
+      "contributor"
+    ],
+    "lastProcessedPage": {
+      "stargazer": 1,
+      "watcher": 1,
+      "forker": 1
+    }
+  },
+  {
+    "repoUrl": "https://github.com/modal-labs/cadre",
+    "scrapedTypes": [
+      "stargazer",
+      "watcher",
+      "contributor"
+    ],
+    "lastProcessedPage": {
+      "stargazer": 1,
+      "watcher": 1
+    }
+  },
+  {
+    "repoUrl": "https://github.com/modal-labs/vprox",
+    "scrapedTypes": [
+      "stargazer",
+      "watcher",
+      "forker",
+      "contributor"
+    ],
+    "lastProcessedPage": {
+      "stargazer": 2,
+      "watcher": 1,
+      "forker": 1
+    }
+  },
+  {
+    "repoUrl": "https://github.com/modal-labs/modal-client",
+    "scrapedTypes": [
+      "stargazer",
+      "watcher",
+      "forker",
+      "contributor"
+    ],
+    "lastProcessedPage": {
+      "stargazer": 4,
+      "watcher": 1,
+      "forker": 1
+    }
+  },
+  {
+    "repoUrl": "https://github.com/modal-labs/modal-examples",
+    "scrapedTypes": [
+      "stargazer",
+      "watcher",
+      "forker",
+      "contributor"
+    ],
+    "lastProcessedPage": {
+      "stargazer": 9,
+      "watcher": 1,
+      "forker": 2
+    }
+  },
+  {
+    "repoUrl": "https://github.com/modal-labs/devlooper",
+    "scrapedTypes": [
+      "stargazer",
+      "watcher",
+      "forker",
+      "contributor"
+    ],
+    "lastProcessedPage": {
+      "stargazer": 5,
+      "watcher": 1,
+      "forker": 1
+    }
+  },
+  {
+    "repoUrl": "https://github.com/modal-labs/tracing-perfetto-sdk",
+    "scrapedTypes": [
+      "stargazer",
+      "watcher",
+      "forker",
+      "contributor"
+    ],
+    "lastProcessedPage": {
+      "stargazer": 1,
+      "watcher": 1,
+      "forker": 1
+    }
+  },
+  {
+    "repoUrl": "https://github.com/modal-labs/awesome-modal",
+    "scrapedTypes": [
+      "stargazer",
+      "watcher",
+      "forker",
+      "contributor"
+    ],
+    "lastProcessedPage": {
+      "stargazer": 2,
+      "watcher": 1,
+      "forker": 1
+    }
+  },
+  {
+    "repoUrl": "https://github.com/modal-labs/ci-on-modal",
+    "scrapedTypes": [
+      "stargazer",
+      "watcher",
+      "forker",
+      "contributor"
+    ],
+    "lastProcessedPage": {
+      "stargazer": 1,
+      "watcher": 1,
+      "forker": 1
+    }
+  },
+  {
+    "repoUrl": "https://github.com/modal-labs/turbo-art",
+    "scrapedTypes": [
+      "stargazer",
+      "watcher",
+      "forker",
+      "contributor"
+    ],
+    "lastProcessedPage": {
+      "stargazer": 3,
+      "watcher": 1,
+      "forker": 1
+    }
+  },
+  {
+    "repoUrl": "https://github.com/modal-labs/doppel-bot",
+    "scrapedTypes": [
+      "stargazer",
+      "watcher",
+      "forker",
+      "contributor"
+    ],
+    "lastProcessedPage": {
+      "stargazer": 3,
+      "watcher": 1,
+      "forker": 1
+    }
+  },
+  {
+    "repoUrl": "https://github.com/modal-labs/mistral-finetuning",
+    "scrapedTypes": [
+      "stargazer",
+      "watcher",
+      "forker",
+      "contributor"
+    ],
+    "lastProcessedPage": {
+      "stargazer": 1,
+      "watcher": 1,
+      "forker": 1
+    }
+  },
+  {
+    "repoUrl": "https://github.com/modal-labs/named-retry",
+    "scrapedTypes": [
+      "stargazer",
+      "watcher",
+      "contributor"
+    ],
+    "lastProcessedPage": {
+      "stargazer": 1,
+      "watcher": 1
+    }
+  },
+  {
+    "repoUrl": "https://github.com/modal-labs/seamless-chat",
+    "scrapedTypes": [
+      "stargazer",
+      "watcher",
+      "forker",
+      "contributor"
+    ],
+    "lastProcessedPage": {
+      "stargazer": 1,
+      "watcher": 1,
+      "forker": 1
+    }
+  },
+  {
+    "repoUrl": "https://github.com/modal-labs/search-california",
+    "scrapedTypes": [
+      "stargazer",
+      "watcher",
+      "contributor"
+    ],
+    "lastProcessedPage": {
+      "stargazer": 1,
+      "watcher": 1
+    }
+  },
+  {
+    "repoUrl": "https://github.com/modal-labs/boombot",
+    "scrapedTypes": [
+      "stargazer",
+      "watcher",
+      "forker",
+      "contributor"
+    ],
+    "lastProcessedPage": {
+      "stargazer": 1,
+      "watcher": 1,
+      "forker": 1
+    }
+  },
+  {
+    "repoUrl": "https://github.com/modal-labs/vector-analogies-wikipedia",
+    "scrapedTypes": [
+      "stargazer",
+      "watcher",
+      "contributor"
+    ],
+    "lastProcessedPage": {
+      "stargazer": 1,
+      "watcher": 1
+    }
+  },
+  {
+    "repoUrl": "https://github.com/modal-labs/biomodals",
+    "scrapedTypes": [
+      "stargazer",
+      "watcher",
+      "contributor"
+    ],
+    "lastProcessedPage": {
+      "stargazer": 1,
+      "watcher": 1
+    }
+  },
+  {
+    "repoUrl": "https://github.com/modal-labs/serverless-queuing-theory-model",
+    "scrapedTypes": [
+      "stargazer",
+      "watcher",
+      "contributor"
+    ],
+    "lastProcessedPage": {
+      "stargazer": 1,
+      "watcher": 1
+    }
+  },
+  {
+    "repoUrl": "https://github.com/modal-labs/vercel-integration-example",
+    "scrapedTypes": [
+      "stargazer",
+      "watcher",
+      "forker",
+      "contributor"
+    ],
+    "lastProcessedPage": {
+      "stargazer": 1,
+      "watcher": 1,
+      "forker": 1
+    }
+  },
+  {
+    "repoUrl": "https://github.com/modal-labs/llama-recipes",
+    "scrapedTypes": [
+      "stargazer",
+      "watcher",
+      "forker",
+      "contributor"
+    ],
+    "lastProcessedPage": {
+      "stargazer": 1,
+      "watcher": 1,
+      "forker": 1
+    }
+  },
+  {
+    "repoUrl": "https://github.com/latitudesh/terraform-provider-latitudesh",
+    "scrapedTypes": [
+      "stargazer",
+      "watcher",
+      "forker",
+      "contributor"
+    ],
+    "lastProcessedPage": {
+      "stargazer": 1,
+      "watcher": 1,
+      "forker": 1
+    }
+  },
+  {
+    "repoUrl": "https://github.com/latitudesh/latitudesh-go",
+    "scrapedTypes": [
+      "stargazer",
+      "watcher",
+      "forker",
+      "contributor"
+    ],
+    "lastProcessedPage": {
+      "stargazer": 1,
+      "watcher": 1,
+      "forker": 1
+    }
+  },
+  {
+    "repoUrl": "https://github.com/latitudesh/latitudesh-nodejs",
+    "scrapedTypes": [
+      "stargazer",
+      "watcher",
+      "contributor"
+    ],
+    "lastProcessedPage": {
+      "stargazer": 1,
+      "watcher": 1
+    }
+  },
+  {
+    "repoUrl": "https://github.com/latitudesh/lsh",
+    "scrapedTypes": [
+      "stargazer",
+      "watcher",
+      "forker",
+      "contributor"
+    ],
+    "lastProcessedPage": {
+      "stargazer": 1,
+      "watcher": 1,
+      "forker": 1
+    }
+  },
+  {
+    "repoUrl": "https://github.com/latitudesh/examples",
+    "scrapedTypes": [
+      "stargazer",
+      "watcher",
+      "forker",
+      "contributor"
+    ],
+    "lastProcessedPage": {
+      "stargazer": 1,
+      "watcher": 1,
+      "forker": 1
+    }
+  },
+  {
+    "repoUrl": "https://github.com/latitudesh/metal-ui",
+    "scrapedTypes": [
+      "stargazer",
+      "watcher",
+      "forker",
+      "contributor"
+    ],
+    "lastProcessedPage": {
+      "stargazer": 1,
+      "watcher": 1,
+      "forker": 1
+    }
+  },
+  {
+    "repoUrl": "https://github.com/leptonai/search_with_lepton",
+    "scrapedTypes": [
+      "stargazer",
+      "watcher",
+      "forker",
+      "contributor"
+    ],
+    "lastProcessedPage": {
+      "stargazer": 81,
+      "watcher": 1,
+      "forker": 10
+    }
+  },
+  {
+    "repoUrl": "https://github.com/leptonai/leptonai",
+    "scrapedTypes": [
+      "stargazer",
+      "watcher",
+      "forker",
+      "contributor"
+    ],
+    "lastProcessedPage": {
+      "stargazer": 28,
+      "watcher": 1,
+      "forker": 2
+    }
+  },
+  {
+    "repoUrl": "https://github.com/leptonai/imgpilot",
+    "scrapedTypes": [
+      "stargazer",
+      "watcher",
+      "forker",
+      "contributor"
+    ],
+    "lastProcessedPage": {
+      "stargazer": 6,
+      "watcher": 1,
+      "forker": 1
+    }
+  },
+  {
+    "repoUrl": "https://github.com/leptonai/tryemoji",
+    "scrapedTypes": [
+      "stargazer",
+      "watcher",
+      "forker",
+      "contributor"
+    ],
+    "lastProcessedPage": {
+      "stargazer": 3,
+      "watcher": 1,
+      "forker": 1
+    }
+  },
+  {
+    "repoUrl": "https://github.com/leptonai/nextjs-with-lepton",
+    "scrapedTypes": [
+      "stargazer",
+      "watcher",
+      "forker",
+      "contributor"
+    ],
+    "lastProcessedPage": {
+      "stargazer": 1,
+      "watcher": 1,
+      "forker": 1
+    }
+  },
+  {
+    "repoUrl": "https://github.com/leptonai/examples",
+    "scrapedTypes": [
+      "stargazer",
+      "watcher",
+      "forker",
+      "contributor"
+    ],
+    "lastProcessedPage": {
+      "stargazer": 2,
+      "watcher": 1,
+      "forker": 1
+    }
+  },
+  {
+    "repoUrl": "https://github.com/Lightning-AI/pytorch-lightning",
+    "scrapedTypes": [
+      "watcher",
+      "forker",
+      "contributor"
+    ],
+    "lastProcessedPage": {
+      "watcher": 3,
+      "forker": 35,
+      "contributor": 5
+    }
+  },
+  {
+    "repoUrl": "https://github.com/Lightning-AI/LitServe",
+    "scrapedTypes": [
+      "stargazer",
+      "watcher",
+      "forker",
+      "contributor"
+    ],
+    "lastProcessedPage": {
+      "stargazer": 31,
+      "watcher": 1,
+      "forker": 2
+    }
+  },
+  {
+    "repoUrl": "https://github.com/Lightning-AI/litData",
+    "scrapedTypes": [
+      "stargazer",
+      "watcher",
+      "forker",
+      "contributor"
+    ],
+    "lastProcessedPage": {
+      "stargazer": 5,
+      "watcher": 1,
+      "forker": 1
+    }
+  },
+  {
+    "repoUrl": "https://github.com/Lightning-AI/litgpt",
+    "scrapedTypes": [
+      "stargazer",
+      "watcher",
+      "forker",
+      "contributor"
+    ],
+    "lastProcessedPage": {
+      "stargazer": 120,
+      "watcher": 2,
+      "forker": 13,
+      "contributor": 2
+    }
+  },
+  {
+    "repoUrl": "https://github.com/Lightning-AI/torchmetrics",
+    "scrapedTypes": [
+      "stargazer",
+      "watcher",
+      "forker",
+      "contributor"
+    ],
+    "lastProcessedPage": {
+      "stargazer": 23,
+      "watcher": 1,
+      "forker": 5,
+      "contributor": 3
+    }
+  },
+  {
+    "repoUrl": "https://github.com/Lightning-AI/tutorials",
+    "scrapedTypes": [
+      "stargazer",
+      "watcher",
+      "forker",
+      "contributor"
+    ],
+    "lastProcessedPage": {
+      "stargazer": 4,
+      "watcher": 1,
+      "forker": 1
+    }
+  },
+  {
+    "repoUrl": "https://github.com/Lightning-AI/LitModels",
+    "scrapedTypes": [
+      "stargazer",
+      "watcher",
+      "forker",
+      "contributor"
+    ],
+    "lastProcessedPage": {
+      "stargazer": 1,
+      "watcher": 1,
+      "forker": 1
+    }
+  },
+  {
+    "repoUrl": "https://github.com/Lightning-AI/lightning-thunder",
+    "scrapedTypes": [
+      "stargazer",
+      "watcher",
+      "forker",
+      "contributor"
+    ],
+    "lastProcessedPage": {
+      "stargazer": 14,
+      "watcher": 1,
+      "forker": 1
+    }
+  },
+  {
+    "repoUrl": "https://github.com/Lightning-AI/lightning-Habana",
+    "scrapedTypes": [
+      "stargazer",
+      "watcher",
+      "forker",
+      "contributor"
+    ],
+    "lastProcessedPage": {
+      "stargazer": 1,
+      "watcher": 1,
+      "forker": 1
+    }
+  },
+  {
+    "repoUrl": "https://github.com/Lightning-AI/utilities",
+    "scrapedTypes": [
+      "stargazer",
+      "watcher",
+      "forker",
+      "contributor"
+    ],
+    "lastProcessedPage": {
+      "stargazer": 1,
+      "watcher": 1,
+      "forker": 1
+    }
+  },
+  {
+    "repoUrl": "https://github.com/Lightning-AI/ecosystem-ci",
+    "scrapedTypes": [
+      "stargazer",
+      "watcher",
+      "forker",
+      "contributor"
+    ],
+    "lastProcessedPage": {
+      "stargazer": 1,
+      "watcher": 1,
+      "forker": 1
+    }
+  },
+  {
+    "repoUrl": "https://github.com/Lightning-AI/deep-learning-project-template",
+    "scrapedTypes": [
+      "stargazer",
+      "watcher",
+      "forker",
+      "contributor"
+    ],
+    "lastProcessedPage": {
+      "stargazer": 13,
+      "watcher": 1,
+      "forker": 3
+    }
+  },
+  {
+    "repoUrl": "https://github.com/Lightning-AI/dl-fundamentals",
+    "scrapedTypes": [
+      "stargazer",
+      "watcher",
+      "forker",
+      "contributor"
+    ],
+    "lastProcessedPage": {
+      "stargazer": 4,
+      "watcher": 1,
+      "forker": 2
+    }
+  },
+  {
+    "repoUrl": "https://github.com/Lightning-AI/lit-llama",
+    "scrapedTypes": [
+      "stargazer",
+      "watcher",
+      "forker",
+      "contributor"
+    ],
+    "lastProcessedPage": {
+      "stargazer": 61,
+      "watcher": 1,
+      "forker": 6
+    }
+  },
+  {
+    "repoUrl": "https://github.com/Lightning-AI/forked-pdb",
+    "scrapedTypes": [
+      "stargazer",
+      "watcher",
+      "forker",
+      "contributor"
+    ],
+    "lastProcessedPage": {
+      "stargazer": 1,
+      "watcher": 1,
+      "forker": 1
+    }
+  },
+  {
+    "repoUrl": "https://github.com/Lightning-AI/engineering-class",
+    "scrapedTypes": [
+      "stargazer",
+      "watcher",
+      "forker",
+      "contributor"
+    ],
+    "lastProcessedPage": {
+      "stargazer": 2,
+      "watcher": 1,
+      "forker": 1
+    }
+  },
+  {
+    "repoUrl": "https://github.com/Lightning-AI/lm-evaluation-harness",
+    "scrapedTypes": [
+      "stargazer",
+      "watcher",
+      "forker",
+      "contributor"
+    ],
+    "lastProcessedPage": {
+      "stargazer": 1,
+      "watcher": 1,
+      "forker": 1
+    }
+  },
+  {
+    "repoUrl": "https://github.com/Lightning-AI/Lightning-multinode-templates",
+    "scrapedTypes": [
+      "stargazer",
+      "watcher",
+      "forker",
+      "contributor"
+    ],
+    "lastProcessedPage": {
+      "stargazer": 1,
+      "watcher": 1,
+      "forker": 1
+    }
+  },
+  {
+    "repoUrl": "https://github.com/Lightning-AI/lightning-Graphcore",
+    "scrapedTypes": [
+      "stargazer",
+      "watcher",
+      "forker",
+      "contributor"
+    ],
+    "lastProcessedPage": {
+      "stargazer": 1,
+      "watcher": 1,
+      "forker": 1
+    }
+  },
+  {
+    "repoUrl": "https://github.com/Lightning-AI/probot",
+    "scrapedTypes": [
+      "stargazer",
+      "watcher",
+      "forker",
+      "contributor"
+    ],
+    "lastProcessedPage": {
+      "stargazer": 1,
+      "watcher": 1,
+      "forker": 1
+    }
+  },
+  {
+    "repoUrl": "https://github.com/replicate/getting-started-nextjs",
+    "scrapedTypes": [
+      "stargazer",
+      "watcher",
+      "forker",
+      "contributor"
+    ],
+    "lastProcessedPage": {
+      "stargazer": 3,
+      "watcher": 1,
+      "forker": 2
+    }
+  },
+  {
+    "repoUrl": "https://github.com/replicate/cog-comfyui-wan-with-lora",
+    "scrapedTypes": [
+      "stargazer",
+      "watcher",
+      "forker",
+      "contributor"
+    ],
+    "lastProcessedPage": {
+      "stargazer": 1,
+      "watcher": 1,
+      "forker": 1
+    }
+  },
+  {
+    "repoUrl": "https://github.com/replicate/cog",
+    "scrapedTypes": [
+      "stargazer",
+      "watcher",
+      "forker",
+      "contributor"
+    ],
+    "lastProcessedPage": {
+      "stargazer": 86,
+      "watcher": 1,
+      "forker": 6
+    }
+  },
+  {
+    "repoUrl": "https://github.com/replicate/replicate-go",
+    "scrapedTypes": [
+      "stargazer",
+      "watcher",
+      "forker",
+      "contributor"
+    ],
+    "lastProcessedPage": {
+      "stargazer": 1,
+      "watcher": 1,
+      "forker": 1
+    }
+  },
+  {
+    "repoUrl": "https://github.com/replicate/replicate-python",
+    "scrapedTypes": [
+      "stargazer",
+      "watcher",
+      "forker",
+      "contributor"
+    ],
+    "lastProcessedPage": {
+      "stargazer": 9,
+      "watcher": 1,
+      "forker": 3
+    }
+  },
+  {
+    "repoUrl": "https://github.com/replicate/cog-comfyui",
+    "scrapedTypes": [
+      "stargazer",
+      "watcher",
+      "forker",
+      "contributor"
+    ],
+    "lastProcessedPage": {
+      "stargazer": 7,
+      "watcher": 1,
+      "forker": 2
+    }
+  },
+  {
+    "repoUrl": "https://github.com/replicate/all-the-public-replicate-models",
+    "scrapedTypes": [
+      "stargazer",
+      "watcher",
+      "forker",
+      "contributor"
+    ],
+    "lastProcessedPage": {
+      "stargazer": 1,
+      "watcher": 1,
+      "forker": 1
+    }
+  },
+  {
+    "repoUrl": "https://github.com/replicate/flux-fine-tuner",
+    "scrapedTypes": [
+      "stargazer",
+      "watcher",
+      "forker",
+      "contributor"
+    ],
+    "lastProcessedPage": {
+      "stargazer": 4,
+      "watcher": 1,
+      "forker": 1
+    }
+  },
+  {
+    "repoUrl": "https://github.com/replicate/cog-flux",
+    "scrapedTypes": [
+      "stargazer",
+      "watcher",
+      "forker",
+      "contributor"
+    ],
+    "lastProcessedPage": {
+      "stargazer": 4,
+      "watcher": 1,
+      "forker": 1
+    }
+  },
+  {
+    "repoUrl": "https://github.com/replicate/replicate-javascript",
+    "scrapedTypes": [
+      "stargazer",
+      "watcher",
+      "forker",
+      "contributor"
+    ],
+    "lastProcessedPage": {
+      "stargazer": 6,
+      "watcher": 1,
+      "forker": 3
+    }
+  },
+  {
+    "repoUrl": "https://github.com/replicate/paint-by-text",
+    "scrapedTypes": [
+      "stargazer",
+      "watcher",
+      "forker",
+      "contributor"
+    ],
+    "lastProcessedPage": {
+      "stargazer": 5,
+      "watcher": 1,
+      "forker": 1
+    }
+  },
+  {
+    "repoUrl": "https://github.com/replicate/reflux",
+    "scrapedTypes": [
+      "stargazer",
+      "watcher",
+      "forker",
+      "contributor"
+    ],
+    "lastProcessedPage": {
+      "stargazer": 1,
+      "watcher": 1,
+      "forker": 1
+    }
+  },
+  {
+    "repoUrl": "https://github.com/replicate/llama-chat",
+    "scrapedTypes": [
+      "stargazer",
+      "watcher",
+      "forker",
+      "contributor"
+    ],
+    "lastProcessedPage": {
+      "stargazer": 9,
+      "watcher": 1,
+      "forker": 4
+    }
+  },
+  {
+    "repoUrl": "https://github.com/replicate/setup-cog",
+    "scrapedTypes": [
+      "stargazer",
+      "watcher",
+      "forker",
+      "contributor"
+    ],
+    "lastProcessedPage": {
+      "stargazer": 1,
+      "watcher": 1,
+      "forker": 1
+    }
+  },
+  {
+    "repoUrl": "https://github.com/replicate/pget",
+    "scrapedTypes": [
+      "stargazer",
+      "watcher",
+      "forker",
+      "contributor"
+    ],
+    "lastProcessedPage": {
+      "stargazer": 2,
+      "watcher": 1,
+      "forker": 1
+    }
+  },
+  {
+    "repoUrl": "https://github.com/replicate/replicate-swift",
+    "scrapedTypes": [
+      "stargazer",
+      "watcher",
+      "forker",
+      "contributor"
+    ],
+    "lastProcessedPage": {
+      "stargazer": 2,
+      "watcher": 1,
+      "forker": 1
+    }
+  },
+  {
+    "repoUrl": "https://github.com/replicate/keepsake",
+    "scrapedTypes": [
+      "stargazer",
+      "watcher",
+      "forker",
+      "contributor"
+    ],
+    "lastProcessedPage": {
+      "stargazer": 17,
+      "watcher": 1,
+      "forker": 1
+    }
+  },
+  {
+    "repoUrl": "https://github.com/replicate/fast-flux-demo",
+    "scrapedTypes": [
+      "stargazer",
+      "watcher",
+      "forker",
+      "contributor"
+    ],
+    "lastProcessedPage": {
+      "stargazer": 2,
+      "watcher": 1,
+      "forker": 1
+    }
+  },
+  {
+    "repoUrl": "https://github.com/replicate/green-screen-creator",
+    "scrapedTypes": [
+      "stargazer",
+      "watcher",
+      "forker",
+      "contributor"
+    ],
+    "lastProcessedPage": {
+      "stargazer": 1,
+      "watcher": 1,
+      "forker": 1
+    }
+  },
+  {
+    "repoUrl": "https://github.com/replicate/comfyui-replicate",
+    "scrapedTypes": [
+      "stargazer",
+      "watcher",
+      "forker",
+      "contributor"
+    ],
+    "lastProcessedPage": {
+      "stargazer": 2,
+      "watcher": 1,
+      "forker": 1
+    }
+  },
+  {
+    "repoUrl": "https://github.com/replicate/create-replicate",
+    "scrapedTypes": [
+      "stargazer",
+      "watcher",
+      "forker",
+      "contributor"
+    ],
+    "lastProcessedPage": {
+      "stargazer": 1,
+      "watcher": 1,
+      "forker": 1
+    }
+  },
+  {
+    "repoUrl": "https://github.com/replicate/hype",
+    "scrapedTypes": [
+      "stargazer",
+      "watcher",
+      "forker",
+      "contributor"
+    ],
+    "lastProcessedPage": {
+      "stargazer": 2,
+      "watcher": 1,
+      "forker": 1
+    }
+  },
+  {
+    "repoUrl": "https://github.com/replicate/inpainter",
+    "scrapedTypes": [
+      "stargazer",
+      "watcher",
+      "forker",
+      "contributor"
+    ],
+    "lastProcessedPage": {
+      "stargazer": 5,
+      "watcher": 1,
+      "forker": 1
+    }
+  },
+  {
+    "repoUrl": "https://github.com/replicate/cog-safe-push",
+    "scrapedTypes": [
+      "stargazer",
+      "watcher",
+      "contributor"
+    ],
+    "lastProcessedPage": {
+      "stargazer": 1,
+      "watcher": 1
+    }
+  },
+  {
+    "repoUrl": "https://github.com/replicate/cog-flux-schnell",
+    "scrapedTypes": [
+      "stargazer",
+      "watcher",
+      "forker",
+      "contributor"
+    ],
+    "lastProcessedPage": {
+      "stargazer": 1,
+      "watcher": 1,
+      "forker": 1
+    }
+  },
+  {
+    "repoUrl": "https://github.com/replicate/cog-stable-diffusion-3",
+    "scrapedTypes": [
+      "stargazer",
+      "watcher",
+      "forker",
+      "contributor"
+    ],
+    "lastProcessedPage": {
+      "stargazer": 1,
+      "watcher": 1,
+      "forker": 1
+    }
+  },
+  {
+    "repoUrl": "https://github.com/replicate/cog-triton",
+    "scrapedTypes": [
+      "stargazer",
+      "watcher",
+      "contributor"
+    ],
+    "lastProcessedPage": {
+      "stargazer": 1,
+      "watcher": 1
+    }
+  },
+  {
+    "repoUrl": "https://github.com/replicate/cog-sdxl",
+    "scrapedTypes": [
+      "stargazer",
+      "watcher",
+      "forker",
+      "contributor"
+    ],
+    "lastProcessedPage": {
+      "stargazer": 3,
+      "watcher": 1,
+      "forker": 1
+    }
+  },
+  {
+    "repoUrl": "https://github.com/replicate/cog-vllm",
+    "scrapedTypes": [
+      "stargazer",
+      "watcher",
+      "forker",
+      "contributor"
+    ],
+    "lastProcessedPage": {
+      "stargazer": 1,
+      "watcher": 1,
+      "forker": 1
+    }
+  },
+  {
+    "repoUrl": "https://github.com/replicate/cog-whisper",
+    "scrapedTypes": [
+      "stargazer",
+      "watcher",
+      "forker",
+      "contributor"
+    ],
+    "lastProcessedPage": {
+      "stargazer": 1,
+      "watcher": 1,
+      "forker": 1
+    }
+  },
+  {
+    "repoUrl": "https://github.com/replicate/cli",
+    "scrapedTypes": [
+      "stargazer",
+      "watcher",
+      "forker",
+      "contributor"
+    ],
+    "lastProcessedPage": {
+      "stargazer": 1,
+      "watcher": 1,
+      "forker": 1
+    }
+  },
+  {
+    "repoUrl": "https://github.com/replicate/cog-examples",
+    "scrapedTypes": [
+      "stargazer",
+      "watcher",
+      "forker",
+      "contributor"
+    ],
+    "lastProcessedPage": {
+      "stargazer": 2,
+      "watcher": 1,
+      "forker": 1
+    }
+  },
+  {
+    "repoUrl": "https://github.com/replicate/scribble-diffusion",
+    "scrapedTypes": [
+      "stargazer",
+      "watcher",
+      "forker",
+      "contributor"
+    ],
+    "lastProcessedPage": {
+      "stargazer": 30,
+      "watcher": 1,
+      "forker": 6
+    }
+  },
+  {
+    "repoUrl": "https://github.com/replicate/monobase",
+    "scrapedTypes": [
+      "stargazer",
+      "watcher",
+      "contributor"
+    ],
+    "lastProcessedPage": {
+      "stargazer": 1,
+      "watcher": 1
+    }
+  },
+  {
+    "repoUrl": "https://github.com/replicate/latent-consistency-model",
+    "scrapedTypes": [
+      "stargazer",
+      "watcher",
+      "forker",
+      "contributor"
+    ],
+    "lastProcessedPage": {
+      "stargazer": 2,
+      "watcher": 1,
+      "forker": 1
+    }
+  },
+  {
+    "repoUrl": "https://github.com/replicate/endless-zoom",
+    "scrapedTypes": [
+      "stargazer",
+      "watcher",
+      "contributor"
+    ],
+    "lastProcessedPage": {
+      "stargazer": 1,
+      "watcher": 1
+    }
+  },
+  {
+    "repoUrl": "https://github.com/replicate/cog-stable-diffusion",
+    "scrapedTypes": [
+      "stargazer",
+      "watcher",
+      "forker",
+      "contributor"
+    ],
+    "lastProcessedPage": {
+      "stargazer": 7,
+      "watcher": 1,
+      "forker": 3
+    }
+  },
+  {
+    "repoUrl": "https://github.com/replicate/huggingface-model-mappings",
+    "scrapedTypes": [
+      "stargazer",
+      "watcher",
+      "contributor"
+    ],
+    "lastProcessedPage": {
+      "stargazer": 1,
+      "watcher": 1
+    }
+  },
+  {
+    "repoUrl": "https://github.com/replicate/quirky",
+    "scrapedTypes": [
+      "stargazer",
+      "watcher",
+      "forker",
+      "contributor"
+    ],
+    "lastProcessedPage": {
+      "stargazer": 3,
+      "watcher": 1,
+      "forker": 1
+    }
+  },
+  {
+    "repoUrl": "https://github.com/replicate/dreambooth",
+    "scrapedTypes": [
+      "stargazer",
+      "watcher",
+      "forker",
+      "contributor"
+    ],
+    "lastProcessedPage": {
+      "stargazer": 2,
+      "watcher": 1,
+      "forker": 1
+    }
+  },
+  {
+    "repoUrl": "https://github.com/replicate/replicate-support-bot",
+    "scrapedTypes": [
+      "stargazer",
+      "watcher",
+      "contributor"
+    ],
+    "lastProcessedPage": {
+      "stargazer": 1,
+      "watcher": 1
+    }
+  },
+  {
+    "repoUrl": "https://github.com/replicate/cog-yue",
+    "scrapedTypes": [
+      "stargazer",
+      "forker",
+      "contributor"
+    ],
+    "lastProcessedPage": {
+      "stargazer": 1,
+      "forker": 1
+    }
+  },
+  {
+    "repoUrl": "https://github.com/replicate/go",
+    "scrapedTypes": [
+      "stargazer",
+      "watcher",
+      "forker",
+      "contributor"
+    ],
+    "lastProcessedPage": {
+      "stargazer": 1,
+      "watcher": 1,
+      "forker": 1
+    }
+  },
+  {
+    "repoUrl": "https://github.com/replicate/cog-t2i-adapter-sdxl",
+    "scrapedTypes": [
+      "stargazer",
+      "watcher",
+      "forker",
+      "contributor"
+    ],
+    "lastProcessedPage": {
+      "stargazer": 1,
+      "watcher": 1,
+      "forker": 1
+    }
+  },
+  {
+    "repoUrl": "https://github.com/replicate/zoo",
+    "scrapedTypes": [
+      "stargazer",
+      "watcher",
+      "forker",
+      "contributor"
+    ],
+    "lastProcessedPage": {
+      "stargazer": 4,
+      "watcher": 1,
+      "forker": 2
+    }
+  },
+  {
+    "repoUrl": "https://github.com/replicate/getting-started-nextjs-typescript",
+    "scrapedTypes": [
+      "stargazer",
+      "watcher",
+      "forker",
+      "contributor"
+    ],
+    "lastProcessedPage": {
+      "stargazer": 1,
+      "watcher": 1,
+      "forker": 1
+    }
+  },
+  {
+    "repoUrl": "https://github.com/replicate/cog-musicgen",
+    "scrapedTypes": [
+      "stargazer",
+      "watcher",
+      "forker",
+      "contributor"
+    ],
+    "lastProcessedPage": {
+      "stargazer": 1,
+      "watcher": 1,
+      "forker": 1
+    }
+  },
+  {
+    "repoUrl": "https://github.com/replicate/controlnet",
+    "scrapedTypes": [
+      "stargazer",
+      "watcher",
+      "forker",
+      "contributor"
+    ],
+    "lastProcessedPage": {
+      "stargazer": 3,
+      "watcher": 1,
+      "forker": 1
+    }
+  },
+  {
+    "repoUrl": "https://github.com/replicate/getting-started-cloudflare-workers",
+    "scrapedTypes": [
+      "stargazer",
+      "watcher",
+      "forker",
+      "contributor"
+    ],
+    "lastProcessedPage": {
+      "stargazer": 1,
+      "watcher": 1,
+      "forker": 1
+    }
+  },
+  {
+    "repoUrl": "https://github.com/replicate/lora-training",
+    "scrapedTypes": [
+      "stargazer",
+      "watcher",
+      "forker",
+      "contributor"
+    ],
+    "lastProcessedPage": {
+      "stargazer": 2,
+      "watcher": 1,
+      "forker": 1
+    }
+  },
+  {
+    "repoUrl": "https://github.com/replicate/tilemaker",
+    "scrapedTypes": [
+      "stargazer",
+      "watcher",
+      "forker",
+      "contributor"
+    ],
+    "lastProcessedPage": {
+      "stargazer": 2,
+      "watcher": 1,
+      "forker": 1
+    }
+  },
+  {
+    "repoUrl": "https://github.com/replicate/img-quality-eval",
+    "scrapedTypes": [
+      "stargazer",
+      "watcher",
+      "contributor"
+    ],
+    "lastProcessedPage": {
+      "stargazer": 1,
+      "watcher": 1
+    }
+  },
+  {
+    "repoUrl": "https://github.com/replicate/cog-svd",
+    "scrapedTypes": [
+      "stargazer",
+      "watcher",
+      "forker",
+      "contributor"
+    ],
+    "lastProcessedPage": {
+      "stargazer": 1,
+      "watcher": 1,
+      "forker": 1
+    }
+  },
+  {
+    "repoUrl": "https://github.com/replicate/cog-wan-2.1",
+    "scrapedTypes": [
+      "stargazer",
+      "watcher",
+      "forker",
+      "contributor"
+    ],
+    "lastProcessedPage": {
+      "stargazer": 1,
+      "watcher": 1,
+      "forker": 1
+    }
+  },
+  {
+    "repoUrl": "https://github.com/replicate/cloudflare-image-cache",
+    "scrapedTypes": [
+      "stargazer",
+      "watcher",
+      "forker",
+      "contributor"
+    ],
+    "lastProcessedPage": {
+      "stargazer": 1,
+      "watcher": 1,
+      "forker": 1
+    }
+  },
+  {
+    "repoUrl": "https://github.com/replicate/dreambooth-action",
+    "scrapedTypes": [
+      "stargazer",
+      "watcher",
+      "forker",
+      "contributor"
+    ],
+    "lastProcessedPage": {
+      "stargazer": 1,
+      "watcher": 1,
+      "forker": 2
+    }
+  },
+  {
+    "repoUrl": "https://github.com/replicate/GFPGAN",
+    "scrapedTypes": [
+      "stargazer",
+      "watcher",
+      "forker",
+      "contributor"
+    ],
+    "lastProcessedPage": {
+      "stargazer": 1,
+      "watcher": 1,
+      "forker": 1
+    }
+  },
+  {
+    "repoUrl": "https://github.com/replicate/cog_stanford_alpaca",
+    "scrapedTypes": [
+      "stargazer",
+      "watcher",
+      "forker",
+      "contributor"
+    ],
+    "lastProcessedPage": {
+      "stargazer": 2,
+      "watcher": 1,
+      "forker": 1
+    }
+  },
+  {
+    "repoUrl": "https://github.com/replicate/ideogram-inpainting-example-js",
+    "scrapedTypes": [
+      "stargazer",
+      "watcher",
+      "contributor"
+    ],
+    "lastProcessedPage": {
+      "stargazer": 1,
+      "watcher": 1
+    }
+  },
+  {
+    "repoUrl": "https://github.com/replicate/outpainter",
+    "scrapedTypes": [
+      "stargazer",
+      "watcher",
+      "forker",
+      "contributor"
+    ],
+    "lastProcessedPage": {
+      "stargazer": 1,
+      "watcher": 1,
+      "forker": 1
+    }
+  },
+  {
+    "repoUrl": "https://github.com/replicate/discord-bot-tutorial-code",
+    "scrapedTypes": [
+      "stargazer",
+      "watcher",
+      "forker",
+      "contributor"
+    ],
+    "lastProcessedPage": {
+      "stargazer": 1,
+      "watcher": 1,
+      "forker": 1
+    }
+  },
+  {
+    "repoUrl": "https://github.com/replicate/cog-mvdream-multiview",
+    "scrapedTypes": [
+      "stargazer",
+      "watcher",
+      "forker",
+      "contributor"
+    ],
+    "lastProcessedPage": {
+      "stargazer": 1,
+      "watcher": 1,
+      "forker": 1
+    }
+  },
+  {
+    "repoUrl": "https://github.com/replicate/cog-dolly-v2-12b",
+    "scrapedTypes": [
+      "stargazer",
+      "watcher",
+      "forker",
+      "contributor"
+    ],
+    "lastProcessedPage": {
+      "stargazer": 1,
+      "watcher": 1,
+      "forker": 1
+    }
+  },
+  {
+    "repoUrl": "https://github.com/replicate/fastapi",
+    "scrapedTypes": [
+      "stargazer",
+      "contributor"
+    ],
+    "lastProcessedPage": {
+      "stargazer": 1,
+      "contributor": 5
+    }
+  },
+  {
+    "repoUrl": "https://github.com/replicate/cog-grounding-dino",
+    "scrapedTypes": [
+      "stargazer",
+      "watcher",
+      "forker",
+      "contributor"
+    ],
+    "lastProcessedPage": {
+      "stargazer": 1,
+      "watcher": 1,
+      "forker": 1
+    }
+  },
+  {
+    "repoUrl": "https://github.com/replicate/stable-diffusion-depth2img",
+    "scrapedTypes": [
+      "stargazer",
+      "watcher",
+      "forker",
+      "contributor"
+    ],
+    "lastProcessedPage": {
+      "stargazer": 1,
+      "watcher": 1,
+      "forker": 1
+    }
+  },
+  {
+    "repoUrl": "https://github.com/replicate/autocompile",
+    "scrapedTypes": [
+      "stargazer",
+      "watcher",
+      "contributor"
+    ],
+    "lastProcessedPage": {
+      "stargazer": 1,
+      "watcher": 1
+    }
+  },
+  {
+    "repoUrl": "https://github.com/replicate/cog-mpt-7b-storywriter-65k",
+    "scrapedTypes": [
+      "stargazer",
+      "watcher",
+      "forker",
+      "contributor"
+    ],
+    "lastProcessedPage": {
+      "stargazer": 1,
+      "watcher": 1,
+      "forker": 1
+    }
+  },
+  {
+    "repoUrl": "https://github.com/replicate/cog-llama-template",
+    "scrapedTypes": [
+      "stargazer",
+      "watcher",
+      "forker",
+      "contributor"
+    ],
+    "lastProcessedPage": {
+      "stargazer": 4,
+      "watcher": 1,
+      "forker": 1
+    }
+  },
+  {
+    "repoUrl": "https://github.com/replicate/replicate-models-chatgpt-plugin",
+    "scrapedTypes": [
+      "stargazer",
+      "watcher",
+      "forker",
+      "contributor"
+    ],
+    "lastProcessedPage": {
+      "stargazer": 1,
+      "watcher": 1,
+      "forker": 1
+    }
+  },
+  {
+    "repoUrl": "https://github.com/replicate/cog-seamlessexpressive",
+    "scrapedTypes": [
+      "stargazer",
+      "watcher",
+      "forker",
+      "contributor"
+    ],
+    "lastProcessedPage": {
+      "stargazer": 1,
+      "watcher": 1,
+      "forker": 1
+    }
+  },
+  {
+    "repoUrl": "https://github.com/replicate/yolo",
+    "scrapedTypes": [
+      "stargazer",
+      "watcher",
+      "contributor"
+    ],
+    "lastProcessedPage": {
+      "stargazer": 1,
+      "watcher": 1
+    }
+  },
+  {
+    "repoUrl": "https://github.com/replicate/codespaces",
+    "scrapedTypes": [
+      "stargazer",
+      "watcher",
+      "forker",
+      "contributor"
+    ],
+    "lastProcessedPage": {
+      "stargazer": 1,
+      "watcher": 1,
+      "forker": 1
+    }
+  },
+  {
+    "repoUrl": "https://github.com/replicate/cog-llama",
+    "scrapedTypes": [
+      "stargazer",
+      "watcher",
+      "forker",
+      "contributor"
+    ],
+    "lastProcessedPage": {
+      "stargazer": 1,
+      "watcher": 1,
+      "forker": 1
+    }
+  },
+  {
+    "repoUrl": "https://github.com/replicate/replicate-sam-2-clicker",
+    "scrapedTypes": [
+      "stargazer",
+      "watcher",
+      "forker",
+      "contributor"
+    ],
+    "lastProcessedPage": {
+      "stargazer": 1,
+      "watcher": 1,
+      "forker": 1
+    }
+  },
+  {
+    "repoUrl": "https://github.com/replicate/cog-redis-example",
+    "scrapedTypes": [
+      "stargazer",
+      "watcher",
+      "forker",
+      "contributor"
+    ],
+    "lastProcessedPage": {
+      "stargazer": 1,
+      "watcher": 1,
+      "forker": 1
+    }
+  },
+  {
+    "repoUrl": "https://github.com/replicate/musicgen-chord",
+    "scrapedTypes": [
+      "stargazer",
+      "watcher",
+      "forker",
+      "contributor"
+    ],
+    "lastProcessedPage": {
+      "stargazer": 1,
+      "watcher": 1,
+      "forker": 1
+    }
+  },
+  {
+    "repoUrl": "https://github.com/replicate/Real-ESRGAN",
+    "scrapedTypes": [
+      "stargazer",
+      "watcher",
+      "forker",
+      "contributor"
+    ],
+    "lastProcessedPage": {
+      "stargazer": 1,
+      "watcher": 1,
+      "forker": 1
+    }
+  },
+  {
+    "repoUrl": "https://github.com/replicate/getting-started-swiftui",
+    "scrapedTypes": [
+      "stargazer",
+      "watcher",
+      "forker",
+      "contributor"
+    ],
+    "lastProcessedPage": {
+      "stargazer": 1,
+      "watcher": 1,
+      "forker": 1
+    }
+  },
+  {
+    "repoUrl": "https://github.com/replicate/cog-imagedream",
+    "scrapedTypes": [
+      "stargazer",
+      "watcher",
+      "contributor"
+    ],
+    "lastProcessedPage": {
+      "stargazer": 1,
+      "watcher": 1
+    }
+  },
+  {
+    "repoUrl": "https://github.com/replicate/cog-dwpose",
+    "scrapedTypes": [
+      "stargazer",
+      "watcher",
+      "contributor"
+    ],
+    "lastProcessedPage": {
+      "stargazer": 1,
+      "watcher": 1
+    }
+  },
+  {
+    "repoUrl": "https://github.com/replicate/all-mpnet-base-v2",
+    "scrapedTypes": [
+      "stargazer",
+      "watcher",
+      "forker",
+      "contributor"
+    ],
+    "lastProcessedPage": {
+      "stargazer": 1,
+      "watcher": 1,
+      "forker": 1
+    }
+  },
+  {
+    "repoUrl": "https://github.com/replicate/lora-inference",
+    "scrapedTypes": [
+      "stargazer",
+      "watcher",
+      "forker",
+      "contributor"
+    ],
+    "lastProcessedPage": {
+      "stargazer": 1,
+      "watcher": 1,
+      "forker": 1
+    }
+  },
+  {
+    "repoUrl": "https://github.com/replicate/terraform-provider-replicate",
+    "scrapedTypes": [
+      "stargazer",
+      "watcher",
+      "contributor"
+    ],
+    "lastProcessedPage": {
+      "stargazer": 1,
+      "watcher": 1
+    }
+  },
+  {
+    "repoUrl": "https://github.com/replicate/cog-replit-code-v1-3b",
+    "scrapedTypes": [
+      "stargazer",
+      "watcher",
+      "forker",
+      "contributor"
+    ],
+    "lastProcessedPage": {
+      "stargazer": 1,
+      "watcher": 1,
+      "forker": 1
+    }
+  },
+  {
+    "repoUrl": "https://github.com/replicate/rtv",
+    "scrapedTypes": [
+      "stargazer",
+      "watcher",
+      "forker",
+      "contributor"
+    ],
+    "lastProcessedPage": {
+      "stargazer": 1,
+      "watcher": 1,
+      "forker": 1
+    }
+  },
+  {
+    "repoUrl": "https://github.com/replicate/getting-started-nextjs-language",
+    "scrapedTypes": [
+      "stargazer",
+      "watcher",
+      "forker",
+      "contributor"
+    ],
+    "lastProcessedPage": {
+      "stargazer": 1,
+      "watcher": 1,
+      "forker": 1
+    }
+  },
+  {
+    "repoUrl": "https://github.com/replicate/vllm-with-loras",
+    "scrapedTypes": [
+      "stargazer",
+      "watcher",
+      "contributor"
+    ],
+    "lastProcessedPage": {
+      "stargazer": 1,
+      "watcher": 1
+    }
+  },
+  {
+    "repoUrl": "https://github.com/replicate/cog-sdxl-lora",
+    "scrapedTypes": [
+      "stargazer",
+      "watcher",
+      "forker",
+      "contributor"
+    ],
+    "lastProcessedPage": {
+      "stargazer": 1,
+      "watcher": 1,
+      "forker": 1
+    }
+  },
+  {
+    "repoUrl": "https://github.com/replicate/cog-stable-diffusion-inpainting",
+    "scrapedTypes": [
+      "stargazer",
+      "watcher",
+      "forker",
+      "contributor"
+    ],
+    "lastProcessedPage": {
+      "stargazer": 1,
+      "watcher": 1,
+      "forker": 1
+    }
+  },
+  {
+    "repoUrl": "https://github.com/replicate/cog-vicuna-13b",
+    "scrapedTypes": [
+      "stargazer",
+      "watcher",
+      "forker",
+      "contributor"
+    ],
+    "lastProcessedPage": {
+      "stargazer": 1,
+      "watcher": 1,
+      "forker": 1
+    }
+  },
+  {
+    "repoUrl": "https://github.com/replicate/cog-udop",
+    "scrapedTypes": [
+      "stargazer",
+      "watcher",
+      "forker",
+      "contributor"
+    ],
+    "lastProcessedPage": {
+      "stargazer": 1,
+      "watcher": 1,
+      "forker": 1
+    }
+  },
+  {
+    "repoUrl": "https://github.com/replicate/cog-stable-diffusion-img2img",
+    "scrapedTypes": [
+      "stargazer",
+      "watcher",
+      "forker",
+      "contributor"
+    ],
+    "lastProcessedPage": {
+      "stargazer": 1,
+      "watcher": 1,
+      "forker": 1
+    }
+  },
+  {
+    "repoUrl": "https://github.com/replicate/replicate-raycast",
+    "scrapedTypes": [
+      "stargazer",
+      "watcher",
+      "forker",
+      "contributor"
+    ],
+    "lastProcessedPage": {
+      "stargazer": 1,
+      "watcher": 1,
+      "forker": 1
+    }
+  },
+  {
+    "repoUrl": "https://github.com/replicate/python-starter",
+    "scrapedTypes": [
+      "stargazer",
+      "watcher",
+      "contributor"
+    ],
+    "lastProcessedPage": {
+      "stargazer": 1,
+      "watcher": 1
+    }
+  },
+  {
+    "repoUrl": "https://github.com/replicate/cog-stablelm",
+    "scrapedTypes": [
+      "stargazer",
+      "watcher",
+      "forker",
+      "contributor"
+    ],
+    "lastProcessedPage": {
+      "stargazer": 1,
+      "watcher": 1,
+      "forker": 1
+    }
+  },
+  {
+    "repoUrl": "https://github.com/replicate/point-e",
+    "scrapedTypes": [
+      "stargazer",
+      "watcher",
+      "contributor"
+    ],
+    "lastProcessedPage": {
+      "stargazer": 1,
+      "watcher": 1
+    }
+  },
+  {
+    "repoUrl": "https://github.com/replicate/cog-lightweight-openpose",
+    "scrapedTypes": [
+      "stargazer",
+      "watcher",
+      "contributor"
+    ],
+    "lastProcessedPage": {
+      "stargazer": 1,
+      "watcher": 1
+    }
+  },
+  {
+    "repoUrl": "https://github.com/replicate/zeroscope-compare",
+    "scrapedTypes": [
+      "stargazer",
+      "watcher",
+      "forker",
+      "contributor"
+    ],
+    "lastProcessedPage": {
+      "stargazer": 1,
+      "watcher": 1,
+      "forker": 1
+    }
+  },
+  {
+    "repoUrl": "https://github.com/replicate/blog-example-rag-chromadb-mistral7b",
+    "scrapedTypes": [
+      "stargazer",
+      "watcher",
+      "forker",
+      "contributor"
+    ],
+    "lastProcessedPage": {
+      "stargazer": 1,
+      "watcher": 1,
+      "forker": 1
+    }
+  },
+  {
+    "repoUrl": "https://github.com/replicate/cog-marigold",
+    "scrapedTypes": [
+      "stargazer",
+      "watcher",
+      "forker",
+      "contributor"
+    ],
+    "lastProcessedPage": {
+      "stargazer": 1,
+      "watcher": 1,
+      "forker": 1
+    }
+  },
+  {
+    "repoUrl": "https://github.com/replicate/dreambooth-template",
+    "scrapedTypes": [
+      "stargazer",
+      "watcher",
+      "forker",
+      "contributor"
+    ],
+    "lastProcessedPage": {
+      "stargazer": 1,
+      "watcher": 1,
+      "forker": 1
+    }
+  },
+  {
+    "repoUrl": "https://github.com/replicate/cog-mplug-owl",
+    "scrapedTypes": [
+      "stargazer",
+      "watcher",
+      "forker",
+      "contributor"
+    ],
+    "lastProcessedPage": {
+      "stargazer": 1,
+      "watcher": 1,
+      "forker": 1
+    }
+  },
+  {
+    "repoUrl": "https://github.com/replicate/cog-flan-models",
+    "scrapedTypes": [
+      "stargazer",
+      "watcher",
+      "forker",
+      "contributor"
+    ],
+    "lastProcessedPage": {
+      "stargazer": 1,
+      "watcher": 1,
+      "forker": 1
+    }
+  },
+  {
+    "repoUrl": "https://github.com/replicate/AudioLDM",
+    "scrapedTypes": [
+      "stargazer",
+      "watcher",
+      "forker",
+      "contributor"
+    ],
+    "lastProcessedPage": {
+      "stargazer": 1,
+      "watcher": 1,
+      "forker": 1
+    }
+  },
+  {
+    "repoUrl": "https://github.com/replicate/r8im",
+    "scrapedTypes": [
+      "stargazer",
+      "watcher",
+      "forker",
+      "contributor"
+    ],
+    "lastProcessedPage": {
+      "stargazer": 1,
+      "watcher": 1,
+      "forker": 1
+    }
+  },
+  {
+    "repoUrl": "https://github.com/replicate/cog-lavis",
+    "scrapedTypes": [
+      "stargazer",
+      "watcher",
+      "contributor"
+    ],
+    "lastProcessedPage": {
+      "stargazer": 1,
+      "watcher": 1
+    }
+  },
+  {
+    "repoUrl": "https://github.com/replicate/cog-flan-t5",
+    "scrapedTypes": [
+      "stargazer",
+      "watcher",
+      "forker",
+      "contributor"
+    ],
+    "lastProcessedPage": {
+      "stargazer": 1,
+      "watcher": 1,
+      "forker": 1
+    }
+  },
+  {
+    "repoUrl": "https://github.com/replicate/clipdraw-interactive",
+    "scrapedTypes": [
+      "stargazer",
+      "watcher",
+      "forker",
+      "contributor"
+    ],
+    "lastProcessedPage": {
+      "stargazer": 1,
+      "watcher": 1,
+      "forker": 1
+    }
+  },
+  {
+    "repoUrl": "https://github.com/replicate/cog-fast-dreambooth",
+    "scrapedTypes": [
+      "stargazer",
+      "watcher",
+      "forker",
+      "contributor"
+    ],
+    "lastProcessedPage": {
+      "stargazer": 1,
+      "watcher": 1,
+      "forker": 1
+    }
+  },
+  {
+    "repoUrl": "https://github.com/replicate/avatar-remix-bot",
+    "scrapedTypes": [
+      "stargazer",
+      "watcher",
+      "contributor"
+    ],
+    "lastProcessedPage": {
+      "stargazer": 1,
+      "watcher": 1
+    }
+  },
+  {
+    "repoUrl": "https://github.com/replicate/StyleGAN-Human",
+    "scrapedTypes": [
+      "stargazer",
+      "watcher",
+      "forker",
+      "contributor"
+    ],
+    "lastProcessedPage": {
+      "stargazer": 1,
+      "watcher": 1,
+      "forker": 1
+    }
+  },
+  {
+    "repoUrl": "https://github.com/togethercomputer/Dragonfly",
+    "scrapedTypes": [
+      "stargazer",
+      "watcher",
+      "forker",
+      "contributor"
+    ],
+    "lastProcessedPage": {
+      "stargazer": 1,
+      "watcher": 1,
+      "forker": 1
+    }
+  },
+  {
+    "repoUrl": "https://github.com/togethercomputer/RedPajama-Data",
+    "scrapedTypes": [
+      "stargazer",
+      "watcher",
+      "forker",
+      "contributor"
+    ],
+    "lastProcessedPage": {
+      "stargazer": 47,
+      "watcher": 1,
+      "forker": 4
+    }
+  },
+  {
+    "repoUrl": "https://github.com/togethercomputer/together-cookbook",
+    "scrapedTypes": [
+      "stargazer",
+      "watcher",
+      "forker",
+      "contributor"
+    ],
+    "lastProcessedPage": {
+      "stargazer": 9,
+      "watcher": 1,
+      "forker": 2
+    }
+  },
+  {
+    "repoUrl": "https://github.com/togethercomputer/MoA",
+    "scrapedTypes": [
+      "stargazer",
+      "watcher",
+      "forker",
+      "contributor"
+    ],
+    "lastProcessedPage": {
+      "stargazer": 28,
+      "watcher": 1,
+      "forker": 4
+    }
+  },
+  {
+    "repoUrl": "https://github.com/togethercomputer/OpenChatKit",
+    "scrapedTypes": [
+      "stargazer",
+      "watcher",
+      "forker",
+      "contributor"
+    ],
+    "lastProcessedPage": {
+      "stargazer": 91,
+      "watcher": 2,
+      "forker": 11
+    }
+  },
+  {
+    "repoUrl": "https://github.com/togethercomputer/together-python",
+    "scrapedTypes": [
+      "stargazer",
+      "watcher",
+      "forker",
+      "contributor"
+    ],
+    "lastProcessedPage": {
+      "stargazer": 1,
+      "watcher": 1,
+      "forker": 1
+    }
+  },
+  {
+    "repoUrl": "https://github.com/togethercomputer/openapi",
+    "scrapedTypes": [
+      "stargazer",
+      "watcher",
+      "forker",
+      "contributor"
+    ],
+    "lastProcessedPage": {
+      "stargazer": 1,
+      "watcher": 1,
+      "forker": 1
+    }
+  },
+  {
+    "repoUrl": "https://github.com/togethercomputer/together-typescript",
+    "scrapedTypes": [
+      "stargazer",
+      "watcher",
+      "forker",
+      "contributor"
+    ],
+    "lastProcessedPage": {
+      "stargazer": 1,
+      "watcher": 1,
+      "forker": 1
+    }
+  },
+  {
+    "repoUrl": "https://github.com/togethercomputer/flash-attention-3",
+    "scrapedTypes": [
+      "stargazer",
+      "contributor"
+    ],
+    "lastProcessedPage": {
+      "stargazer": 1
+    }
+  },
+  {
+    "repoUrl": "https://github.com/togethercomputer/stripedhyena",
+    "scrapedTypes": [
+      "stargazer",
+      "watcher",
+      "forker",
+      "contributor"
+    ],
+    "lastProcessedPage": {
+      "stargazer": 4,
+      "watcher": 1,
+      "forker": 1
+    }
+  },
+  {
+    "repoUrl": "https://github.com/togethercomputer/OpenDataHub",
+    "scrapedTypes": [
+      "stargazer",
+      "watcher",
+      "forker",
+      "contributor"
+    ],
+    "lastProcessedPage": {
+      "stargazer": 2,
+      "watcher": 1,
+      "forker": 1
+    }
+  },
+  {
+    "repoUrl": "https://github.com/togethercomputer/llamaindex-chatbot",
+    "scrapedTypes": [
+      "stargazer",
+      "watcher",
+      "forker",
+      "contributor"
+    ],
+    "lastProcessedPage": {
+      "stargazer": 1,
+      "watcher": 1,
+      "forker": 1
+    }
+  },
+  {
+    "repoUrl": "https://github.com/togethercomputer/finetuning",
+    "scrapedTypes": [
+      "stargazer",
+      "watcher",
+      "forker",
+      "contributor"
+    ],
+    "lastProcessedPage": {
+      "stargazer": 2,
+      "watcher": 1,
+      "forker": 1
+    }
+  },
+  {
+    "repoUrl": "https://github.com/togethercomputer/SMiR",
+    "scrapedTypes": [
+      "stargazer",
+      "watcher",
+      "contributor"
+    ],
+    "lastProcessedPage": {
+      "stargazer": 1,
+      "watcher": 1
+    }
+  },
+  {
+    "repoUrl": "https://github.com/togethercomputer/redpajama.cpp",
+    "scrapedTypes": [
+      "stargazer",
+      "watcher",
+      "forker",
+      "contributor"
+    ],
+    "lastProcessedPage": {
+      "stargazer": 2,
+      "watcher": 1,
+      "forker": 1,
+      "contributor": 2
+    }
+  },
+  {
+    "repoUrl": "https://github.com/togethercomputer/together-worker",
+    "scrapedTypes": [
+      "stargazer",
+      "watcher",
+      "forker",
+      "contributor"
+    ],
+    "lastProcessedPage": {
+      "stargazer": 1,
+      "watcher": 1,
+      "forker": 1
+    }
+  },
+  {
+    "repoUrl": "https://github.com/togethercomputer/Llama-2-7B-32K-Instruct",
+    "scrapedTypes": [
+      "stargazer",
+      "watcher",
+      "forker",
+      "contributor"
+    ],
+    "lastProcessedPage": {
+      "stargazer": 1,
+      "watcher": 1,
+      "forker": 1
+    }
+  },
+  {
+    "repoUrl": "https://github.com/togethercomputer/diffusers",
+    "scrapedTypes": [
+      "stargazer",
+      "watcher",
+      "forker",
+      "contributor"
+    ],
+    "lastProcessedPage": {
+      "stargazer": 1,
+      "watcher": 1,
+      "forker": 1
+    }
+  },
+  {
+    "repoUrl": "https://github.com/togethercomputer/transformers_port",
+    "scrapedTypes": [
+      "stargazer",
+      "watcher",
+      "forker",
+      "contributor"
+    ],
+    "lastProcessedPage": {
+      "stargazer": 1,
+      "watcher": 1,
+      "forker": 1,
+      "contributor": 5
+    }
+  },
+  {
+    "repoUrl": "https://github.com/togethercomputer/whisper",
+    "scrapedTypes": [
+      "stargazer",
+      "watcher",
+      "forker",
+      "contributor"
+    ],
+    "lastProcessedPage": {
+      "stargazer": 1,
+      "watcher": 1,
+      "forker": 1
+    }
+  },
+  {
+    "repoUrl": "https://github.com/togethercomputer/Quick_Deployment_HELM",
+    "scrapedTypes": [
+      "stargazer",
+      "watcher",
+      "forker",
+      "contributor"
+    ],
+    "lastProcessedPage": {
+      "stargazer": 1,
+      "watcher": 1,
+      "forker": 1
+    }
+  },
+  {
+    "repoUrl": "https://github.com/togethercomputer/open-models-api",
+    "scrapedTypes": [
+      "stargazer",
+      "watcher",
+      "contributor"
+    ],
+    "lastProcessedPage": {
+      "stargazer": 1,
+      "watcher": 1
+    }
+  },
+  {
+    "repoUrl": "https://github.com/togethercomputer/Decentralized_Training",
+    "scrapedTypes": [
+      "stargazer",
+      "watcher",
+      "forker",
+      "contributor"
+    ],
+    "lastProcessedPage": {
+      "stargazer": 1,
+      "watcher": 1,
+      "forker": 1
+    }
+  },
+  {
+    "repoUrl": "https://github.com/togethercomputer/UniversalSD",
+    "scrapedTypes": [
+      "stargazer",
+      "watcher",
+      "contributor"
+    ],
+    "lastProcessedPage": {
+      "stargazer": 1,
+      "watcher": 1
+    }
+  },
+  {
+    "repoUrl": "https://github.com/togethercomputer/GPT-JT-Int8",
+    "scrapedTypes": [
+      "stargazer",
+      "watcher",
+      "forker",
+      "contributor"
+    ],
+    "lastProcessedPage": {
+      "stargazer": 1,
+      "watcher": 1,
+      "forker": 1
+    }
+  },
+  {
+    "repoUrl": "https://github.com/togethercomputer/together-cli",
+    "scrapedTypes": [
+      "stargazer",
+      "watcher",
+      "forker",
+      "contributor"
+    ],
+    "lastProcessedPage": {
+      "stargazer": 1,
+      "watcher": 1,
+      "forker": 1
+    }
+  },
+  {
+    "repoUrl": "https://github.com/togethercomputer/FT_Llama2",
+    "scrapedTypes": [
+      "stargazer",
+      "watcher",
+      "forker",
+      "contributor"
+    ],
+    "lastProcessedPage": {
+      "stargazer": 1,
+      "watcher": 1,
+      "forker": 1
+    }
+  },
+  {
+    "repoUrl": "https://github.com/togethercomputer/glm_fastertransformer",
+    "scrapedTypes": [
+      "stargazer",
+      "watcher",
+      "forker",
+      "contributor"
+    ],
+    "lastProcessedPage": {
+      "stargazer": 1,
+      "watcher": 1,
+      "forker": 1
+    }
+  },
+  {
+    "repoUrl": "https://github.com/togethercomputer/single_GPU_nlp_models",
+    "scrapedTypes": [
+      "stargazer",
+      "watcher",
+      "forker",
+      "contributor"
+    ],
+    "lastProcessedPage": {
+      "stargazer": 1,
+      "watcher": 1,
+      "forker": 1
+    }
+  },
+  {
+    "repoUrl": "https://github.com/vast-ai/pyworker",
+    "scrapedTypes": [
+      "stargazer",
+      "watcher",
+      "forker",
+      "contributor"
+    ],
+    "lastProcessedPage": {
+      "stargazer": 1,
+      "watcher": 1,
+      "forker": 1
+    }
+  },
+  {
+    "repoUrl": "https://github.com/vast-ai/vast-cli",
+    "scrapedTypes": [
+      "stargazer",
+      "watcher",
+      "forker",
+      "contributor"
+    ],
+    "lastProcessedPage": {
+      "stargazer": 2,
+      "watcher": 1,
+      "forker": 1
+    }
+  },
+  {
+    "repoUrl": "https://github.com/vast-ai/base-image",
+    "scrapedTypes": [
+      "stargazer",
+      "watcher",
+      "forker",
+      "contributor"
+    ],
+    "lastProcessedPage": {
+      "stargazer": 1,
+      "watcher": 1,
+      "forker": 1
+    }
+  },
+  {
+    "repoUrl": "https://github.com/vast-ai/vast-pyworker",
+    "scrapedTypes": [
+      "stargazer",
+      "watcher",
+      "forker",
+      "contributor"
+    ],
+    "lastProcessedPage": {
+      "stargazer": 1,
+      "watcher": 1,
+      "forker": 1
+    }
+  },
+  {
+    "repoUrl": "https://github.com/vast-ai/vast-sdk",
+    "scrapedTypes": [
+      "stargazer",
+      "watcher",
+      "forker",
+      "contributor"
+    ],
+    "lastProcessedPage": {
+      "stargazer": 1,
+      "watcher": 1,
+      "forker": 1
+    }
+  },
+  {
+    "repoUrl": "https://github.com/vast-ai/vast-tools",
+    "scrapedTypes": [
+      "stargazer",
+      "forker",
+      "contributor"
+    ],
+    "lastProcessedPage": {
+      "stargazer": 1,
+      "forker": 1
+    }
+  },
+  {
+    "repoUrl": "https://github.com/snorkel-ai/long-context-eval",
+    "scrapedTypes": [
+      "stargazer",
+      "watcher",
+      "forker",
+      "contributor"
+    ],
+    "lastProcessedPage": {
+      "stargazer": 1,
+      "watcher": 1,
+      "forker": 1
+    }
+  },
+  {
+    "repoUrl": "https://github.com/sfcompute/cli",
+    "scrapedTypes": [
+      "stargazer",
+      "contributor"
+    ],
+    "lastProcessedPage": {
+      "stargazer": 1
+    }
+  },
+  {
+    "repoUrl": "https://github.com/sfcompute/hardware_report",
+    "scrapedTypes": [
+      "stargazer",
+      "watcher",
+      "contributor"
+    ],
+    "lastProcessedPage": {
+      "stargazer": 1,
+      "watcher": 1
+    }
+  },
+  {
+    "repoUrl": "https://github.com/sfcompute/rust-maelstrom-boilerplate",
+    "scrapedTypes": [
+      "stargazer",
+      "watcher",
+      "contributor"
+    ],
+    "lastProcessedPage": {
+      "stargazer": 1,
+      "watcher": 1
+    }
+  },
+  {
+    "repoUrl": "https://github.com/sfcompute/tinynarrations",
+    "scrapedTypes": [
+      "stargazer",
+      "watcher",
+      "forker",
+      "contributor"
+    ],
+    "lastProcessedPage": {
+      "stargazer": 1,
+      "watcher": 1,
+      "forker": 1
+    }
+  },
+  {
+    "repoUrl": "https://github.com/sfcompute/cluster_run",
+    "scrapedTypes": [
+      "stargazer",
+      "watcher",
+      "contributor"
+    ],
+    "lastProcessedPage": {
+      "stargazer": 1,
+      "watcher": 1
+    }
+  },
+  {
+    "repoUrl": "https://github.com/kudobuilder/kudo",
+    "scrapedTypes": [
+      "stargazer",
+      "watcher",
+      "forker",
+      "contributor"
+    ],
+    "lastProcessedPage": {
+      "stargazer": 12,
+      "watcher": 1,
+      "forker": 2
+    }
+  },
+  {
+    "repoUrl": "https://github.com/kudobuilder/kuttl",
+    "scrapedTypes": [
+      "stargazer",
+      "watcher",
+      "forker",
+      "contributor"
+    ],
+    "lastProcessedPage": {
+      "stargazer": 8,
+      "watcher": 1,
+      "forker": 1
+    }
+  },
+  {
+    "repoUrl": "https://github.com/kudobuilder/homebrew-tap",
+    "scrapedTypes": [
+      "stargazer",
+      "watcher",
+      "forker",
+      "contributor"
+    ],
+    "lastProcessedPage": {
+      "stargazer": 1,
+      "watcher": 1,
+      "forker": 1
+    }
+  },
+  {
+    "repoUrl": "https://github.com/kudobuilder/operators",
+    "scrapedTypes": [
+      "stargazer",
+      "watcher",
+      "forker",
+      "contributor"
+    ],
+    "lastProcessedPage": {
+      "stargazer": 3,
+      "watcher": 1,
+      "forker": 1
+    }
+  },
+  {
+    "repoUrl": "https://github.com/kudobuilder/kuttl.dev",
+    "scrapedTypes": [
+      "stargazer",
+      "watcher",
+      "forker",
+      "contributor"
+    ],
+    "lastProcessedPage": {
+      "stargazer": 1,
+      "watcher": 1,
+      "forker": 1
+    }
+  },
+  {
+    "repoUrl": "https://github.com/kudobuilder/kudo.dev",
+    "scrapedTypes": [
+      "stargazer",
+      "watcher",
+      "forker",
+      "contributor"
+    ],
+    "lastProcessedPage": {
+      "stargazer": 1,
+      "watcher": 1,
+      "forker": 1
+    }
+  },
+  {
+    "repoUrl": "https://github.com/kudobuilder/terraform-provider-kudo",
+    "scrapedTypes": [
+      "stargazer",
+      "watcher",
+      "forker",
+      "contributor"
+    ],
+    "lastProcessedPage": {
+      "stargazer": 1,
+      "watcher": 1,
+      "forker": 1
+    }
+  },
+  {
+    "repoUrl": "https://github.com/genesiscloud/genesis-cloud-inference-articles",
+    "scrapedTypes": [
+      "stargazer",
+      "watcher",
+      "forker",
+      "contributor"
+    ],
+    "lastProcessedPage": {
+      "stargazer": 1,
+      "watcher": 1,
+      "forker": 1
+    }
+  },
+  {
+    "repoUrl": "https://github.com/genesiscloud/terraform-provider-genesiscloud",
+    "scrapedTypes": [
+      "stargazer",
+      "watcher",
+      "forker",
+      "contributor"
+    ],
+    "lastProcessedPage": {
+      "stargazer": 1,
+      "watcher": 1,
+      "forker": 1
+    }
+  },
+  {
+    "repoUrl": "https://github.com/genesiscloud/py-genesiscloud",
+    "scrapedTypes": [
+      "stargazer",
+      "watcher",
+      "forker",
+      "contributor"
+    ],
+    "lastProcessedPage": {
+      "stargazer": 1,
+      "watcher": 1,
+      "forker": 1
+    }
+  },
+  {
+    "repoUrl": "https://github.com/Paperspace/PyTorch-101-Tutorial-Series",
+    "scrapedTypes": [
+      "stargazer",
+      "watcher",
+      "forker",
+      "contributor"
+    ],
+    "lastProcessedPage": {
+      "stargazer": 3,
+      "watcher": 1,
+      "forker": 1
+    }
+  },
+  {
+    "repoUrl": "https://github.com/Paperspace/cli",
+    "scrapedTypes": [
+      "stargazer",
+      "watcher",
+      "forker",
+      "contributor"
+    ],
+    "lastProcessedPage": {
+      "stargazer": 1,
+      "watcher": 1,
+      "forker": 1
+    }
+  },
+  {
+    "repoUrl": "https://github.com/Paperspace/DataAugmentationForObjectDetection",
+    "scrapedTypes": [
+      "stargazer",
+      "watcher",
+      "forker",
+      "contributor"
+    ],
+    "lastProcessedPage": {
+      "stargazer": 12,
+      "watcher": 1,
+      "forker": 4
+    }
+  },
+  {
+    "repoUrl": "https://github.com/Paperspace/DinoRunTutorial",
+    "scrapedTypes": [
+      "stargazer",
+      "watcher",
+      "forker",
+      "contributor"
+    ],
+    "lastProcessedPage": {
+      "stargazer": 4,
+      "watcher": 1,
+      "forker": 1
+    }
+  },
+  {
+    "repoUrl": "https://github.com/Paperspace/gradient-cli",
+    "scrapedTypes": [
+      "stargazer",
+      "watcher",
+      "forker",
+      "contributor"
+    ],
+    "lastProcessedPage": {
+      "stargazer": 1,
+      "watcher": 1,
+      "forker": 1
+    }
+  },
+  {
+    "repoUrl": "https://github.com/Paperspace/terraform-provider-paperspace",
+    "scrapedTypes": [
+      "stargazer",
+      "watcher",
+      "forker",
+      "contributor"
+    ],
+    "lastProcessedPage": {
+      "stargazer": 1,
+      "watcher": 1,
+      "forker": 1
+    }
+  },
+  {
+    "repoUrl": "https://github.com/Paperspace/FastAPI-Hugging-Face-Template-App",
+    "scrapedTypes": [
+      "stargazer",
+      "watcher",
+      "forker",
+      "contributor"
+    ],
+    "lastProcessedPage": {
+      "stargazer": 1,
+      "watcher": 1,
+      "forker": 1
+    }
+  },
+  {
+    "repoUrl": "https://github.com/Paperspace/jupyter-docker-stacks",
+    "scrapedTypes": [
+      "stargazer",
+      "watcher",
+      "forker",
+      "contributor"
+    ],
+    "lastProcessedPage": {
+      "stargazer": 1,
+      "watcher": 1,
+      "forker": 1
+    }
+  },
+  {
+    "repoUrl": "https://github.com/Paperspace/paperspace-python",
+    "scrapedTypes": [
+      "stargazer",
+      "watcher",
+      "forker",
+      "contributor"
+    ],
+    "lastProcessedPage": {
+      "stargazer": 1,
+      "watcher": 1,
+      "forker": 1
+    }
+  },
+  {
+    "repoUrl": "https://github.com/Paperspace/FaceApp-with-Deep-Learning",
+    "scrapedTypes": [
+      "stargazer",
+      "watcher",
+      "forker",
+      "contributor"
+    ],
+    "lastProcessedPage": {
+      "stargazer": 1,
+      "watcher": 1,
+      "forker": 1
+    }
+  },
+  {
+    "repoUrl": "https://github.com/Paperspace/PyTorch-Lightning",
+    "scrapedTypes": [
+      "stargazer",
+      "watcher",
+      "contributor"
+    ],
+    "lastProcessedPage": {
+      "stargazer": 1,
+      "watcher": 1
+    }
+  },
+  {
+    "repoUrl": "https://github.com/Paperspace/ml-in-a-box",
+    "scrapedTypes": [
+      "stargazer",
+      "watcher",
+      "forker",
+      "contributor"
+    ],
+    "lastProcessedPage": {
+      "stargazer": 1,
+      "watcher": 1,
+      "forker": 1
+    }
+  },
+  {
+    "repoUrl": "https://github.com/Paperspace/GPU-Kubernetes-Guide",
+    "scrapedTypes": [
+      "stargazer",
+      "watcher",
+      "forker",
+      "contributor"
+    ],
+    "lastProcessedPage": {
+      "stargazer": 1,
+      "watcher": 1,
+      "forker": 1
+    }
+  },
+  {
+    "repoUrl": "https://github.com/Paperspace/Docs",
+    "scrapedTypes": [
+      "stargazer",
+      "watcher",
+      "forker",
+      "contributor"
+    ],
+    "lastProcessedPage": {
+      "stargazer": 1,
+      "watcher": 1,
+      "forker": 1
+    }
+  },
+  {
+    "repoUrl": "https://github.com/Paperspace/object-detection-segmentation",
+    "scrapedTypes": [
+      "stargazer",
+      "watcher",
+      "forker",
+      "contributor"
+    ],
+    "lastProcessedPage": {
+      "stargazer": 1,
+      "watcher": 1,
+      "forker": 1
+    }
+  },
+  {
+    "repoUrl": "https://github.com/Paperspace/gradient-ssh-test",
+    "scrapedTypes": [
+      "stargazer",
+      "watcher",
+      "forker",
+      "contributor"
+    ],
+    "lastProcessedPage": {
+      "stargazer": 1,
+      "watcher": 1,
+      "forker": 1
+    }
+  },
+  {
+    "repoUrl": "https://github.com/Paperspace/deploy-action",
+    "scrapedTypes": [
+      "stargazer",
+      "watcher",
+      "forker",
+      "contributor"
+    ],
+    "lastProcessedPage": {
+      "stargazer": 1,
+      "watcher": 1,
+      "forker": 1
+    }
+  },
+  {
+    "repoUrl": "https://github.com/Paperspace/training_styletransfer",
+    "scrapedTypes": [
+      "stargazer",
+      "watcher",
+      "forker",
+      "contributor"
+    ],
+    "lastProcessedPage": {
+      "stargazer": 1,
+      "watcher": 1,
+      "forker": 1
+    }
+  },
+  {
+    "repoUrl": "https://github.com/Paperspace/fastai-docker",
+    "scrapedTypes": [
+      "stargazer",
+      "watcher",
+      "forker",
+      "contributor"
+    ],
+    "lastProcessedPage": {
+      "stargazer": 1,
+      "watcher": 1,
+      "forker": 1
+    }
+  },
+  {
+    "repoUrl": "https://github.com/Paperspace/paperspace-go",
+    "scrapedTypes": [
+      "stargazer",
+      "watcher",
+      "forker",
+      "contributor"
+    ],
+    "lastProcessedPage": {
+      "stargazer": 1,
+      "watcher": 1,
+      "forker": 1
+    }
+  },
+  {
+    "repoUrl": "https://github.com/Paperspace/GradientDeepFakes",
+    "scrapedTypes": [
+      "stargazer",
+      "watcher",
+      "forker",
+      "contributor"
+    ],
+    "lastProcessedPage": {
+      "stargazer": 1,
+      "watcher": 1,
+      "forker": 1
+    }
+  },
+  {
+    "repoUrl": "https://github.com/Paperspace/training-pix2pix",
+    "scrapedTypes": [
+      "stargazer",
+      "watcher",
+      "forker",
+      "contributor"
+    ],
+    "lastProcessedPage": {
+      "stargazer": 1,
+      "watcher": 1,
+      "forker": 1
+    }
+  },
+  {
+    "repoUrl": "https://github.com/Paperspace/gradient-utils",
+    "scrapedTypes": [
+      "stargazer",
+      "watcher",
+      "forker",
+      "contributor"
+    ],
+    "lastProcessedPage": {
+      "stargazer": 1,
+      "watcher": 1,
+      "forker": 1
+    }
+  },
+  {
+    "repoUrl": "https://github.com/Paperspace/paperspace-node",
+    "scrapedTypes": [
+      "stargazer",
+      "watcher",
+      "forker",
+      "contributor"
+    ],
+    "lastProcessedPage": {
+      "stargazer": 1,
+      "watcher": 1,
+      "forker": 1
+    }
+  },
+  {
+    "repoUrl": "https://github.com/Paperspace/client-sdk",
+    "scrapedTypes": [
+      "stargazer",
+      "watcher",
+      "contributor"
+    ],
+    "lastProcessedPage": {
+      "stargazer": 1,
+      "watcher": 1
+    }
+  },
+  {
+    "repoUrl": "https://github.com/Paperspace/gradient-hyperparameter-example",
+    "scrapedTypes": [
+      "stargazer",
+      "watcher",
+      "forker",
+      "contributor"
+    ],
+    "lastProcessedPage": {
+      "stargazer": 1,
+      "watcher": 1,
+      "forker": 1
+    }
+  },
+  {
+    "repoUrl": "https://github.com/Paperspace/fastai-docker-deprecated",
+    "scrapedTypes": [
+      "stargazer",
+      "watcher",
+      "forker",
+      "contributor"
+    ],
+    "lastProcessedPage": {
+      "stargazer": 1,
+      "watcher": 1,
+      "forker": 1
+    }
+  },
+  {
+    "repoUrl": "https://github.com/Paperspace/dl-docker",
+    "scrapedTypes": [
+      "stargazer",
+      "watcher",
+      "contributor"
+    ],
+    "lastProcessedPage": {
+      "stargazer": 1,
+      "watcher": 1
+    }
+  },
+  {
+    "repoUrl": "https://github.com/Paperspace/tensorflow-python",
+    "scrapedTypes": [
+      "stargazer",
+      "watcher",
+      "forker",
+      "contributor"
+    ],
+    "lastProcessedPage": {
+      "stargazer": 1,
+      "watcher": 1,
+      "forker": 1
+    }
+  },
+  {
+    "repoUrl": "https://github.com/Paperspace/mnist-sample",
+    "scrapedTypes": [
+      "stargazer",
+      "watcher",
+      "forker",
+      "contributor"
+    ],
+    "lastProcessedPage": {
+      "stargazer": 1,
+      "watcher": 1,
+      "forker": 1
+    }
+  },
+  {
+    "repoUrl": "https://github.com/Paperspace/hyperopt-keras-sample",
+    "scrapedTypes": [
+      "stargazer",
+      "watcher",
+      "forker",
+      "contributor"
+    ],
+    "lastProcessedPage": {
+      "stargazer": 1,
+      "watcher": 1,
+      "forker": 1
+    }
+  },
+  {
+    "repoUrl": "https://github.com/Paperspace/gradient-coder",
+    "scrapedTypes": [
+      "stargazer",
+      "watcher",
+      "forker",
+      "contributor"
+    ],
+    "lastProcessedPage": {
+      "stargazer": 1,
+      "watcher": 1,
+      "forker": 1
+    }
+  },
+  {
+    "repoUrl": "https://github.com/Paperspace/tpu-resnet",
+    "scrapedTypes": [
+      "stargazer",
+      "watcher",
+      "forker",
+      "contributor"
+    ],
+    "lastProcessedPage": {
+      "stargazer": 1,
+      "watcher": 1,
+      "forker": 1
+    }
+  },
+  {
+    "repoUrl": "https://github.com/Paperspace/training-lstm",
+    "scrapedTypes": [
+      "stargazer",
+      "watcher",
+      "forker",
+      "contributor"
+    ],
+    "lastProcessedPage": {
+      "stargazer": 1,
+      "watcher": 1,
+      "forker": 1
+    }
+  },
+  {
+    "repoUrl": "https://github.com/Paperspace/fast-style-transfer",
+    "scrapedTypes": [
+      "stargazer",
+      "watcher",
+      "forker",
+      "contributor"
+    ],
+    "lastProcessedPage": {
+      "stargazer": 1,
+      "watcher": 1,
+      "forker": 1
+    }
+  },
+  {
+    "repoUrl": "https://github.com/bananaml/potassium",
+    "scrapedTypes": [
+      "stargazer",
+      "watcher",
+      "forker",
+      "contributor"
+    ],
+    "lastProcessedPage": {
+      "stargazer": 1,
+      "watcher": 1,
+      "forker": 1
+    }
+  },
+  {
+    "repoUrl": "https://github.com/bananaml/serverless-template-stable-diffusion",
+    "scrapedTypes": [
+      "stargazer",
+      "watcher",
+      "forker",
+      "contributor"
+    ],
+    "lastProcessedPage": {
+      "stargazer": 1,
+      "watcher": 1,
+      "forker": 1
+    }
+  },
+  {
+    "repoUrl": "https://github.com/bananaml/fructose",
+    "scrapedTypes": [
+      "stargazer",
+      "watcher",
+      "forker",
+      "contributor"
+    ],
+    "lastProcessedPage": {
+      "stargazer": 8,
+      "watcher": 1,
+      "forker": 1
+    }
+  },
+  {
+    "repoUrl": "https://github.com/bananaml/demo-sd-hf-safetensors",
+    "scrapedTypes": [
+      "stargazer",
+      "watcher",
+      "forker",
+      "contributor"
+    ],
+    "lastProcessedPage": {
+      "stargazer": 1,
+      "watcher": 1,
+      "forker": 1
+    }
+  },
+  {
+    "repoUrl": "https://github.com/bananaml/demo-mistral-7b-instruct-v0.1",
+    "scrapedTypes": [
+      "stargazer",
+      "watcher",
+      "forker",
+      "contributor"
+    ],
+    "lastProcessedPage": {
+      "stargazer": 1,
+      "watcher": 1,
+      "forker": 1
+    }
+  },
+  {
+    "repoUrl": "https://github.com/bananaml/banana-cli",
+    "scrapedTypes": [
+      "stargazer",
+      "watcher",
+      "forker",
+      "contributor"
+    ],
+    "lastProcessedPage": {
+      "stargazer": 1,
+      "watcher": 1,
+      "forker": 1
+    }
+  },
+  {
+    "repoUrl": "https://github.com/bananaml/serverless-template-gptj",
+    "scrapedTypes": [
+      "stargazer",
+      "watcher",
+      "forker",
+      "contributor"
+    ],
+    "lastProcessedPage": {
+      "stargazer": 1,
+      "watcher": 1,
+      "forker": 1
+    }
+  },
+  {
+    "repoUrl": "https://github.com/bananaml/serverless-template",
+    "scrapedTypes": [
+      "stargazer",
+      "watcher",
+      "forker",
+      "contributor"
+    ],
+    "lastProcessedPage": {
+      "stargazer": 1,
+      "watcher": 1,
+      "forker": 1
+    }
+  },
+  {
+    "repoUrl": "https://github.com/bananaml/demo-whisper",
+    "scrapedTypes": [
+      "stargazer",
+      "watcher",
+      "forker",
+      "contributor"
+    ],
+    "lastProcessedPage": {
+      "stargazer": 1,
+      "watcher": 1,
+      "forker": 1
+    }
+  },
+  {
+    "repoUrl": "https://github.com/bananaml/serverless-template-dreambooth-inference",
+    "scrapedTypes": [
+      "stargazer",
+      "watcher",
+      "forker",
+      "contributor"
+    ],
+    "lastProcessedPage": {
+      "stargazer": 1,
+      "watcher": 1,
+      "forker": 1
+    }
+  },
+  {
+    "repoUrl": "https://github.com/bananaml/demo-gfpgan",
+    "scrapedTypes": [
+      "stargazer",
+      "watcher",
+      "forker",
+      "contributor"
+    ],
+    "lastProcessedPage": {
+      "stargazer": 1,
+      "watcher": 1,
+      "forker": 1
+    }
+  },
+  {
+    "repoUrl": "https://github.com/bananaml/demo-stable-diffusion-xl-base-1.0",
+    "scrapedTypes": [
+      "stargazer",
+      "watcher",
+      "forker",
+      "contributor"
+    ],
+    "lastProcessedPage": {
+      "stargazer": 1,
+      "watcher": 1,
+      "forker": 1
+    }
+  },
+  {
+    "repoUrl": "https://github.com/bananaml/demo-automatic1111-sd-webui",
+    "scrapedTypes": [
+      "stargazer",
+      "watcher",
+      "forker",
+      "contributor"
+    ],
+    "lastProcessedPage": {
+      "stargazer": 1,
+      "watcher": 1,
+      "forker": 1
+    }
+  },
+  {
+    "repoUrl": "https://github.com/bananaml/demo-lang-segment-anything",
+    "scrapedTypes": [
+      "watcher",
+      "forker",
+      "contributor"
+    ],
+    "lastProcessedPage": {
+      "forker": 1
+    }
+  },
+  {
+    "repoUrl": "https://github.com/bananaml/demo-vit-base-patch16-224",
+    "scrapedTypes": [
+      "forker",
+      "contributor"
+    ],
+    "lastProcessedPage": {
+      "forker": 1
+    }
+  },
+  {
+    "repoUrl": "https://github.com/bananaml/demo-wizardlm-1.0-uncensored-llama2-13b-gptq",
+    "scrapedTypes": [
+      "forker",
+      "contributor"
+    ],
+    "lastProcessedPage": {
+      "forker": 1
+    }
+  },
+  {
+    "repoUrl": "https://github.com/bananaml/demo-bert",
+    "scrapedTypes": [
+      "forker",
+      "contributor"
+    ],
+    "lastProcessedPage": {
+      "forker": 1
+    }
+  },
+  {
+    "repoUrl": "https://github.com/bananaml/banana-node-sdk",
+    "scrapedTypes": [
+      "stargazer",
+      "forker",
+      "contributor"
+    ],
+    "lastProcessedPage": {
+      "stargazer": 1,
+      "forker": 1
+    }
+  },
+  {
+    "repoUrl": "https://github.com/bananaml/banana-python-sdk",
+    "scrapedTypes": [
+      "stargazer",
+      "watcher",
+      "forker",
+      "contributor"
+    ],
+    "lastProcessedPage": {
+      "stargazer": 1,
+      "watcher": 1,
+      "forker": 1
+    }
+  },
+  {
+    "repoUrl": "https://github.com/bananaml/t5-serverless",
+    "scrapedTypes": [
+      "stargazer",
+      "watcher",
+      "forker",
+      "contributor"
+    ],
+    "lastProcessedPage": {
+      "stargazer": 1,
+      "watcher": 1,
+      "forker": 1
+    }
+  },
+  {
+    "repoUrl": "https://github.com/bananaml/clip-serverless-template",
+    "scrapedTypes": [
+      "stargazer",
+      "watcher",
+      "forker",
+      "contributor"
+    ],
+    "lastProcessedPage": {
+      "stargazer": 1,
+      "watcher": 1,
+      "forker": 1
+    }
+  },
+  {
+    "repoUrl": "https://github.com/bananaml/serverless-template-stable-diffusion-v2",
+    "scrapedTypes": [
+      "watcher",
+      "forker",
+      "contributor"
+    ],
+    "lastProcessedPage": {
+      "forker": 1
+    }
+  },
+  {
+    "repoUrl": "https://github.com/deepinfra/deepctl",
+    "scrapedTypes": [
+      "stargazer",
+      "watcher",
+      "forker",
+      "contributor"
+    ],
+    "lastProcessedPage": {
+      "stargazer": 1,
+      "watcher": 1,
+      "forker": 1
+    }
+  },
+  {
+    "repoUrl": "https://github.com/deepinfra/deepinfra-node",
+    "scrapedTypes": [
+      "stargazer",
+      "watcher",
+      "forker",
+      "contributor"
+    ],
+    "lastProcessedPage": {
+      "stargazer": 1,
+      "watcher": 1,
+      "forker": 1
+    }
+  },
+  {
+    "repoUrl": "https://github.com/deepinfra/text-generation-inference",
+    "scrapedTypes": [
+      "stargazer",
+      "watcher",
+      "forker",
+      "contributor"
+    ],
+    "lastProcessedPage": {
+      "stargazer": 1,
+      "watcher": 1,
+      "forker": 1
+    }
+  },
+  {
+    "repoUrl": "https://github.com/SaladTechnologies/comfyui-api",
+    "scrapedTypes": [
+      "stargazer",
+      "watcher",
+      "forker",
+      "contributor"
+    ],
+    "lastProcessedPage": {
+      "stargazer": 2,
+      "watcher": 1,
+      "forker": 1
+    }
+  },
+  {
+    "repoUrl": "https://github.com/SaladTechnologies/salad-cloud-docs",
+    "scrapedTypes": [
+      "stargazer",
+      "watcher",
+      "forker",
+      "contributor"
+    ],
+    "lastProcessedPage": {
+      "stargazer": 1,
+      "watcher": 1,
+      "forker": 1
+    }
+  },
+  {
+    "repoUrl": "https://github.com/SaladTechnologies/salad-recipes",
+    "scrapedTypes": [
+      "stargazer",
+      "watcher",
+      "forker",
+      "contributor"
+    ],
+    "lastProcessedPage": {
+      "stargazer": 1,
+      "watcher": 1,
+      "forker": 1
+    }
+  },
+  {
+    "repoUrl": "https://github.com/SaladTechnologies/virtual-kubelet-saladcloud",
+    "scrapedTypes": [
+      "stargazer",
+      "watcher",
+      "forker",
+      "contributor"
+    ],
+    "lastProcessedPage": {
+      "stargazer": 1,
+      "watcher": 1,
+      "forker": 1
+    }
+  },
+  {
+    "repoUrl": "https://github.com/SaladTechnologies/salad-applications",
+    "scrapedTypes": [
+      "stargazer",
+      "watcher",
+      "forker",
+      "contributor"
+    ],
+    "lastProcessedPage": {
+      "stargazer": 2,
+      "watcher": 1,
+      "forker": 1
+    }
+  },
+  {
+    "repoUrl": "https://github.com/SaladTechnologies/kelpie",
+    "scrapedTypes": [
+      "stargazer",
+      "watcher",
+      "forker",
+      "contributor"
+    ],
+    "lastProcessedPage": {
+      "stargazer": 1,
+      "watcher": 1,
+      "forker": 1
+    }
+  },
+  {
+    "repoUrl": "https://github.com/SaladTechnologies/sce-deploy",
+    "scrapedTypes": [
+      "stargazer",
+      "watcher",
+      "contributor"
+    ],
+    "lastProcessedPage": {
+      "stargazer": 1,
+      "watcher": 1
+    }
+  },
+  {
+    "repoUrl": "https://github.com/SaladTechnologies/sdnext-dynamic",
+    "scrapedTypes": [
+      "stargazer",
+      "watcher",
+      "forker",
+      "contributor"
+    ],
+    "lastProcessedPage": {
+      "stargazer": 1,
+      "watcher": 1,
+      "forker": 1
+    }
+  },
+  {
+    "repoUrl": "https://github.com/SaladTechnologies/comfyui-dynamic",
+    "scrapedTypes": [
+      "stargazer",
+      "watcher",
+      "forker",
+      "contributor"
+    ],
+    "lastProcessedPage": {
+      "stargazer": 1,
+      "watcher": 1,
+      "forker": 1
+    }
+  },
+  {
+    "repoUrl": "https://github.com/SaladTechnologies/sdnext",
+    "scrapedTypes": [
+      "stargazer",
+      "forker",
+      "contributor"
+    ],
+    "lastProcessedPage": {
+      "stargazer": 1,
+      "forker": 1,
+      "contributor": 5
+    }
+  },
+  {
+    "repoUrl": "https://github.com/SaladTechnologies/bark",
+    "scrapedTypes": [
+      "stargazer",
+      "watcher",
+      "forker",
+      "contributor"
+    ],
+    "lastProcessedPage": {
+      "stargazer": 1,
+      "watcher": 1,
+      "forker": 1
+    }
+  },
+  {
+    "repoUrl": "https://github.com/SaladTechnologies/styletts2-api",
+    "scrapedTypes": [
+      "stargazer",
+      "watcher",
+      "forker",
+      "contributor"
+    ],
+    "lastProcessedPage": {
+      "stargazer": 1,
+      "watcher": 1,
+      "forker": 1
+    }
+  },
+  {
+    "repoUrl": "https://github.com/SaladTechnologies/asr-api",
+    "scrapedTypes": [
+      "stargazer",
+      "watcher",
+      "forker",
+      "contributor"
+    ],
+    "lastProcessedPage": {
+      "stargazer": 1,
+      "watcher": 1,
+      "forker": 1
+    }
+  },
+  {
+    "repoUrl": "https://github.com/SaladTechnologies/stable-audio-open",
+    "scrapedTypes": [
+      "stargazer",
+      "watcher",
+      "forker",
+      "contributor"
+    ],
+    "lastProcessedPage": {
+      "stargazer": 1,
+      "watcher": 1,
+      "forker": 1
+    }
+  },
+  {
+    "repoUrl": "https://github.com/SaladTechnologies/supertokens-dotnet",
+    "scrapedTypes": [
+      "stargazer",
+      "watcher",
+      "forker",
+      "contributor"
+    ],
+    "lastProcessedPage": {
+      "stargazer": 1,
+      "watcher": 1,
+      "forker": 1
+    }
+  },
+  {
+    "repoUrl": "https://github.com/SaladTechnologies/plugin-downloads",
+    "scrapedTypes": [
+      "stargazer",
+      "watcher",
+      "forker",
+      "contributor"
+    ],
+    "lastProcessedPage": {
+      "stargazer": 1,
+      "watcher": 1,
+      "forker": 1
+    }
+  },
+  {
+    "repoUrl": "https://github.com/SaladTechnologies/sdnext-benchmark",
+    "scrapedTypes": [
+      "stargazer",
+      "watcher",
+      "forker",
+      "contributor"
+    ],
+    "lastProcessedPage": {
+      "stargazer": 1,
+      "watcher": 1,
+      "forker": 1
+    }
+  },
+  {
+    "repoUrl": "https://github.com/vultr/terraform-provider-vultr",
+    "scrapedTypes": [
+      "stargazer",
+      "watcher",
+      "forker",
+      "contributor"
+    ],
+    "lastProcessedPage": {
+      "stargazer": 2,
+      "watcher": 1,
+      "forker": 1
+    }
+  },
+  {
+    "repoUrl": "https://github.com/vultr/vultr-mdtk",
+    "scrapedTypes": [
+      "stargazer",
+      "watcher",
+      "forker",
+      "contributor"
+    ],
+    "lastProcessedPage": {
+      "stargazer": 1,
+      "watcher": 1,
+      "forker": 1
+    }
+  },
+  {
+    "repoUrl": "https://github.com/vultr/docker-machine-driver-vultr",
+    "scrapedTypes": [
+      "stargazer",
+      "watcher",
+      "forker",
+      "contributor"
+    ],
+    "lastProcessedPage": {
+      "stargazer": 1,
+      "watcher": 1,
+      "forker": 1
+    }
+  },
+  {
+    "repoUrl": "https://github.com/vultr/vultr-csi",
+    "scrapedTypes": [
+      "stargazer",
+      "watcher",
+      "forker",
+      "contributor"
+    ],
+    "lastProcessedPage": {
+      "stargazer": 1,
+      "watcher": 1,
+      "forker": 1
+    }
+  },
+  {
+    "repoUrl": "https://github.com/vultr/govultr",
+    "scrapedTypes": [
+      "stargazer",
+      "watcher",
+      "forker",
+      "contributor"
+    ],
+    "lastProcessedPage": {
+      "stargazer": 3,
+      "watcher": 1,
+      "forker": 1
+    }
+  },
+  {
+    "repoUrl": "https://github.com/vultr/slik",
+    "scrapedTypes": [
+      "stargazer",
+      "watcher",
+      "forker",
+      "contributor"
+    ],
+    "lastProcessedPage": {
+      "stargazer": 1,
+      "watcher": 1,
+      "forker": 1
+    }
+  },
+  {
+    "repoUrl": "https://github.com/vultr/ansible-collection-vultr",
+    "scrapedTypes": [
+      "stargazer",
+      "watcher",
+      "forker",
+      "contributor"
+    ],
+    "lastProcessedPage": {
+      "stargazer": 1,
+      "watcher": 1,
+      "forker": 1
+    }
+  },
+  {
+    "repoUrl": "https://github.com/vultr/vultr-cli",
+    "scrapedTypes": [
+      "stargazer",
+      "watcher",
+      "forker",
+      "contributor"
+    ],
+    "lastProcessedPage": {
+      "stargazer": 5,
+      "watcher": 1,
+      "forker": 1
+    }
+  },
+  {
+    "repoUrl": "https://github.com/vultr/vultr-node",
+    "scrapedTypes": [
+      "stargazer",
+      "watcher",
+      "forker",
+      "contributor"
+    ],
+    "lastProcessedPage": {
+      "stargazer": 1,
+      "watcher": 1,
+      "forker": 1
+    }
+  },
+  {
+    "repoUrl": "https://github.com/vultr/vultr-docs",
+    "scrapedTypes": [
+      "stargazer",
+      "watcher",
+      "forker",
+      "contributor"
+    ],
+    "lastProcessedPage": {
+      "stargazer": 1,
+      "watcher": 1,
+      "forker": 1
+    }
+  },
+  {
+    "repoUrl": "https://github.com/vultr/whmcs-vultr",
+    "scrapedTypes": [
+      "stargazer",
+      "watcher",
+      "forker",
+      "contributor"
+    ],
+    "lastProcessedPage": {
+      "stargazer": 1,
+      "watcher": 1,
+      "forker": 1
+    }
+  },
+  {
+    "repoUrl": "https://github.com/vultr/vultr-cloud-controller-manager",
+    "scrapedTypes": [
+      "stargazer",
+      "watcher",
+      "forker",
+      "contributor"
+    ],
+    "lastProcessedPage": {
+      "stargazer": 1,
+      "watcher": 1,
+      "forker": 1
+    }
+  },
+  {
+    "repoUrl": "https://github.com/vultr/crossplane-provider-vultr",
+    "scrapedTypes": [
+      "stargazer",
+      "watcher",
+      "forker",
+      "contributor"
+    ],
+    "lastProcessedPage": {
+      "stargazer": 1,
+      "watcher": 1,
+      "forker": 1
+    }
+  },
+  {
+    "repoUrl": "https://github.com/vultr/cluster-api-provider-vultr",
+    "scrapedTypes": [
+      "stargazer",
+      "watcher",
+      "forker",
+      "contributor"
+    ],
+    "lastProcessedPage": {
+      "stargazer": 1,
+      "watcher": 1,
+      "forker": 1
+    }
+  },
+  {
+    "repoUrl": "https://github.com/vultr/packer-plugin-vultr",
+    "scrapedTypes": [
+      "stargazer",
+      "watcher",
+      "forker",
+      "contributor"
+    ],
+    "lastProcessedPage": {
+      "stargazer": 1,
+      "watcher": 1,
+      "forker": 1
+    }
+  },
+  {
+    "repoUrl": "https://github.com/vultr/cert-manager-webhook-vultr",
+    "scrapedTypes": [
+      "stargazer",
+      "watcher",
+      "forker",
+      "contributor"
+    ],
+    "lastProcessedPage": {
+      "stargazer": 1,
+      "watcher": 1,
+      "forker": 1
+    }
+  },
+  {
+    "repoUrl": "https://github.com/vultr/vultr-marketplace",
+    "scrapedTypes": [
+      "stargazer",
+      "watcher",
+      "forker",
+      "contributor"
+    ],
+    "lastProcessedPage": {
+      "stargazer": 1,
+      "watcher": 1,
+      "forker": 1
+    }
+  },
+  {
+    "repoUrl": "https://github.com/vultr/archian",
+    "scrapedTypes": [
+      "stargazer",
+      "watcher",
+      "forker",
+      "contributor"
+    ],
+    "lastProcessedPage": {
+      "stargazer": 1,
+      "watcher": 1,
+      "forker": 1
+    }
+  },
+  {
+    "repoUrl": "https://github.com/vultr/vultr-php",
+    "scrapedTypes": [
+      "stargazer",
+      "watcher",
+      "forker",
+      "contributor"
+    ],
+    "lastProcessedPage": {
+      "stargazer": 1,
+      "watcher": 1,
+      "forker": 1
+    }
+  },
+  {
+    "repoUrl": "https://github.com/vultr/homebrew-vultr-cli",
+    "scrapedTypes": [
+      "stargazer",
+      "watcher",
+      "forker",
+      "contributor"
+    ],
+    "lastProcessedPage": {
+      "stargazer": 1,
+      "watcher": 1,
+      "forker": 1
+    }
+  },
+  {
+    "repoUrl": "https://github.com/vultr/rancher-ui-driver-vultr",
+    "scrapedTypes": [
+      "stargazer",
+      "watcher",
+      "forker",
+      "contributor"
+    ],
+    "lastProcessedPage": {
+      "stargazer": 1,
+      "watcher": 1,
+      "forker": 1
+    }
+  },
+  {
+    "repoUrl": "https://github.com/vultr/.github",
+    "scrapedTypes": [
+      "stargazer",
+      "watcher",
+      "forker",
+      "contributor"
+    ],
+    "lastProcessedPage": {
+      "stargazer": 1,
+      "watcher": 1,
+      "forker": 1
+    }
+  },
+  {
+    "repoUrl": "https://github.com/vultr/vultr-python-client",
+    "scrapedTypes": [
+      "stargazer",
+      "watcher",
+      "forker",
+      "contributor"
+    ],
+    "lastProcessedPage": {
+      "stargazer": 1,
+      "watcher": 1,
+      "forker": 1
+    }
+  },
+  {
+    "repoUrl": "https://github.com/vultr/solution-vpc-peering",
+    "scrapedTypes": [
+      "stargazer",
+      "watcher",
+      "forker",
+      "contributor"
+    ],
+    "lastProcessedPage": {
+      "stargazer": 1,
+      "watcher": 1,
+      "forker": 1
+    }
+  },
+  {
+    "repoUrl": "https://github.com/vultr/terraform-provider-vultr-community",
+    "scrapedTypes": [
+      "stargazer",
+      "watcher",
+      "forker",
+      "contributor"
+    ],
+    "lastProcessedPage": {
+      "stargazer": 1,
+      "watcher": 1,
+      "forker": 1
+    }
+  },
+  {
+    "repoUrl": "https://github.com/vultr/metadata",
+    "scrapedTypes": [
+      "stargazer",
+      "watcher",
+      "forker",
+      "contributor"
+    ],
+    "lastProcessedPage": {
+      "stargazer": 1,
+      "watcher": 1,
+      "forker": 1
+    }
+  },
+  {
+    "repoUrl": "https://github.com/vultr/terraform-vultr-condor",
+    "scrapedTypes": [
+      "stargazer",
+      "watcher",
+      "forker",
+      "contributor"
+    ],
+    "lastProcessedPage": {
+      "stargazer": 1,
+      "watcher": 1,
+      "forker": 1
+    }
+  },
+  {
+    "repoUrl": "https://github.com/vultr/cloud-init",
+    "scrapedTypes": [
+      "stargazer",
+      "forker",
+      "contributor"
+    ],
+    "lastProcessedPage": {
+      "stargazer": 1,
+      "forker": 1,
+      "contributor": 3
+    }
+  },
+  {
+    "repoUrl": "https://github.com/vultr/api-postman-collection",
+    "scrapedTypes": [
+      "stargazer",
+      "watcher",
+      "forker",
+      "contributor"
+    ],
+    "lastProcessedPage": {
+      "stargazer": 1,
+      "watcher": 1,
+      "forker": 1
+    }
+  },
+  {
+    "repoUrl": "https://github.com/vultr/terraform-datalib-vultr",
+    "scrapedTypes": [
+      "stargazer",
+      "watcher",
+      "forker",
+      "contributor"
+    ],
+    "lastProcessedPage": {
+      "stargazer": 1,
+      "watcher": 1,
+      "forker": 1
+    }
+  },
+  {
+    "repoUrl": "https://github.com/vultr/helm-charts",
+    "scrapedTypes": [
+      "stargazer",
+      "watcher",
+      "forker",
+      "contributor"
+    ],
+    "lastProcessedPage": {
+      "stargazer": 1,
+      "watcher": 1,
+      "forker": 1
+    }
+  },
+  {
+    "repoUrl": "https://github.com/run-ai/docs",
+    "scrapedTypes": [
+      "stargazer",
+      "watcher",
+      "forker",
+      "contributor"
+    ],
+    "lastProcessedPage": {
+      "stargazer": 1,
+      "watcher": 1,
+      "forker": 1
+    }
+  },
+  {
+    "repoUrl": "https://github.com/run-ai/runai-model-streamer",
+    "scrapedTypes": [
+      "stargazer",
+      "watcher",
+      "forker",
+      "contributor"
+    ],
+    "lastProcessedPage": {
+      "stargazer": 2,
+      "watcher": 1,
+      "forker": 1
+    }
+  },
+  {
+    "repoUrl": "https://github.com/run-ai/genv",
+    "scrapedTypes": [
+      "stargazer",
+      "watcher",
+      "forker",
+      "contributor"
+    ],
+    "lastProcessedPage": {
+      "stargazer": 6,
+      "watcher": 1,
+      "forker": 1
+    }
+  },
+  {
+    "repoUrl": "https://github.com/run-ai/rntop",
+    "scrapedTypes": [
+      "stargazer",
+      "watcher",
+      "forker",
+      "contributor"
+    ],
+    "lastProcessedPage": {
+      "stargazer": 1,
+      "watcher": 1,
+      "forker": 1
+    }
+  },
+  {
+    "repoUrl": "https://github.com/run-ai/scale-test-tool",
+    "scrapedTypes": [
+      "stargazer",
+      "watcher",
+      "contributor"
+    ],
+    "lastProcessedPage": {
+      "stargazer": 1,
+      "watcher": 1
+    }
+  },
+  {
+    "repoUrl": "https://github.com/run-ai/fake-gpu-operator",
+    "scrapedTypes": [
+      "stargazer",
+      "watcher",
+      "forker",
+      "contributor"
+    ],
+    "lastProcessedPage": {
+      "stargazer": 1,
+      "watcher": 1,
+      "forker": 1
+    }
+  },
+  {
+    "repoUrl": "https://github.com/run-ai/llmperf",
+    "scrapedTypes": [
+      "stargazer",
+      "watcher",
+      "forker",
+      "contributor"
+    ],
+    "lastProcessedPage": {
+      "stargazer": 1,
+      "watcher": 1,
+      "forker": 1
+    }
+  },
+  {
+    "repoUrl": "https://github.com/run-ai/runai-samples",
+    "scrapedTypes": [
+      "stargazer",
+      "watcher",
+      "forker",
+      "contributor"
+    ],
+    "lastProcessedPage": {
+      "stargazer": 1,
+      "watcher": 1,
+      "forker": 1
+    }
+  },
+  {
+    "repoUrl": "https://github.com/run-ai/k8s-launcher",
+    "scrapedTypes": [
+      "stargazer",
+      "watcher",
+      "forker",
+      "contributor"
+    ],
+    "lastProcessedPage": {
+      "stargazer": 1,
+      "watcher": 1,
+      "forker": 1
+    }
+  },
+  {
+    "repoUrl": "https://github.com/run-ai/jupyterlab_genv",
+    "scrapedTypes": [
+      "stargazer",
+      "watcher",
+      "forker",
+      "contributor"
+    ],
+    "lastProcessedPage": {
+      "stargazer": 1,
+      "watcher": 1,
+      "forker": 1
+    }
+  },
+  {
+    "repoUrl": "https://github.com/run-ai/chatbot-ui",
+    "scrapedTypes": [
+      "stargazer",
+      "watcher",
+      "forker",
+      "contributor"
+    ],
+    "lastProcessedPage": {
+      "stargazer": 1,
+      "watcher": 1,
+      "forker": 1
+    }
+  },
+  {
+    "repoUrl": "https://github.com/run-ai/kwok-operator",
+    "scrapedTypes": [
+      "stargazer",
+      "watcher",
+      "forker",
+      "contributor"
+    ],
+    "lastProcessedPage": {
+      "stargazer": 1,
+      "watcher": 1,
+      "forker": 1
+    }
+  },
+  {
+    "repoUrl": "https://github.com/run-ai/vscode-genv",
+    "scrapedTypes": [
+      "stargazer",
+      "watcher",
+      "forker",
+      "contributor"
+    ],
+    "lastProcessedPage": {
+      "stargazer": 1,
+      "watcher": 1,
+      "forker": 1
+    }
+  },
+  {
+    "repoUrl": "https://github.com/run-ai/models",
+    "scrapedTypes": [
+      "stargazer",
+      "watcher",
+      "forker",
+      "contributor"
+    ],
+    "lastProcessedPage": {
+      "stargazer": 1,
+      "watcher": 1,
+      "forker": 1
+    }
+  },
+  {
+    "repoUrl": "https://github.com/run-ai/rntop-board",
+    "scrapedTypes": [
+      "stargazer",
+      "watcher",
+      "forker",
+      "contributor"
+    ],
+    "lastProcessedPage": {
+      "stargazer": 1,
+      "watcher": 1,
+      "forker": 1
+    }
+  },
+  {
+    "repoUrl": "https://github.com/octoml/octoml-profile",
+    "scrapedTypes": [
+      "stargazer",
+      "watcher",
+      "forker",
+      "contributor"
+    ],
+    "lastProcessedPage": {
+      "stargazer": 2,
+      "watcher": 1,
+      "forker": 1
+    }
+  },
+  {
+    "repoUrl": "https://github.com/octoml/macho-dyld",
+    "scrapedTypes": [
+      "stargazer",
+      "watcher",
+      "forker",
+      "contributor"
+    ],
+    "lastProcessedPage": {
+      "stargazer": 1,
+      "watcher": 1,
+      "forker": 1
+    }
+  },
+  {
+    "repoUrl": "https://github.com/octoml/public-tvm-docker",
+    "scrapedTypes": [
+      "stargazer",
+      "watcher",
+      "forker",
+      "contributor"
+    ],
+    "lastProcessedPage": {
+      "stargazer": 1,
+      "watcher": 1,
+      "forker": 1
+    }
+  },
+  {
+    "repoUrl": "https://github.com/octoml/synr",
+    "scrapedTypes": [
+      "stargazer",
+      "watcher",
+      "forker",
+      "contributor"
+    ],
+    "lastProcessedPage": {
+      "stargazer": 1,
+      "watcher": 1,
+      "forker": 1
+    }
+  },
+  {
+    "repoUrl": "https://github.com/octoml/octoai-textgen-cookbook",
+    "scrapedTypes": [
+      "stargazer",
+      "watcher",
+      "forker",
+      "contributor"
+    ],
+    "lastProcessedPage": {
+      "stargazer": 1,
+      "watcher": 1,
+      "forker": 1
+    }
+  },
+  {
+    "repoUrl": "https://github.com/octoml/Apple-M1-BERT",
+    "scrapedTypes": [
+      "stargazer",
+      "watcher",
+      "forker",
+      "contributor"
+    ],
+    "lastProcessedPage": {
+      "stargazer": 2,
+      "watcher": 1,
+      "forker": 1
+    }
+  },
+  {
+    "repoUrl": "https://github.com/octoml/relax",
+    "scrapedTypes": [
+      "stargazer",
+      "watcher",
+      "forker",
+      "contributor"
+    ],
+    "lastProcessedPage": {
+      "stargazer": 1,
+      "watcher": 1,
+      "forker": 1,
+      "contributor": 4
+    }
+  },
+  {
+    "repoUrl": "https://github.com/octoml/triton-client-rs",
+    "scrapedTypes": [
+      "stargazer",
+      "watcher",
+      "forker",
+      "contributor"
+    ],
+    "lastProcessedPage": {
+      "stargazer": 1,
+      "watcher": 1,
+      "forker": 1
+    }
+  },
+  {
+    "repoUrl": "https://github.com/octoml/deformable-attention-kernel",
+    "scrapedTypes": [
+      "stargazer",
+      "watcher",
+      "forker",
+      "contributor"
+    ],
+    "lastProcessedPage": {
+      "stargazer": 1,
+      "watcher": 1,
+      "forker": 1
+    }
+  },
+  {
+    "repoUrl": "https://github.com/octoml/mlcommons-inference",
+    "scrapedTypes": [
+      "stargazer",
+      "watcher",
+      "forker",
+      "contributor"
+    ],
+    "lastProcessedPage": {
+      "stargazer": 1,
+      "watcher": 1,
+      "forker": 1
+    }
+  },
+  {
+    "repoUrl": "https://github.com/octoml/tvm2onnx",
+    "scrapedTypes": [
+      "stargazer",
+      "watcher",
+      "forker",
+      "contributor"
+    ],
+    "lastProcessedPage": {
+      "stargazer": 1,
+      "watcher": 1,
+      "forker": 1
+    }
+  },
+  {
+    "repoUrl": "https://github.com/octoml/fern-config",
+    "scrapedTypes": [
+      "stargazer",
+      "watcher",
+      "forker",
+      "contributor"
+    ],
+    "lastProcessedPage": {
+      "stargazer": 1,
+      "watcher": 1,
+      "forker": 1
+    }
+  },
+  {
+    "repoUrl": "https://github.com/octoml/octoml-llm-qa",
+    "scrapedTypes": [
+      "stargazer",
+      "watcher",
+      "forker",
+      "contributor"
+    ],
+    "lastProcessedPage": {
+      "stargazer": 1,
+      "watcher": 1,
+      "forker": 1
+    }
+  },
+  {
+    "repoUrl": "https://github.com/octoml/dockercon23-octoai",
+    "scrapedTypes": [
+      "stargazer",
+      "watcher",
+      "forker",
+      "contributor"
+    ],
+    "lastProcessedPage": {
+      "stargazer": 1,
+      "watcher": 1,
+      "forker": 1
+    }
+  },
+  {
+    "repoUrl": "https://github.com/octoml/mlc-llm",
+    "scrapedTypes": [
+      "stargazer",
+      "watcher",
+      "forker",
+      "contributor"
+    ],
+    "lastProcessedPage": {
+      "stargazer": 1,
+      "watcher": 1,
+      "forker": 1
+    }
+  },
+  {
+    "repoUrl": "https://github.com/octoml/octoai-apps",
+    "scrapedTypes": [
+      "stargazer",
+      "watcher",
+      "contributor"
+    ],
+    "lastProcessedPage": {
+      "stargazer": 1,
+      "watcher": 1
+    }
+  },
+  {
+    "repoUrl": "https://github.com/octoml/qualcomm",
+    "scrapedTypes": [
+      "stargazer",
+      "watcher",
+      "forker",
+      "contributor"
+    ],
+    "lastProcessedPage": {
+      "stargazer": 1,
+      "watcher": 1,
+      "forker": 1,
+      "contributor": 4
+    }
+  },
+  {
+    "repoUrl": "https://github.com/octoml/LLM-RAG-Examples",
+    "scrapedTypes": [
+      "stargazer",
+      "watcher",
+      "forker",
+      "contributor"
+    ],
+    "lastProcessedPage": {
+      "stargazer": 1,
+      "watcher": 1,
+      "forker": 1
+    }
+  },
+  {
+    "repoUrl": "https://github.com/octoml/tvm-build",
+    "scrapedTypes": [
+      "stargazer",
+      "watcher",
+      "forker",
+      "contributor"
+    ],
+    "lastProcessedPage": {
+      "stargazer": 1,
+      "watcher": 1,
+      "forker": 1
+    }
+  },
+  {
+    "repoUrl": "https://github.com/octoml/ck",
+    "scrapedTypes": [
+      "stargazer",
+      "watcher",
+      "contributor"
+    ],
+    "lastProcessedPage": {
+      "stargazer": 1,
+      "watcher": 1
+    }
+  },
+  {
+    "repoUrl": "https://github.com/octoml/cm-mlops",
+    "scrapedTypes": [
+      "stargazer",
+      "watcher",
+      "forker",
+      "contributor"
+    ],
+    "lastProcessedPage": {
+      "stargazer": 1,
+      "watcher": 1,
+      "forker": 1
+    }
+  },
+  {
+    "repoUrl": "https://github.com/octoml/octoai-template-apps",
+    "scrapedTypes": [
+      "stargazer",
+      "watcher",
+      "contributor"
+    ],
+    "lastProcessedPage": {
+      "stargazer": 1,
+      "watcher": 1
+    }
+  },
+  {
+    "repoUrl": "https://github.com/octoml/mlperf-loadgen-harness",
+    "scrapedTypes": [
+      "stargazer",
+      "watcher",
+      "contributor"
+    ],
+    "lastProcessedPage": {
+      "stargazer": 1,
+      "watcher": 1
+    }
+  },
+  {
+    "repoUrl": "https://github.com/octoml/models",
+    "scrapedTypes": [
+      "stargazer",
+      "watcher",
+      "forker",
+      "contributor"
+    ],
+    "lastProcessedPage": {
+      "stargazer": 1,
+      "watcher": 1,
+      "forker": 1
+    }
+  },
+  {
+    "repoUrl": "https://github.com/octoml/mlops",
+    "scrapedTypes": [
+      "stargazer",
+      "watcher",
+      "forker",
+      "contributor"
+    ],
+    "lastProcessedPage": {
+      "stargazer": 1,
+      "watcher": 1,
+      "forker": 1
+    }
+  },
+  {
+    "repoUrl": "https://github.com/octoml/octoml-examples",
+    "scrapedTypes": [
+      "stargazer",
+      "watcher",
+      "contributor"
+    ],
+    "lastProcessedPage": {
+      "stargazer": 1,
+      "watcher": 1
+    }
+  }
+]

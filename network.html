@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>GitHub Network Graph</title>
+    <!-- Add vis-network CSS -->
+    <link
+      href="https://unpkg.com/vis-network/dist/dist/vis-network.min.css"
+      rel="stylesheet"
+      type="text/css"
+    />
+
+    <!-- Add Import Map -->
+    <script type="importmap">
+      {
+        "imports": {
+          "vis-data": "/node_modules/vis-data/peer/esm/vis-data.js",
+          "vis-network": "/node_modules/vis-network/standalone/esm/vis-network.js"
+        }
+      }
+    </script>
+    <!-- End Import Map -->
+
+    <style type="text/css">
+      body,
+      html {
+        font: 10pt sans;
+        width: 100%;
+        height: 100%;
+        margin: 0;
+        padding: 0;
+        overflow: hidden;
+      }
+      #network {
+        width: 100%;
+        height: 100vh;
+        background-color: #ffffff;
+      }
+    </style>
+    <!-- Import the compiled JavaScript module -->
+    <script type="module" src="./dist/vis/visualize-network.js"></script>
+  </head>
+  <body>
+    <div id="network"></div>
+    <!-- Add vis-network and vis-data from CDN -->
+    <!-- <script src="https://unpkg.com/vis-network/standalone/umd/vis-network.min.js"></script> -->
+    <!-- <script src="https://unpkg.com/vis-data/standalone/umd/vis-data.min.js"></script> -->
+  </body>
+</html>
