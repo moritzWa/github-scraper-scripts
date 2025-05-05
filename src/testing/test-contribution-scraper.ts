@@ -3,7 +3,7 @@ import dotenv from "dotenv";
 import {
   isActiveInEnoughMonths,
   isWeekdayCoder,
-} from "../graph-scraper/top-profile-helpers.js";
+} from "../graph-scraper/helpers.js";
 import { fetchContributions } from "../utils/prime-scraper-api-utils.js"; // Assuming fetchContributions is here
 
 dotenv.config(); // Load environment variables (like GITHUB_ACCESS_TOKEN)
