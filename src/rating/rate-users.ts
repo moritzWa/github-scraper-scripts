@@ -1,7 +1,7 @@
 import { config } from "dotenv";
 import { appendFileSync, readFileSync, writeFileSync } from "fs";
 import OpenAI from "openai";
-import { UserData } from "./types.js";
+import { UserData } from "../types.js";
 
 // Load environment variables
 config();

@@ -3,7 +3,7 @@ import { Octokit } from "@octokit/core";
 import dotenv from "dotenv";
 import fs from "fs";
 import { scrapeUser } from "./top-profile-helpers.js";
-import { topProfiles } from "./top-profils.js";
+import { topProfiles } from "./profils.js";
 import { GraphUser } from "../types.js";
 import { withRateLimitRetry } from "../utils/prime-scraper-api-utils.js";
 

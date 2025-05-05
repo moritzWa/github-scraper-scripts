@@ -1,4 +1,4 @@
-import { NormalizedLocation } from "./utils/prime-scraper-location.js";
+import { NormalizedLocation } from "./utils/location.js";
 
 export interface ScrapedRepo {
   repoUrl: string;

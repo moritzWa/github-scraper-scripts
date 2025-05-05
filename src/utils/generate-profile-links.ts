@@ -1,5 +1,5 @@
 import { readFileSync, writeFileSync } from "fs";
-import { UserData } from "./types.js";
+import { UserData } from "../types.js";
 
 function generateProfileLinks() {
   try {
