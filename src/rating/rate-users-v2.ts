@@ -1,6 +1,6 @@
 import { config } from "dotenv";
 import { OpenAI } from "openai";
-import { UserData } from "./types.js";
+import { UserData } from "../types.js";
 
 config();
 

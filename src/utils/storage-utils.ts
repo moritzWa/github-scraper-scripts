@@ -1,5 +1,5 @@
 import fs from "fs";
-import { ScrapedRepo } from "./types.js";
+import { ScrapedRepo } from "../types.js";
 
 // Add these helper functions
 export function loadScrapedRepos(): ScrapedRepo[] {

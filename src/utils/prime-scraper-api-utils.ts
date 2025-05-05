@@ -1,4 +1,4 @@
-import { ContributionData } from "./types.js";
+import { ContributionData } from "../types.js";
 
 function isLinkedInDomain(url: string): boolean {
   try {

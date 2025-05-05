@@ -2,37 +2,37 @@ import { Octokit } from "@octokit/core";
 import dotenv from "dotenv";
 import fs from "fs";
 import player from "play-sound";
-import {
-  countProfileFields,
-  fetchContributions,
-  withRateLimitRetry,
-} from "./prime-scraper-api-utils.js";
-import {
-  isLocationInBadCountries,
-  normalizeLocation,
-} from "./prime-scraper-location.js";
-import {
-  fetchProfileReadme,
-  fetchRecentRepositories,
-  fetchWebsiteContent,
-  fetchXProfileMetadata,
-} from "./prime-scraper-profile-utils.js";
-import {
-  getLastProcessedPage,
-  hasBeenScraped,
-  loadScrapedRepos,
-  markTypeAsCompleted,
-  saveScrapedRepo,
-} from "./prime-scraper-storage-utils.js";
-import { rateUserV2 } from "./rate-users-v2.js";
+import { rateUserV2 } from "../rating/rate-users-v2.js";
 import {
   ContributionData,
   GitHubRepo,
   interactionTypes,
   RepoSummary,
   UserData,
-} from "./types.js";
-import { primeTeamMembers, reposToScrape } from "./variables.js";
+} from "../types.js";
+import {
+  isLocationInBadCountries,
+  normalizeLocation,
+} from "../utils/location.js";
+import {
+  countProfileFields,
+  fetchContributions,
+  withRateLimitRetry,
+} from "../utils/prime-scraper-api-utils.js";
+import {
+  fetchProfileReadme,
+  fetchRecentRepositories,
+  fetchWebsiteContent,
+  fetchXProfileMetadata,
+} from "../utils/profile-data-fetchers.js";
+import {
+  getLastProcessedPage,
+  hasBeenScraped,
+  loadScrapedRepos,
+  markTypeAsCompleted,
+  saveScrapedRepo,
+} from "../utils/storage-utils.js";
+import { primeTeamMembers, reposToScrape } from "../variables.js";
 
 // Load environment variables
 dotenv.config();

@@ -1,7 +1,7 @@
 import fs from "fs";
-import { rateUserV2 } from "./rate-users-v2.js";
-import { rateUser } from "./rate-users.js";
-import { UserData } from "./types.js";
+import { rateUserV2 } from "../rating/rate-users-v2.js";
+import { UserData } from "../types.js";
+import { rateUser } from "../rating/rate-users.js";
 
 async function rateIdealUsers() {
   try {

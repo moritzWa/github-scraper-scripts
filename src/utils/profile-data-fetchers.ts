@@ -1,8 +1,8 @@
 import { Readability } from "@mozilla/readability";
 import { Octokit } from "@octokit/core";
 import { JSDOM, VirtualConsole } from "jsdom";
+import { GitHubRepo, GitHubUser } from "../types.js";
 import { withRateLimitRetry } from "./prime-scraper-api-utils.js";
-import { GitHubRepo, GitHubUser } from "./types.js";
 
 export async function fetchWebsiteContent(url: string): Promise<string | null> {
   if (!url) return null;

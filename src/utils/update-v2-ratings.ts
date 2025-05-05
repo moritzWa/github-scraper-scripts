@@ -1,7 +1,7 @@
 import { config } from "dotenv";
 import { readFileSync, writeFileSync } from "fs";
-import { rateUserV2 } from "./rate-users-v2.js";
-import { UserData } from "./types.js";
+import { rateUserV2 } from "../rating/rate-users-v2.js";
+import { UserData } from "../types.js";
 
 // Load environment variables
 config();

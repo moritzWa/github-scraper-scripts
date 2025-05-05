@@ -1,19 +1,19 @@
 import { Octokit } from "@octokit/core";
+import { CalendarWeek, ContributionData, GraphUser } from "../types.js";
+import {
+  isLocationInBadCountries,
+  normalizeLocation,
+} from "../utils/location.js";
 import {
   countProfileFields,
   fetchContributions,
   withRateLimitRetry,
-} from "./prime-scraper-api-utils.js";
-import {
-  isLocationInBadCountries,
-  normalizeLocation,
-} from "./prime-scraper-location.js";
+} from "../utils/prime-scraper-api-utils.js";
 import {
   fetchProfileReadme,
   fetchWebsiteContent,
   fetchXProfileMetadata,
-} from "./prime-scraper-profile-utils.js";
-import { CalendarWeek, ContributionData, GraphUser } from "./types.js";
+} from "../utils/profile-data-fetchers.js";
 
 /**
  * Scrapes detailed information for a single GitHub user.

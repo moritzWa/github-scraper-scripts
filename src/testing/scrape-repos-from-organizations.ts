@@ -1,7 +1,7 @@
 import { Octokit } from "@octokit/core";
 import dotenv from "dotenv";
-import { withRateLimitRetry } from "./prime-scraper-api-utils.js";
-import { organisationsToScrape } from "./variables.js";
+import { withRateLimitRetry } from "../utils/prime-scraper-api-utils.js";
+import { organisationsToScrape } from "../variables.js";
 
 // Load environment variables
 dotenv.config();

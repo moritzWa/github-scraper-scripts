@@ -1,5 +1,5 @@
 import { readFileSync, writeFileSync } from "fs";
-import { GraphData, GraphUser } from "./types.js"; // Assuming types are correctly exported
+import { GraphData, GraphUser } from "../types.js"; // Assuming types are correctly exported
 
 interface RankedUser extends GraphUser {
   inboundInfluence: number;

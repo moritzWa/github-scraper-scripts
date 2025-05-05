@@ -2,10 +2,10 @@
 import { Octokit } from "@octokit/core";
 import dotenv from "dotenv";
 import fs from "fs";
-import { withRateLimitRetry } from "./prime-scraper-api-utils.js";
 import { scrapeUser } from "./top-profile-helpers.js";
 import { topProfiles } from "./top-profils.js";
-import { GraphUser } from "./types.js";
+import { GraphUser } from "../types.js";
+import { withRateLimitRetry } from "../utils/prime-scraper-api-utils.js";
 
 // Load environment variables
 dotenv.config();

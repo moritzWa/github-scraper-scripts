@@ -1,7 +1,7 @@
 import { Octokit } from "@octokit/core";
 import dotenv from "dotenv";
+import { johannesRecUserNames } from "../variables.js";
 import { fetchContributions } from "./prime-scraper-api-utils.js";
-import { johannesRecUserNames } from "./variables.js";
 
 // Load environment variables
 dotenv.config();

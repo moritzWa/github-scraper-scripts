@@ -1,16 +1,16 @@
 import { Octokit } from "@octokit/core";
 import dotenv from "dotenv";
 import fs from "fs";
-import { withRateLimitRetry } from "./prime-scraper-api-utils.js";
-import { normalizeLocation } from "./prime-scraper-location.js";
+import { UserData } from "../types.js";
+import { withRateLimitRetry } from "../utils/prime-scraper-api-utils.js";
 import {
   fetchProfileReadme,
   fetchRecentRepositories,
   fetchWebsiteContent,
   fetchXProfileMetadata,
-} from "./prime-scraper-profile-utils.js";
-import { UserData } from "./types.js";
-import { primeTeamMembers } from "./variables.js";
+} from "../utils/profile-data-fetchers.js";
+import { primeTeamMembers } from "../variables.js";
+import { normalizeLocation } from "../utils/location.js";
 
 // Load environment variables
 dotenv.config();
