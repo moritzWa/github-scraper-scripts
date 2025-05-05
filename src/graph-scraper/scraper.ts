@@ -13,6 +13,7 @@ const octokit = new Octokit({ auth: apiKey });
 const mongoUri = process.env.MONGODB_URI || "mongodb://localhost:27017";
 const dbName = process.env.MONGODB_DB || "githubGraph";
 const maxDepth = 2;
+const BATCH_SIZE = 5;
 
 async function main() {
   const client = new MongoClient(mongoUri);
@@ -38,100 +39,113 @@ async function main() {
   }
 
   while (true) {
-    // Get the next pending user
-    const userDoc = await usersCol.findOneAndUpdate(
-      { status: "pending", depth: { $lte: maxDepth } },
-      { $set: { status: "processing" } },
-      { returnDocument: "after" }
-    );
-    if (!userDoc) {
+    // Fetch a batch of pending users
+    const pendingUsers = await usersCol
+      .find({ status: "pending", depth: { $lte: maxDepth } })
+      .limit(BATCH_SIZE)
+      .toArray();
+
+    if (pendingUsers.length === 0) {
       console.log("No more pending users. Done!");
       break;
     }
-    const username = userDoc._id;
-    const depth = userDoc.depth || 0;
-    console.log(`Processing ${username} at depth ${depth}`);
 
-    try {
-      const userData: GraphUser | null = await scrapeUser(
-        octokit,
-        username,
-        depth,
-        depth === 0
-      );
-      if (!userData) {
-        await usersCol.updateOne(
-          { _id: username },
-          { $set: { status: "ignored" } }
-        );
-        continue;
-      }
+    // Mark users as processing
+    const usernames = pendingUsers.map((u) => u._id);
+    await usersCol.updateMany(
+      { _id: { $in: usernames } },
+      { $set: { status: "processing" } }
+    );
 
-      // Upsert user data
-      await usersCol.updateOne(
-        { _id: username },
-        {
-          $set: {
-            ...userData,
-            status: "processed",
+    // Process the batch in parallel
+    await Promise.all(
+      pendingUsers.map(async (userDoc) => {
+        const username = userDoc._id;
+        const depth = userDoc.depth || 0;
+        console.log(`Processing ${username} at depth ${depth}`);
+
+        try {
+          const userData: GraphUser | null = await scrapeUser(
+            octokit,
+            username,
             depth,
-          },
-        },
-        { upsert: true }
-      );
+            depth === 0
+          );
+          if (!userData) {
+            await usersCol.updateOne(
+              { _id: username },
+              { $set: { status: "ignored" } }
+            );
+            return;
+          }
 
-      if (depth < maxDepth) {
-        // Fetch followers and following
-        const [followers, following] = await Promise.all([
-          fetchFollowers(username),
-          fetchFollowing(username),
-        ]);
-
-        // Insert edges
-        if (followers.length > 0) {
-          await edgesCol
-            .insertMany(
-              followers.map((f) => ({ from: f, to: username })),
-              { ordered: false }
-            )
-            .catch(() => {}); // Ignore duplicate key errors
-        }
-        if (following.length > 0) {
-          await edgesCol
-            .insertMany(
-              following.map((f) => ({ from: username, to: f })),
-              { ordered: false }
-            )
-            .catch(() => {});
-        }
-
-        // Upsert new users to users collection
-        const newUsers = [...followers, ...following];
-        if (newUsers.length > 0) {
-          await usersCol.bulkWrite(
-            newUsers.map((newUsername) => ({
-              updateOne: {
-                filter: { _id: newUsername },
-                update: {
-                  $setOnInsert: {
-                    _id: newUsername,
-                    status: "pending",
-                    depth: depth + 1,
-                  },
-                },
-                upsert: true,
+          // Upsert user data
+          await usersCol.updateOne(
+            { _id: username },
+            {
+              $set: {
+                ...userData,
+                status: "processed",
+                depth,
               },
-            }))
+            },
+            { upsert: true }
+          );
+
+          if (depth < maxDepth) {
+            // Fetch followers and following
+            const [followers, following] = await Promise.all([
+              fetchFollowers(username),
+              fetchFollowing(username),
+            ]);
+
+            // Insert edges
+            if (followers.length > 0) {
+              await edgesCol
+                .insertMany(
+                  followers.map((f) => ({ from: f, to: username })),
+                  { ordered: false }
+                )
+                .catch(() => {});
+            }
+            if (following.length > 0) {
+              await edgesCol
+                .insertMany(
+                  following.map((f) => ({ from: username, to: f })),
+                  { ordered: false }
+                )
+                .catch(() => {});
+            }
+
+            // Upsert new users to users collection
+            const newUsers = [...followers, ...following];
+            if (newUsers.length > 0) {
+              await usersCol.bulkWrite(
+                newUsers.map((newUsername) => ({
+                  updateOne: {
+                    filter: { _id: newUsername },
+                    update: {
+                      $setOnInsert: {
+                        _id: newUsername,
+                        status: "pending",
+                        depth: depth + 1,
+                      },
+                    },
+                    upsert: true,
+                  },
+                }))
+              );
+            }
+          }
+        } catch (err) {
+          console.error(`Error processing ${username}:`, err);
+          await usersCol.updateOne(
+            { _id: username },
+            { $set: { status: "ignored" } }
           );
         }
-      }
-    } catch (err) {
-      console.error(`Error processing ${username}:`, err);
-      await usersCol.updateOne(
-        { _id: username },
-        { $set: { status: "ignored" } }
-      );
-    }
+      })
+    );
   }
 
   await client.close();
