@@ -145,4 +145,4 @@ function addNormalizedLocations() {
 }
 
 // Run the script
-addNormalizedLocations();
+// addNormalizedLocations();
