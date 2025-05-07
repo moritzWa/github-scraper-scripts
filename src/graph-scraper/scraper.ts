@@ -39,6 +39,12 @@ async function main() {
   }
 
   while (true) {
+    // Get total count of pending users
+    const totalPending = await usersCol.countDocuments({
+      status: "pending",
+      depth: { $lte: maxDepth },
+    });
+
     // Fetch a batch of pending users
     const pendingUsers = await usersCol
       .find({ status: "pending", depth: { $lte: maxDepth } })
@@ -49,6 +55,12 @@ async function main() {
       console.log("No more pending users. Done!");
       break;
     }
+
+    // Show progress
+    console.log(`\nProgress Update:`);
+    console.log(`Total pending profiles: ${totalPending}`);
+    console.log(`Current batch size: ${pendingUsers.length}`);
+    console.log(`Processing next batch...\n`);
 
     // Mark users as processing
     const usernames = pendingUsers.map((u) => u._id);
@@ -77,7 +89,7 @@ async function main() {
               {
                 $set: {
                   status: "ignored",
-                  ignoredReason: ignoredReason,
+                  ignoredReason: ignoredReason || IgnoredReason.ERROR_SCRAPING,
                 },
               }
             );
