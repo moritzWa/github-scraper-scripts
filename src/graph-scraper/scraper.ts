@@ -77,7 +77,7 @@ async function main() {
         console.log(`Processing ${username} at depth ${depth}`);
 
         try {
-          const { user: userData, ignoredReason } = await scrapeUser(
+          const { user: userData } = await scrapeUser(
             octokit,
             username,
             depth,
@@ -89,7 +89,7 @@ async function main() {
               {
                 $set: {
                   status: "ignored",
-                  ignoredReason: ignoredReason || IgnoredReason.ERROR_SCRAPING,
+                  ignoredReason: IgnoredReason.ERROR_SCRAPING,
                 },
               }
             );
@@ -111,10 +111,26 @@ async function main() {
 
           if (depth < maxDepth) {
             // Fetch followers and following
-            const [followers, following] = await Promise.all([
-              fetchFollowers(username),
-              fetchFollowing(username),
-            ]);
+            let followers: string[] = [];
+            let following: string[] = [];
+            try {
+              [followers, following] = await Promise.all([
+                fetchFollowers(username),
+                fetchFollowing(username),
+              ]);
+            } catch (err) {
+              console.error(`Error fetching connections for ${username}:`, err);
+              await usersCol.updateOne(
+                { _id: username },
+                {
+                  $set: {
+                    status: "ignored",
+                    ignoredReason: IgnoredReason.ERROR_SCRAPING,
+                  },
+                }
+              );
+              return;
+            }
 
             // Insert edges
             if (followers.length > 0) {

@@ -1,3 +1,5 @@
+import { NormalizedLocation } from "../utils/location.js";
+
 export interface CalendarWeek {
   contributionDays: CalendarDay[];
 }
@@ -28,7 +30,7 @@ export interface GraphUser {
   company: string | null;
   blog: string | null;
   location: string | null;
-  normalizedLocation: any;
+  normalizedLocation: NormalizedLocation;
   email: string | null;
   twitter_username: string | null;
   xUrl: string | null;
@@ -40,6 +42,8 @@ export interface GraphUser {
   profileReadme: string | null;
   websiteContent: string | null;
   depth: number;
+  status: "pending" | "processing" | "processed" | "ignored";
+  ignoredReason?: IgnoredReason;
 }
 
 export interface DbGraphUser extends Omit<GraphUser, "login"> {

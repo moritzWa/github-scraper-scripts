@@ -20,6 +20,21 @@ import {
   IgnoredReason,
 } from "./types.js";
 
+function createIgnoredUser(
+  basicUserData: Omit<GraphUser, "status" | "ignoredReason">,
+  reason: IgnoredReason,
+  contributions?: ContributionData | null
+): { user: GraphUser } {
+  return {
+    user: {
+      ...basicUserData,
+      contributions: contributions ?? null,
+      status: "ignored",
+      ignoredReason: reason,
+    },
+  };
+}
+
 /**
  * Scrapes detailed information for a single GitHub user.
  */
@@ -28,7 +43,7 @@ export async function scrapeUser(
   username: string,
   depth: number,
   bypassFilters: boolean = false
-): Promise<{ user: GraphUser | null; ignoredReason?: IgnoredReason }> {
+): Promise<{ user: GraphUser | null }> {
   try {
     const userData = await withRateLimitRetry(() =>
       octokit.request("GET /users/{username}", {
@@ -36,44 +51,64 @@ export async function scrapeUser(
       })
     );
 
+    // Basic user data that we'll store regardless of filters
+    const basicUserData = {
+      login: userData.data.login,
+      profileUrl: userData.data.html_url || "",
+      createdAt: userData.data.created_at,
+      followers: userData.data.followers,
+      following: userData.data.following,
+      name: userData.data.name || null,
+      bio: userData.data.bio || null,
+      company: userData.data.company || null,
+      blog: userData.data.blog || null,
+      location: userData.data.location || null,
+      normalizedLocation: normalizeLocation(userData.data.location) || null,
+      email: userData.data.email || null,
+      twitter_username: userData.data.twitter_username || null,
+      xUrl: null,
+      xBio: null,
+      xName: null,
+      xLocation: null,
+      public_repos: userData.data.public_repos,
+      contributions: null,
+      profileReadme: null,
+      websiteContent: null,
+      depth,
+    };
+
     if (!bypassFilters) {
       if (
         userData.data.location &&
         isLocationInBadCountries(userData.data.location)
       ) {
-        return {
-          user: null,
-          ignoredReason: IgnoredReason.BANNED_COUNTRY,
-        };
+        return createIgnoredUser(basicUserData, IgnoredReason.BANNED_COUNTRY);
       }
 
       const createdAt = new Date(userData.data.created_at);
       if (createdAt > new Date("2019-01-01")) {
-        return {
-          user: null,
-          ignoredReason: IgnoredReason.ACCOUNT_TOO_NEW,
-        };
+        return createIgnoredUser(basicUserData, IgnoredReason.ACCOUNT_TOO_NEW);
       }
 
       if (countProfileFields(userData.data) < 1) {
-        return {
-          user: null,
-          ignoredReason: IgnoredReason.INSUFFICIENT_PROFILE_FIELDS,
-        };
+        return createIgnoredUser(
+          basicUserData,
+          IgnoredReason.INSUFFICIENT_PROFILE_FIELDS
+        );
       }
 
       if (userData.data.followers > 3500) {
-        return {
-          user: null,
-          ignoredReason: IgnoredReason.TOO_MANY_FOLLOWERS,
-        };
+        return createIgnoredUser(
+          basicUserData,
+          IgnoredReason.TOO_MANY_FOLLOWERS
+        );
       }
 
       if (userData.data.following > 415) {
-        return {
-          user: null,
-          ignoredReason: IgnoredReason.TOO_MANY_FOLLOWING,
-        };
+        return createIgnoredUser(
+          basicUserData,
+          IgnoredReason.TOO_MANY_FOLLOWING
+        );
       }
     }
 
@@ -83,48 +118,53 @@ export async function scrapeUser(
 
       if (!bypassFilters) {
         if (!contributions) {
-          return {
-            user: null,
-            ignoredReason: IgnoredReason.COULD_NOT_FETCH_CONTRIBUTIONS,
-          };
+          return createIgnoredUser(
+            basicUserData,
+            IgnoredReason.COULD_NOT_FETCH_CONTRIBUTIONS
+          );
         }
 
         if (userData.data.followers <= 35 && contributions.totalSum < 3500) {
-          return {
-            user: null,
-            ignoredReason: IgnoredReason.LOW_CONTRIBUTIONS_LOW_FOLLOWERS,
-          };
+          return createIgnoredUser(
+            basicUserData,
+            IgnoredReason.LOW_CONTRIBUTIONS_LOW_FOLLOWERS,
+            contributions
+          );
         } else if (
           userData.data.followers > 35 &&
           userData.data.followers <= 60 &&
           contributions.totalSum < 3000
         ) {
-          return {
-            user: null,
-            ignoredReason: IgnoredReason.LOW_CONTRIBUTIONS_MEDIUM_FOLLOWERS,
-          };
+          return createIgnoredUser(
+            basicUserData,
+            IgnoredReason.LOW_CONTRIBUTIONS_MEDIUM_FOLLOWERS,
+            contributions
+          );
         } else if (
           userData.data.followers > 60 &&
           contributions.totalSum < 2000
         ) {
-          return {
-            user: null,
-            ignoredReason: IgnoredReason.LOW_CONTRIBUTIONS_HIGH_FOLLOWERS,
-          };
+          return createIgnoredUser(
+            basicUserData,
+            IgnoredReason.LOW_CONTRIBUTIONS_HIGH_FOLLOWERS,
+            contributions
+          );
         }
 
         if (contributions.calendar_weeks) {
           if (!isActiveInEnoughMonths(contributions.calendar_weeks)) {
-            return {
-              user: null,
-              ignoredReason: IgnoredReason.NOT_ACTIVE_ENOUGH_MONTHS,
-            };
+            return createIgnoredUser(
+              basicUserData,
+              IgnoredReason.NOT_ACTIVE_ENOUGH_MONTHS,
+              contributions
+            );
           }
           if (isWeekdayCoder(contributions.calendar_weeks)) {
-            return {
-              user: null,
-              ignoredReason: IgnoredReason.WEEKDAY_CODER,
-            };
+            return createIgnoredUser(
+              basicUserData,
+              IgnoredReason.WEEKDAY_CODER,
+              contributions
+            );
           }
         } else {
           console.warn(
@@ -137,14 +177,16 @@ export async function scrapeUser(
         `Could not fetch contributions for ${username}. Error: ${error}`
       );
       if (!bypassFilters) {
-        return {
-          user: null,
-          ignoredReason: IgnoredReason.COULD_NOT_FETCH_CONTRIBUTIONS,
-        };
+        return createIgnoredUser(
+          basicUserData,
+          IgnoredReason.COULD_NOT_FETCH_CONTRIBUTIONS
+        );
       }
       contributions = undefined;
     }
 
+    // If we get here, the user passed all filters or bypassFilters is true
+    // Now we can fetch the additional data
     console.log(
       `Scraping user https://github.com/${
         userData.data.login
@@ -161,41 +203,25 @@ export async function scrapeUser(
         : Promise.resolve(null),
     ]);
 
-    const normalizedLocation = normalizeLocation(userData.data.location);
-
     return {
       user: {
-        login: userData.data.login,
-        profileUrl: userData.data.html_url || "",
-        createdAt: userData.data.created_at,
-        followers: userData.data.followers,
-        following: userData.data.following,
-        name: userData.data.name || null,
-        bio: userData.data.bio || null,
-        company: userData.data.company || null,
-        blog: userData.data.blog || null,
-        location: userData.data.location || null,
-        normalizedLocation,
-        email: userData.data.email || null,
-        twitter_username: userData.data.twitter_username || null,
+        ...basicUserData,
         xUrl: userData.data.twitter_username
           ? `https://x.com/${userData.data.twitter_username}`
           : null,
         xBio: xProfile?.bio || null,
         xName: xProfile?.name || null,
         xLocation: xProfile?.location || null,
-        public_repos: userData.data.public_repos,
         contributions: contributions,
         profileReadme: profileReadme || null,
         websiteContent: websiteContent || null,
-        depth,
+        status: "processed",
       },
     };
   } catch (error) {
     console.error(`Error scraping user ${username}:`, error);
     return {
       user: null,
-      ignoredReason: IgnoredReason.ERROR_SCRAPING,
     };
   }
 }

@@ -1,4 +1,4 @@
-import { ContributionData } from "../types.js";
+import { ContributionData } from "../graph-scraper/types.js";
 
 function isLinkedInDomain(url: string): boolean {
   try {
