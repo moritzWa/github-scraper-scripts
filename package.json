@@ -21,7 +21,8 @@
     "rank-top-profiles": "node --loader ts-node/esm src/graph-scraper/top-profiles-ranker.ts",
     "test-contribution-scraper": "node --loader ts-node/esm src/testing/test-contribution-scraper.ts",
     "build-vis": "tsc --project tsconfig.json --outDir dist/vis",
-    "serve-vis": "npx http-server ."
+    "serve-vis": "npx http-server .",
+    "scrape-graph": "node --loader ts-node/esm src/graph-scraper/scraper.ts"
   },
   "keywords": [],
   "author": "",

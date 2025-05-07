@@ -1,10 +1,10 @@
 import { Octokit } from "@octokit/core";
 import dotenv from "dotenv";
 import { MongoClient } from "mongodb";
-import { DbGraphUser, GraphUser } from "../types.js";
 import { withRateLimitRetry } from "../utils/prime-scraper-api-utils.js";
 import { scrapeUser } from "./helpers.js";
 import { topProfiles } from "./profils.js";
+import { DbGraphUser, IgnoredReason } from "./types.js";
 
 dotenv.config();
 
@@ -65,7 +65,7 @@ async function main() {
         console.log(`Processing ${username} at depth ${depth}`);
 
         try {
-          const userData: GraphUser | null = await scrapeUser(
+          const { user: userData, ignoredReason } = await scrapeUser(
             octokit,
             username,
             depth,
@@ -74,7 +74,12 @@ async function main() {
           if (!userData) {
             await usersCol.updateOne(
               { _id: username },
-              { $set: { status: "ignored" } }
+              {
+                $set: {
+                  status: "ignored",
+                  ignoredReason: ignoredReason,
+                },
+              }
             );
             return;
           }
@@ -141,7 +146,12 @@ async function main() {
           console.error(`Error processing ${username}:`, err);
           await usersCol.updateOne(
             { _id: username },
-            { $set: { status: "ignored" } }
+            {
+              $set: {
+                status: "ignored",
+                ignoredReason: IgnoredReason.ERROR_SCRAPING,
+              },
+            }
           );
         }
       })

@@ -1,6 +1,6 @@
+import { cityMapping } from "city-timezones";
 import { readFileSync, writeFileSync } from "fs";
 import { UserData } from "../types.js";
-import { cityMapping } from "city-timezones";
 
 export interface NormalizedLocation {
   city: string | null;

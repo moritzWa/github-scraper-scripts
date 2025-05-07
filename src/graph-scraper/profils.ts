@@ -1,8 +1,8 @@
 export const topProfiles = [
   "https://github.com/JannikSt",
-  "https://github.com/alpayariyak",
-  "https://github.com/erik-dunteman",
-  "https://github.com/wuweiweiwu",
+  // "https://github.com/alpayariyak",
+  // "https://github.com/erik-dunteman",
+  // "https://github.com/wuweiweiwu",
 ];
 
 export const topProfilesFinal = [
