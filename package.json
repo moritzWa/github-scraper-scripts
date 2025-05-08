@@ -23,7 +23,8 @@
     "build-vis": "tsc --project tsconfig.json --outDir dist/vis",
     "serve-vis": "npx http-server .",
     "scrape-graph": "NODE_OPTIONS='--loader ts-node/esm' node src/graph-scraper/scraper.ts",
-    "scrape-stats": "node --loader ts-node/esm src/graph-scraper/stats.ts"
+    "scrape-stats": "node --loader ts-node/esm src/graph-scraper/stats.ts",
+    "delete-db": "node --loader ts-node/esm src/graph-scraper/delete-db.ts"
   },
   "keywords": [],
   "author": "",
