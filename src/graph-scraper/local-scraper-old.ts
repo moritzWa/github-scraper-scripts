@@ -120,19 +120,21 @@ async function scrapeUserGraph(
               depth,
               depth === 0
             );
-            if (!userData) {
+            if (!userData || !userData.user) {
               graphData.ignoredUsernames.add(username);
               graphData.processedUsernames.delete(username);
               return null;
             }
 
+            const actualUser = userData.user;
+
             const existingUserIndex = graphData.users.findIndex(
               (u) => u.login === username
             );
             if (existingUserIndex !== -1) {
-              graphData.users[existingUserIndex] = userData;
+              graphData.users[existingUserIndex] = actualUser;
             } else {
-              graphData.users.push(userData);
+              graphData.users.push(actualUser);
             }
             graphData.processedUsernames.add(username);
 
