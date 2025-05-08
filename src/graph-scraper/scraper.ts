@@ -198,24 +198,28 @@ async function main() {
             return;
           }
 
-          // Upsert user data
+          // Upsert user data, respecting the status determined by scrapeUser
+          const updateFields: any = {
+            // Ideally Partial<DbGraphUser>
+            ...userData, // This includes login, profileUrl, ..., status, ignoredReason (if any), depth
+          };
+
+          if (userData.status === "processed") {
+            // Only initialize scrapedConnections for successfully processed users
+            updateFields.scrapedConnections = {
+              followers: false,
+              following: false,
+            };
+          }
+
           await usersCol.updateOne(
             { _id: username },
-            {
-              $set: {
-                ...userData,
-                status: "processed",
-                depth,
-                scrapedConnections: {
-                  followers: false,
-                  following: false,
-                },
-              },
-            },
+            { $set: updateFields },
             { upsert: true }
           );
 
-          if (depth < maxDepth) {
+          // Only attempt to scrape connections if the user was processed and is not at max depth
+          if (userData.status === "processed" && depth < maxDepth) {
             try {
               const connectionPromises = [];
 

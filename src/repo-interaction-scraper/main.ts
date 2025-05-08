@@ -4,7 +4,6 @@ import fs from "fs";
 import player from "play-sound";
 import { rateUserV2 } from "../rating/rate-users-v2.js";
 import {
-  ContributionData,
   GitHubRepo,
   interactionTypes,
   RepoSummary,
@@ -33,6 +32,7 @@ import {
   saveScrapedRepo,
 } from "../utils/storage-utils.js";
 import { primeTeamMembers, reposToScrape } from "../variables.js";
+import { ContributionData } from "../graph-scraper/types.js";
 
 // Load environment variables
 dotenv.config();

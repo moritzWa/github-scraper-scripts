@@ -1,13 +1,13 @@
 export const topProfiles = [
   "https://github.com/JannikSt",
   "https://github.com/alpayariyak",
+  "https://github.com/lukasmasuch",
   // "https://github.com/erik-dunteman",
   // "https://github.com/wuweiweiwu",
 ];
 
 export const topProfilesFinal = [
   "https://github.com/mi-yu",
-  "https://github.com/lukasmasuch",
   "https://github.com/steebchen",
   "https://github.com/btorressz",
   "https://github.com/WillGarman",

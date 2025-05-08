@@ -10,6 +10,7 @@ import {
 } from "../utils/prime-scraper-api-utils.js";
 import {
   fetchProfileReadme,
+  fetchRecentRepositories,
   fetchWebsiteContent,
   fetchXProfileMetadata,
 } from "../utils/profile-data-fetchers.js";
@@ -74,6 +75,7 @@ export async function scrapeUser(
       contributions: null,
       profileReadme: null,
       websiteContent: null,
+      recentRepositories: null,
       depth,
     };
 
@@ -193,15 +195,17 @@ export async function scrapeUser(
       } (contributions: ${contributions?.totalSum ?? "N/A"})`
     );
 
-    const [profileReadme, websiteContent, xProfile] = await Promise.all([
-      fetchProfileReadme(username),
-      userData.data.blog
-        ? fetchWebsiteContent(userData.data.blog)
-        : Promise.resolve(null),
-      userData.data.twitter_username
-        ? fetchXProfileMetadata(userData.data.twitter_username)
-        : Promise.resolve(null),
-    ]);
+    const [profileReadme, websiteContent, xProfile, recentRepositories] =
+      await Promise.all([
+        fetchProfileReadme(username),
+        userData.data.blog
+          ? fetchWebsiteContent(userData.data.blog)
+          : Promise.resolve(null),
+        userData.data.twitter_username
+          ? fetchXProfileMetadata(userData.data.twitter_username)
+          : Promise.resolve(null),
+        fetchRecentRepositories(username, octokit),
+      ]);
 
     return {
       user: {
@@ -215,6 +219,7 @@ export async function scrapeUser(
         contributions: contributions,
         profileReadme: profileReadme || null,
         websiteContent: websiteContent || null,
+        recentRepositories: recentRepositories || null,
         status: "processed",
       },
     };

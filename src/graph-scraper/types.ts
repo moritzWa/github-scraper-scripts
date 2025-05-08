@@ -1,3 +1,4 @@
+import { GitHubRepo } from "../types.js";
 import { NormalizedLocation } from "../utils/location.js";
 
 export interface CalendarWeek {
@@ -41,6 +42,7 @@ export interface GraphUser {
   contributions: ContributionData | null | undefined;
   profileReadme: string | null;
   websiteContent: string | null;
+  recentRepositories: Array<GitHubRepo> | null;
   depth: number;
   status: "pending" | "processing" | "processed" | "ignored";
   ignoredReason?: IgnoredReason;
@@ -48,6 +50,10 @@ export interface GraphUser {
     followers: boolean;
     following: boolean;
   };
+  rating?: number;
+  ratingReasoning?: string;
+  webResearchInfo?: string;
+  ratedAt?: Date;
 }
 
 export interface DbGraphUser extends Omit<GraphUser, "login"> {

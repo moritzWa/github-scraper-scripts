@@ -1,5 +1,4 @@
-import { ContributionData } from "./graph-scraper/types.js";
-import { NormalizedLocation } from "./utils/location.js";
+import { DbGraphUser } from "./graph-scraper/types.js";
 
 export interface ScrapedRepo {
   repoUrl: string;
@@ -15,6 +14,7 @@ export enum interactionTypes {
   stargazer = "stargazer",
   watcher = "watcher",
 }
+
 export interface RepoSummary {
   repoUrl: string;
   totalProcessed: number;
@@ -35,33 +35,16 @@ export interface GitHubRepo {
   stargazers_count: number;
   forks_count: number;
   topics: string[];
+  is_fork: boolean;
 }
 
-export interface UserData {
+export interface UserData
+  extends Omit<DbGraphUser, "_id" | "status" | "depth" | "scrapedConnections"> {
   login: string;
-  profileUrl: string;
-  createdAt: string;
-  followers: number;
-  name: string | null;
-  bio: string | null;
-  company: string | null;
-  blog: string | null;
-  location: string | null;
-  email: string | null;
-  twitter_username: string | null;
-  xUrl: string | null;
-  xBio: string | null;
-  xName: string | null;
-  xLocation: string | null;
-  public_repos: number;
   repoInteractionScraped: Array<{
     scrapedFromUrl: string;
     interactionTypes: string[];
   }>;
-  contributions?: ContributionData;
-  profileReadme: string | null;
-  websiteContent: string | null;
-  recentRepositories?: Array<GitHubRepo>;
   llmRoleMatchRatingScore?: {
     reasoning: string;
     score: number;
@@ -72,5 +55,4 @@ export interface UserData {
     score: number;
     webResearchInfo: string;
   };
-  normalizedLocation: NormalizedLocation;
 }

@@ -1,7 +1,8 @@
 import { Readability } from "@mozilla/readability";
 import { Octokit } from "@octokit/core";
 import { JSDOM, VirtualConsole } from "jsdom";
-import { GitHubRepo, GitHubUser } from "../types.js";
+import { GitHubUser } from "../graph-scraper/types.js";
+import { GitHubRepo } from "../types.js";
 import { withRateLimitRetry } from "./prime-scraper-api-utils.js";
 
 export async function fetchWebsiteContent(url: string): Promise<string | null> {
@@ -131,6 +132,23 @@ export async function fetchProfileReadme(
   }
 }
 
+function calculateRepoScore(repo: GitHubRepo): number {
+  // Base score from stars
+  const starScore = repo.stargazers_count * 2;
+
+  // Activity score based on last update
+  const lastUpdate = repo.updated_at ? new Date(repo.updated_at).getTime() : 0;
+  const now = Date.now();
+  const daysSinceUpdate = (now - lastUpdate) / (1000 * 60 * 60 * 24);
+  const activityScore = Math.max(0, 100 - daysSinceUpdate); // Decay score over time
+
+  // Fork score
+  const forkScore = repo.forks_count;
+
+  // Combined score with weights
+  return starScore + activityScore * 0.5 + forkScore * 0.3;
+}
+
 export async function fetchRecentRepositories(
   username: string,
   octokit: Octokit
@@ -139,12 +157,12 @@ export async function fetchRecentRepositories(
     const repos = await withRateLimitRetry(() =>
       octokit.request("GET /users/{username}/repos", {
         username,
-        sort: "updated",
-        per_page: 10,
+        sort: "updated", // Always fetch by updated to get recent activity
+        per_page: 100, // Fetch more repos to have a better sample for sorting
       })
     );
 
-    return repos.data.map((repo) => ({
+    const mappedRepos = repos.data.map((repo) => ({
       id: repo.id,
       name: repo.name,
       full_name: repo.full_name,
@@ -156,7 +174,14 @@ export async function fetchRecentRepositories(
       stargazers_count: repo.stargazers_count || 0,
       forks_count: repo.forks_count || 0,
       topics: repo.topics || [],
+      is_fork: repo.fork, // Include fork information
     }));
+
+    // Always use combined sorting
+    mappedRepos.sort((a, b) => calculateRepoScore(b) - calculateRepoScore(a));
+
+    // Return top 10 after sorting
+    return mappedRepos.slice(0, 10);
   } catch (error) {
     console.error(`Error fetching repositories for ${username}:`, error);
     return null;
