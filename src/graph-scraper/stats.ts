@@ -73,6 +73,16 @@ async function calculateGraphStats() {
       console.log(`Depth ${_id}: ${count} (${percentage}%)`);
     });
 
+    // Get total ignored users count
+    const totalIgnored = await usersCol.countDocuments({ status: "ignored" });
+    console.log("\nIgnored Users Statistics:");
+    console.log(
+      `Total Ignored Users: ${totalIgnored} (${(
+        (totalIgnored / totalUsers) *
+        100
+      ).toFixed(1)}% of total)`
+    );
+
     if (ignoredReasons.length > 0) {
       console.log("\nIgnored Reasons:");
       // Sort reasons by count in descending order

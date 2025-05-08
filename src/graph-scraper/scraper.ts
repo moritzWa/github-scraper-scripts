@@ -12,8 +12,9 @@ const apiKey = process.env.GITHUB_ACCESS_TOKEN;
 const octokit = new Octokit({ auth: apiKey });
 const mongoUri = process.env.MONGODB_URI || "mongodb://localhost:27017";
 const dbName = process.env.MONGODB_DB || "githubGraph";
-const maxDepth = 2;
+const maxDepth = 1;
 const BATCH_SIZE = 5;
+const SCRAPE_FOLLOWERS = false; // Set to false to only scrape following connections
 
 // --- Reusable Connection Processing Function ---
 async function processConnectionsPageByPage(
@@ -97,6 +98,10 @@ async function main() {
           _id: username,
           status: "pending",
           depth: 0,
+          scrapedConnections: {
+            followers: false,
+            following: false,
+          },
         },
       },
       { upsert: true }
@@ -104,19 +109,19 @@ async function main() {
   }
 
   // Re-queue users that were processed at a depth shallower than the current maxDepth,
-  // so their connections can be explored further.
-  // This allows resuming and deepening the graph if maxDepth is increased.
+  // but only if they haven't had their following connections scraped yet
   const requeueResult = await usersCol.updateMany(
     {
       status: "processed",
       depth: { $lt: maxDepth },
+      "scrapedConnections.following": { $ne: true },
     },
     { $set: { status: "pending" } }
   );
 
   if (requeueResult.modifiedCount > 0) {
     console.log(
-      `Re-queued ${requeueResult.modifiedCount} previously processed users whose connections might need further scraping due to increased maxDepth.`
+      `Re-queued ${requeueResult.modifiedCount} previously processed users whose following connections need to be scraped.`
     );
   }
 
@@ -136,7 +141,6 @@ async function main() {
     if (pendingUsers.length === 0) {
       console.log("No more pending users within the current maxDepth.");
       // Before breaking, check if there are any users at all (even > maxDepth or different statuses)
-      // to distinguish between a completed scrape and a scrape limited by maxDepth.
       const anyRemainingPendingUsers = await usersCol.countDocuments({
         status: "pending",
       });
@@ -202,6 +206,10 @@ async function main() {
                 ...userData,
                 status: "processed",
                 depth,
+                scrapedConnections: {
+                  followers: false,
+                  following: false,
+                },
               },
             },
             { upsert: true }
@@ -209,15 +217,10 @@ async function main() {
 
           if (depth < maxDepth) {
             try {
-              await Promise.all([
-                processConnectionsPageByPage(
-                  username,
-                  depth,
-                  "followers",
-                  fetchFollowersPaged,
-                  usersCol,
-                  edgesCol
-                ),
+              const connectionPromises = [];
+
+              // Always scrape following
+              connectionPromises.push(
                 processConnectionsPageByPage(
                   username,
                   depth,
@@ -225,8 +228,34 @@ async function main() {
                   fetchFollowingPaged,
                   usersCol,
                   edgesCol
-                ),
-              ]);
+                ).then(() => {
+                  return usersCol.updateOne(
+                    { _id: username },
+                    { $set: { "scrapedConnections.following": true } }
+                  );
+                })
+              );
+
+              // Only scrape followers if configured to do so
+              if (SCRAPE_FOLLOWERS) {
+                connectionPromises.push(
+                  processConnectionsPageByPage(
+                    username,
+                    depth,
+                    "followers",
+                    fetchFollowersPaged,
+                    usersCol,
+                    edgesCol
+                  ).then(() => {
+                    return usersCol.updateOne(
+                      { _id: username },
+                      { $set: { "scrapedConnections.followers": true } }
+                    );
+                  })
+                );
+              }
+
+              await Promise.all(connectionPromises);
             } catch (connectionError) {
               console.error(
                 `Error fetching or processing connections for ${username}:`,

@@ -44,6 +44,10 @@ export interface GraphUser {
   depth: number;
   status: "pending" | "processing" | "processed" | "ignored";
   ignoredReason?: IgnoredReason;
+  scrapedConnections?: {
+    followers: boolean;
+    following: boolean;
+  };
 }
 
 export interface DbGraphUser extends Omit<GraphUser, "login"> {
