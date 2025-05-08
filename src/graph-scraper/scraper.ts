@@ -103,6 +103,23 @@ async function main() {
     );
   }
 
+  // Re-queue users that were processed at a depth shallower than the current maxDepth,
+  // so their connections can be explored further.
+  // This allows resuming and deepening the graph if maxDepth is increased.
+  const requeueResult = await usersCol.updateMany(
+    {
+      status: "processed",
+      depth: { $lt: maxDepth },
+    },
+    { $set: { status: "pending" } }
+  );
+
+  if (requeueResult.modifiedCount > 0) {
+    console.log(
+      `Re-queued ${requeueResult.modifiedCount} previously processed users whose connections might need further scraping due to increased maxDepth.`
+    );
+  }
+
   while (true) {
     // Get total count of pending users
     const totalPending = await usersCol.countDocuments({
@@ -117,13 +134,29 @@ async function main() {
       .toArray();
 
     if (pendingUsers.length === 0) {
-      console.log("No more pending users. Done!");
+      console.log("No more pending users within the current maxDepth.");
+      // Before breaking, check if there are any users at all (even > maxDepth or different statuses)
+      // to distinguish between a completed scrape and a scrape limited by maxDepth.
+      const anyRemainingPendingUsers = await usersCol.countDocuments({
+        status: "pending",
+      });
+      if (anyRemainingPendingUsers === 0) {
+        console.log(
+          "All discovered users have been processed or ignored. Graph scraping complete for all reachable nodes."
+        );
+      } else {
+        console.log(
+          `Scraping complete up to maxDepth: ${maxDepth}. There are ${anyRemainingPendingUsers} pending users at deeper levels not yet processed.`
+        );
+      }
       break;
     }
 
     // Show progress
     console.log(`\nProgress Update:`);
-    console.log(`Total pending profiles: ${totalPending}`);
+    console.log(
+      `Total pending profiles (up to depth ${maxDepth}): ${totalPending}`
+    );
     console.log(`Current batch size: ${pendingUsers.length}`);
     console.log(`Processing next batch...\n`);
 
@@ -138,7 +171,7 @@ async function main() {
     await Promise.all(
       pendingUsers.map(async (userDoc) => {
         const username = userDoc._id;
-        const depth = userDoc.depth || 0;
+        const depth = typeof userDoc.depth === "number" ? userDoc.depth : 0;
         console.log(`Processing ${username} at depth ${depth}`);
 
         try {
@@ -204,13 +237,15 @@ async function main() {
                 {
                   $set: {
                     status: "ignored",
-                    ignoredReason: IgnoredReason.ERROR_SCRAPING_CONNECTIONS, // Using the new reason
+                    ignoredReason: IgnoredReason.ERROR_SCRAPING_CONNECTIONS,
                   },
                 }
               );
-              // No return here; main user data is saved, only connections failed.
-              // If connections are absolutely critical to proceed, you might return.
             }
+          } else {
+            console.log(
+              `Max depth ${maxDepth} reached for ${username} (depth ${depth}). Not fetching further connections.`
+            );
           }
         } catch (err) {
           console.error(`Error processing ${username}:`, err);

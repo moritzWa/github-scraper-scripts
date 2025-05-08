@@ -6,6 +6,8 @@ export const topProfiles = [
 ];
 
 export const topProfilesFinal = [
+  "https://github.com/WillGarman",
+  "https://github.com/tgberkeley",
   "https://github.com/fouad-openai",
   "https://github.com/alpayariyak",
   "https://github.com/erik-dunteman",
