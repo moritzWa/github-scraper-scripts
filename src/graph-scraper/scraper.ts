@@ -15,6 +15,71 @@ const dbName = process.env.MONGODB_DB || "githubGraph";
 const maxDepth = 2;
 const BATCH_SIZE = 5;
 
+// --- Reusable Connection Processing Function ---
+async function processConnectionsPageByPage(
+  username: string,
+  depth: number,
+  connectionType: "followers" | "following",
+  fetchFunction: (
+    username: string
+  ) => AsyncGenerator<string[], void, undefined>,
+  usersCol: any, // Consider using Collection<DbGraphUser> type if available here
+  edgesCol: any // Consider using Collection<any> type
+) {
+  try {
+    for await (const pageItems of fetchFunction(username)) {
+      if (pageItems.length > 0) {
+        // Insert edges
+        const edgeDocs =
+          connectionType === "followers"
+            ? pageItems.map((item) => ({ from: item, to: username }))
+            : pageItems.map((item) => ({ from: username, to: item }));
+
+        await edgesCol
+          .insertMany(edgeDocs, { ordered: false })
+          .catch((err: any) => {
+            console.error(
+              `Error inserting ${connectionType} edges for ${username}, page:`,
+              err
+            );
+            // Decide if you want to throw or just log for edge insertion failures
+          });
+
+        // Upsert new users
+        await usersCol
+          .bulkWrite(
+            pageItems.map((newUsername: string) => ({
+              updateOne: {
+                filter: { _id: newUsername },
+                update: {
+                  $setOnInsert: {
+                    _id: newUsername,
+                    status: "pending",
+                    depth: depth + 1,
+                  },
+                },
+                upsert: true,
+              },
+            }))
+          )
+          .catch((err: any) => {
+            console.error(
+              `Error upserting new users from ${connectionType} for ${username}, page:`,
+              err
+            );
+            // Decide if you want to throw or just log for user upsertion failures
+          });
+      }
+    }
+  } catch (err) {
+    console.error(
+      `Error in ${connectionType} processing stream for ${username}:`,
+      err
+    );
+    throw err; // Re-throw to be caught by the calling Promise.all
+  }
+}
+
 async function main() {
   const client = new MongoClient(mongoUri);
   await client.connect();
@@ -110,64 +175,41 @@ async function main() {
           );
 
           if (depth < maxDepth) {
-            // Fetch followers and following
-            let followers: string[] = [];
-            let following: string[] = [];
             try {
-              [followers, following] = await Promise.all([
-                fetchFollowers(username),
-                fetchFollowing(username),
+              await Promise.all([
+                processConnectionsPageByPage(
+                  username,
+                  depth,
+                  "followers",
+                  fetchFollowersPaged,
+                  usersCol,
+                  edgesCol
+                ),
+                processConnectionsPageByPage(
+                  username,
+                  depth,
+                  "following",
+                  fetchFollowingPaged,
+                  usersCol,
+                  edgesCol
+                ),
               ]);
-            } catch (err) {
-              console.error(`Error fetching connections for ${username}:`, err);
+            } catch (connectionError) {
+              console.error(
+                `Error fetching or processing connections for ${username}:`,
+                connectionError
+              );
               await usersCol.updateOne(
                 { _id: username },
                 {
                   $set: {
                     status: "ignored",
-                    ignoredReason: IgnoredReason.ERROR_SCRAPING,
+                    ignoredReason: IgnoredReason.ERROR_SCRAPING_CONNECTIONS, // Using the new reason
                   },
                 }
               );
-              return;
-            }
-
-            // Insert edges
-            if (followers.length > 0) {
-              await edgesCol
-                .insertMany(
-                  followers.map((f) => ({ from: f, to: username })),
-                  { ordered: false }
-                )
-                .catch(() => {});
-            }
-            if (following.length > 0) {
-              await edgesCol
-                .insertMany(
-                  following.map((f) => ({ from: username, to: f })),
-                  { ordered: false }
-                )
-                .catch(() => {});
-            }
-
-            // Upsert new users to users collection
-            const newUsers = [...followers, ...following];
-            if (newUsers.length > 0) {
-              await usersCol.bulkWrite(
-                newUsers.map((newUsername) => ({
-                  updateOne: {
-                    filter: { _id: newUsername },
-                    update: {
-                      $setOnInsert: {
-                        _id: newUsername,
-                        status: "pending",
-                        depth: depth + 1,
-                      },
-                    },
-                    upsert: true,
-                  },
-                }))
-              );
+              // No return here; main user data is saved, only connections failed.
+              // If connections are absolutely critical to proceed, you might return.
             }
           }
         } catch (err) {
@@ -190,51 +232,59 @@ async function main() {
   console.log("Graph scraping with MongoDB completed!");
 }
 
-// Helper functions (same as before)
-async function fetchFollowers(username: string): Promise<string[]> {
-  const followers: string[] = [];
+// Helper functions (async generators for paged fetching)
+async function* fetchFollowersPaged(
+  username: string
+): AsyncGenerator<string[], void, undefined> {
   let page = 1;
+  const perPage = 100; // Keep this per page for API calls
   while (true) {
     const response = await withRateLimitRetry(() =>
       octokit.request("GET /users/{username}/followers", {
         username,
-        per_page: 100,
+        per_page: perPage,
         page,
       })
     );
     if (response.data.length === 0) break;
-    followers.push(
-      ...response.data
-        .filter((user: any) => user.type === "User")
-        .map((user: any) => user.login)
-    );
-    if (response.data.length < 100) break;
+    const currentPageFollowers = response.data
+      .filter((user: any) => user.type === "User")
+      .map((user: any) => user.login);
+
+    if (currentPageFollowers.length > 0) {
+      yield currentPageFollowers;
+    }
+
+    if (response.data.length < perPage) break;
     page++;
   }
-  return followers;
 }
 
-async function fetchFollowing(username: string): Promise<string[]> {
-  const following: string[] = [];
+async function* fetchFollowingPaged(
+  username: string
+): AsyncGenerator<string[], void, undefined> {
   let page = 1;
+  const perPage = 100; // Keep this per page for API calls
   while (true) {
     const response = await withRateLimitRetry(() =>
       octokit.request("GET /users/{username}/following", {
         username,
-        per_page: 100,
+        per_page: perPage,
         page,
       })
     );
     if (response.data.length === 0) break;
-    following.push(
-      ...response.data
-        .filter((user: any) => user.type === "User")
-        .map((user: any) => user.login)
-    );
-    if (response.data.length < 100) break;
+    const currentPageFollowing = response.data
+      .filter((user: any) => user.type === "User")
+      .map((user: any) => user.login);
+
+    if (currentPageFollowing.length > 0) {
+      yield currentPageFollowing;
+    }
+
+    if (response.data.length < perPage) break;
     page++;
   }
-  return following;
 }
 
 main().catch(console.error);
