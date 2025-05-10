@@ -47,7 +47,7 @@ const webResearchInfoPrompt = (user: UserData, email?: string | null) =>
     user.xBio ? user.xBio : user.bio ? user.bio : ""
   }${
     user.blog ? `Blog is: ${user.blog}` : ""
-  }. If you can't identify the person based on the above information, just say "No additional information found." Focus on most recent job/company experience (i.e. which specific copanies and roles they had most recently), interests, and current role.  No need for complete sentences. Max 250 words.`;
+  }. Focus on most recent job/company experience (i.e. which specific copanies and roles they had most recently), interests, and current role.  No need for complete sentences. Max 250 words.`;
 
 async function getWebResearchInfoOpenAI(
   user: UserData,
@@ -242,11 +242,14 @@ GitHub Profile:
 Name: Sarah Chen
 Company: @Stripe
 Recent Repos:
-Web Research: Software engineer at Stripe.
+- stripe-api
+- stripe-node
+- solidity-examples
+Web Research: Software engineer at Stripe, previously at Coinbase.
 
-REASONING CALCULATION: Role Fit (Assumed Full-Stack at Stripe): +15
-ENGINEER_ARCHETYPE: full-stack
-SCORE: 15
+REASONING CALCULATION: Role Fit (Assumed Full-Stack at Stripe): +15, Crypto Experience/Interest (Coinbase): +10
+ENGINEER_ARCHETYPE: full-stack, protocol/crypto
+SCORE: 25
 ---
 Example 4: 
 ---
