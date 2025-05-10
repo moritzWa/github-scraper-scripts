@@ -1,4 +1,5 @@
 import { Octokit } from "@octokit/core";
+import { OpenAI } from "openai";
 import {
   isLocationInBadCountries,
   normalizeLocation,
@@ -9,6 +10,7 @@ import {
   withRateLimitRetry,
 } from "../utils/prime-scraper-api-utils.js";
 import {
+  fetchLinkedInProfile,
   fetchProfileReadme,
   fetchRecentRepositories,
   fetchWebsiteContent,
@@ -243,6 +245,24 @@ export async function scrapeUser(
         user.webResearchPromptText = ratingData.webResearchPromptText;
         user.engineerArchetype = ratingData.engineerArchetype;
         user.ratedAt = new Date();
+
+        // Fetch LinkedIn information
+        console.log(`[${username}] Fetching LinkedIn information...`);
+        const openai = new OpenAI({
+          apiKey: process.env.OPENAI_API_KEY,
+        });
+        const linkedInUrl = await fetchLinkedInProfile(
+          {
+            name: user.name,
+            login: user.login,
+            company: user.company,
+            bio: user.bio,
+            xBio: user.xBio,
+            email: user.email,
+          },
+          openai
+        );
+        user.linkedinUrl = linkedInUrl;
 
         console.log(`[${username}] Rating calculated: ${ratingData.score}`);
       } catch (error) {

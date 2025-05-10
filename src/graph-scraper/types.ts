@@ -59,6 +59,7 @@ export interface GraphUser {
   engineerArchetype?: string[];
   ratedAt?: Date;
   repoInteractionScraped: any[];
+  linkedinUrl?: string | null;
 }
 
 export interface DbGraphUser extends Omit<GraphUser, "login"> {
