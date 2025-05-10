@@ -52,6 +52,7 @@ export interface GraphUser {
     following: boolean;
   };
   rating?: number;
+  ratingWithRoleFitPoints?: number;
   ratingReasoning?: string;
   webResearchInfoOpenAI?: string;
   webResearchInfoGemini?: string;

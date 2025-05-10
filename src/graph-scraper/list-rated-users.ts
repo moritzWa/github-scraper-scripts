@@ -29,6 +29,7 @@ async function listRatedUsers() {
     ratedUsers.forEach((user: DbGraphUser, index) => {
       console.log(`${index + 1}. https://github.com/${user._id}`);
       console.log(`   Score: ${user.rating}`);
+      console.log(`   Score w/ roleFitPoints: ${user.ratingWithRoleFitPoints}`);
       if (user.ratingReasoning) {
         console.log(`   Reasoning: ${user.ratingReasoning}`);
       }

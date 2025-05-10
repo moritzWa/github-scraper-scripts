@@ -199,10 +199,9 @@ Point Guidelines for Reasoning & Score:
 - Education:
     - Degree from a globally top-tier/renowned university: +5
     - Elite CS (or highly relevant engineering/math) degree from such a university: +10
-- Role Fit (Full-Stack, SRE/Infra, AI Agent Engineers):
-    - Strong alignment & significant, demonstrable experience in a target role: +10 to +25 (Judge based on depth, relevance, recency). No points are awarded under this category for non-target roles (e.g., Investors, pure Eng Managers, PMs, designers).
 - Other Positive Signals (Discretionary):
     - e.g., Impressive open-source work, clear 'hustler' mentality, notable relevant public achievements/awards: +5 to +15 (Judge)
+    - Note: Non-engineering roles (e.g., Investors, pure Eng Managers, PMs, designers) should receive lower scores as we're looking for extremely technical talent.
 
 Help me output a final score (0-100). The score should primarily reflect accumulated positive points from the guidelines. REASONING CALCULATION must explicitly reference these categories.
 
@@ -217,9 +216,9 @@ Recent Repos:
 - startup-ideas
 Web Research: Lead AI Research Engineer at Meta (2018-present). Previously Research Scientist at Google AI (2015-2018). PhD in CS from Stanford. Published papers on distributed ML. Advised early-stage companies. Ran a small AI consulting business.
 
-REASONING CALCULATION: Startup Experience (Interest/minor contributions via advising & small sale): +5, AI Experience (Lead AI Research, papers, but less startup-applied): +15, Education (PhD CS Stanford): +10, Role Fit (AI Agent Engineer, but academic/big tech context): +5
+REASONING CALCULATION: Startup Experience (Interest/minor contributions via advising & small sale): +5, AI Experience (Lead AI Research, papers, but less startup-applied): +15, Education (PhD CS Stanford): +10
 ENGINEER_ARCHETYPE: AI researcher, ML engineer
-SCORE: 35
+SCORE: 30
 ---
 Example 2:
 ---
@@ -232,9 +231,9 @@ Recent Repos:
 - kinema
 Web Research: Co-founded vystem.io (acquired). MS InfoSys from TU Munich. Currently @ PrimeIntellect (our company) building decentralized AI training infrastructure. Work on Kinema (Kubernetes).
 
-REASONING CALCULATION: Startup Experience (Co-founded vystem.io): +20, AI Experience (AI-Scientist repo, current role in decentralized AI): +25, Crypto Experience/Interest (Decentralized AI interest/current role): +5, Education (MS TU Munich): +5, Role Fit (SRE/Infra for Kinema, AI Agent for AI-Scientist & current role): +25, Other Positive Signals (vystem.io acquisition): +5
+REASONING CALCULATION: Startup Experience (Co-founded vystem.io): +20, AI Experience (AI-Scientist repo, current role in decentralized AI): +25, Crypto Experience/Interest (Decentralized AI interest/current role): +5, Education (MS TU Munich): +5, Other positive hustler signals (vystem.io acquisition): +10
 ENGINEER_ARCHETYPE: backend/infra, ML engineer
-SCORE: 85
+SCORE: 65
 ---
 Example 3: 
 ---
@@ -247,9 +246,9 @@ Recent Repos:
 - solidity-examples
 Web Research: Software engineer at Stripe, previously at Coinbase.
 
-REASONING CALCULATION: Role Fit (Assumed Full-Stack at Stripe): +15, Crypto Experience/Interest (Coinbase): +10
+REASONING CALCULATION: Crypto Experience/Interest (Coinbase): +10
 ENGINEER_ARCHETYPE: full-stack, protocol/crypto
-SCORE: 25
+SCORE: 10
 ---
 Example 4: 
 ---
@@ -262,9 +261,9 @@ Recent Repos:
 - lms-ranking
 Web Research: Staff SE @ Phantom (crypto wallet), building self-custody. Co-founded Phonic (AI platform, acquired). Built ranking systems @ Google. Mechatronics & Robotics from Waterloo. YC W20 alum.
 
-REASONING CALCULATION: Startup Experience (Co-founded Phonic, YC Alum): +20, Crypto Experience/Interest (Worked at Phantom - crypto): +25, AI Experience (AI platform Phonic, Google ranking): +25, Education (Waterloo): +5, Role Fit (SRE/Infra for self-custody, AI Agent for platform): +20, Other Positive Signals (YC W20 Alum): +5
+REASONING CALCULATION: Startup Experience (Co-founded Phonic, YC Alum): +20, Crypto Experience/Interest (Worked at renowned crypto company Phantom - crypto): +25, AI Experience (AI platform Phonic, Google ranking): +25, Education (Waterloo): +5, Other positive hustler signals (YC W20 Alum): +10
 ENGINEER_ARCHETYPE: protocol/crypto, backend/infra, ML engineer
-SCORE: 100
+SCORE: 85
 ---
 Engineer in question:
 Name: ${getUserName(user)}
@@ -365,6 +364,13 @@ export async function rateUserV3(user: UserData): Promise<{
   };
 }
 
+function calculateRoleFitPoints(archetypes: string[]): number {
+  const targetRoles = ["protocol/crypto", "backend/infra", "full-stack"];
+  return archetypes.some((archetype) => targetRoles.includes(archetype))
+    ? 20
+    : 0;
+}
+
 async function rateAllProcessedUsers() {
   const mongoUri = process.env.MONGODB_URI || "mongodb://localhost:27017";
   const dbName = process.env.MONGODB_DB || "githubGraph";
@@ -413,12 +419,16 @@ async function rateAllProcessedUsers() {
         };
 
         const ratingData = await rateUserV3(userData);
+        const roleFitPoints = calculateRoleFitPoints(
+          ratingData.engineerArchetype
+        );
 
         await usersCol.updateOne(
           { _id: user._id },
           {
             $set: {
               rating: ratingData.score,
+              ratingWithRoleFitPoints: ratingData.score + roleFitPoints,
               ratingReasoning: ratingData.reasoning,
               webResearchInfoOpenAI: ratingData.webResearchInfoOpenAI,
               webResearchInfoGemini: ratingData.webResearchInfoGemini,
