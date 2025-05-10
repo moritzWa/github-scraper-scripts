@@ -1,5 +1,6 @@
 import { GitHubRepo } from "../types.js";
 import { NormalizedLocation } from "../utils/location.js";
+import { EngineerArchetypes } from "./llm-rating.js";
 
 export interface CalendarWeek {
   contributionDays: CalendarDay[];
@@ -55,6 +56,7 @@ export interface GraphUser {
   webResearchInfoOpenAI?: string;
   webResearchInfoGemini?: string;
   webResearchPromptText?: string;
+  engineerArchetype?: (typeof EngineerArchetypes)[number][];
   ratedAt?: Date;
 }
 

@@ -26,7 +26,7 @@ async function listRatedUsers() {
     console.log("\nRated Users (Sorted by Score):");
     console.log("----------------------------------------");
 
-    ratedUsers.forEach((user, index) => {
+    ratedUsers.forEach((user: DbGraphUser, index) => {
       console.log(`${index + 1}. https://github.com/${user._id}`);
       console.log(`   Score: ${user.rating}`);
       if (user.ratingReasoning) {
@@ -40,6 +40,9 @@ async function listRatedUsers() {
       }
       if (user.webResearchPromptText) {
         console.log(`   Web Research Prompt: ${user.webResearchPromptText}`);
+      }
+      if (user.engineerArchetype) {
+        console.log(`   Engineer Archetype: ${user.engineerArchetype}`);
       }
       console.log("----------------------------------------");
     });

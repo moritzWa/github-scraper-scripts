@@ -47,7 +47,7 @@ const webResearchInfoPrompt = (user: UserData, email?: string | null) =>
     user.xBio ? user.xBio : user.bio ? user.bio : ""
   }${
     user.blog ? `Blog is: ${user.blog}` : ""
-  }. If you can't identify the person based on the above information, just say "No additional information found." Focus on most recent job/company experience (i.e. which specific copanies and roles they had most recently), interests, and current role. No need for complete sentences. Max 250 words.`;
+  }. If you can't identify the person based on the above information, just say "No additional information found." Focus on most recent job/company experience (i.e. which specific copanies and roles they had most recently), interests, and current role.  No need for complete sentences. Max 250 words.`;
 
 async function getWebResearchInfoOpenAI(
   user: UserData,
@@ -157,33 +157,69 @@ async function getWebResearchInfoGemini(
 const getUserName = (user: UserData) =>
   `${user.name || user.login} ${user.xName ? `(${user.xName})` : ""}`;
 
+export const EngineerArchetypes = [
+  "full-stack",
+  "ML engineer",
+  "AI researcher",
+  "backend/infra",
+  "frontend",
+  "protocol/crypto",
+  "data engineer",
+  "low-level systems",
+  "Other",
+  "None",
+];
+
 const RatingPrompt = (
   webResearchInfoOpenAI: string,
   webResearchInfoGemini: string,
   user: UserData
-) => `I'm hiring for several roles for my series A Founders Fund-backed decentralised AI training startup.
+) => `Hiring for roles at a Series A, Founders Fund-backed, decentralized AI training startup.
 
-We are reviewing GitHub profiles and making educated guesses (using a point system) about how good of a fit these engineers are.
-1. Bio & Background: We'll use the github bio, readme, X bio, and web research information to learn about their career and interest. 
-2. Repositories: There are often helpful to asses if a user has shown interest in topics related to our company or is a potential cultural fit. 
-3. Desired Traits: We are looking for startup hustlers and individuals excited about startups, crypto, and LLMs. Award points for these attributes. Note if experience leans heavily towards large corporations or primarily academic research in the reasoning, but focus the score on positive indicators.
-4. Role Fit: We are primarily hiring for Full-Stack, SRE/Infra, and AI Agent Engineers. Focus on awarding points for skills and experience aligning with these roles. No points here for Eng Managers, PMs, designers, etc.
+Reviewing GitHub profiles to assess user fit using a point system.
+1. Bio & Background: Use GitHub bio, readme, X bio, and web research for career/interest insights.
+2. Repositories: Assess for interest in our company's topics or cultural fit.
+3. Engineer Archetype: Based on all available information, categorize the engineer into one or more of the following archetypes: ${EngineerArchetypes.join(
+  ", "
+)}. If multiple apply, list them separated by a comma. If none seem to fit well or it's unclear, use "Other" or "None".
 
-Help me output a final score between 0 and 100 for the user. The score should primarily reflect the accumulation of positive points for desired attributes.
+We prioritize startup hustlers excited about startups, crypto, and LLMs. 
+
+Point Guidelines for Reasoning & Score:
+- Startup Experience: (Focus on demonstrated startup drive; extensive big corp/academic-only experience will naturally receive fewer points in this specific category)
+    - Interest/minor startup project contributions: +5
+    - Recently worked at a startup (clear role): +15
+    - Co-founded a startup OR founding engineer at relevant startup: +20
+- Crypto Experience/Interest:
+    - Expressed interest or minor projects in crypto/decentralized tech: +5
+    - Substantial work/role at a crypto/web3 focused company/project: +25
+- AI Experience:
+    - General interest in AI/ML (courses, conceptual discussions): +5
+    - Significant hands-on AI/ML projects OR AI infrastructure development: +25
+- Education:
+    - Degree from a globally top-tier/renowned university: +5
+    - Elite CS (or highly relevant engineering/math) degree from such a university: +10
+- Role Fit (Full-Stack, SRE/Infra, AI Agent Engineers):
+    - Strong alignment & significant, demonstrable experience in a target role: +10 to +25 (Judge based on depth, relevance, recency). No points are awarded under this category for non-target roles (e.g., Investors, pure Eng Managers, PMs, designers).
+- Other Positive Signals (Discretionary):
+    - e.g., Impressive open-source work, clear 'hustler' mentality, notable relevant public achievements/awards: +5 to +15 (Judge)
+
+Help me output a final score (0-100). The score should primarily reflect accumulated positive points from the guidelines. REASONING CALCULATION must explicitly reference these categories.
 
 Example 1: 
 ---
 GitHub Profile:
 Name: Xiangyi Li
-Company: AI Research Lead @ TechCorp
+Company: AI Research Lead @ Meta
 Recent Repos:
-- ml-model-serving (Production ML model deployment framework)
-- distributed-training (Distributed ML training infrastructure)
-- startup-ideas (Collection of AI startup concepts)
-Web Research: Lead AI Research Engineer at TechCorp (2018-present). Previously Research Scientist at Google AI (2015-2018). PhD in Computer Science from Stanford. Published several papers on distributed ML systems. Active in AI startup community, advising early-stage companies. Built and sold a small AI consulting business in 2020.
+- ml-model-serving
+- distributed-training
+- startup-ideas
+Web Research: Lead AI Research Engineer at Meta (2018-present). Previously Research Scientist at Google AI (2015-2018). PhD in CS from Stanford. Published papers on distributed ML. Advised early-stage companies. Ran a small AI consulting business.
 
-REASONING CALCULATION: startup experience but not co-founder or similar (+5), big tech background (+0), academic focus (+0), no crypto experience (+0), strong infra engineering skills (+20)
-SCORE: 25
+REASONING CALCULATION: Startup Experience (Interest/minor contributions via advising & small sale): +5, AI Experience (Lead AI Research, papers, but less startup-applied): +15, Education (PhD CS Stanford): +10, Role Fit (AI Agent Engineer, but academic/big tech context): +5
+ENGINEER_ARCHETYPE: AI researcher, ML engineer
+SCORE: 35
 ---
 Example 2:
 ---
@@ -191,37 +227,41 @@ GitHub Profile:
 Name: Jannik St
 Company: @PrimeIntellect-ai
 Recent Repos: 
-- kubernetes-cluster-utilization (Kubernetes cluster utilization)
-- AI-Scientist (The AI Scientist: Towards Fully Automated Open-Ended Scientific Discovery 🧑‍🔬)
-- kinema (Holistic rescheduling system for Kubernetes to optimize cluster utilization)
-- react-big-calendar (gcal/outlook like calendar component
-Web Research: Founded vystem.io (acquired 2023), a WebRTC-based video platform scaling to 10K+ concurrent users. MS in Information Systems from TU Munich, thesis on Kubernetes scheduling. Previously at IBM in USA/Germany dual program. Strong background in distributed systems, cloud infrastructure, and AI compute orchestration. Currently building decentralized AI training infrastructure at Prime Intellect.
+- kubernetes-cluster-utilization
+- AI-Scientist
+- kinema
+Web Research: Co-founded vystem.io (acquired). MS InfoSys from TU Munich. Currently @ PrimeIntellect (our company) building decentralized AI training infrastructure. Work on Kinema (Kubernetes).
 
-REASONING CALCULATION: prev co-founder of startup (+20) and now at Prime Intellect i.e. ai startup (+20), displayed interest in Agentic AI (AI Scientist) and decentralized AI (+25), and infra (Kubernetes cluster utilization) (+20)
+REASONING CALCULATION: Startup Experience (Co-founded vystem.io): +20, AI Experience (AI-Scientist repo, current role in decentralized AI): +25, Crypto Experience/Interest (Decentralized AI interest/current role): +5, Education (MS TU Munich): +5, Role Fit (SRE/Infra for Kinema, AI Agent for AI-Scientist & current role): +25, Other Positive Signals (vystem.io acquisition): +5
+ENGINEER_ARCHETYPE: backend/infra, ML engineer
 SCORE: 85
 ---
 Example 3: 
 ---
 GitHub Profile:
-Name: Mitchell Catoen
-Company: @Phantom
-Recent Repos:
-- self-custody (Building self-custody for the masses)
-- ai-research-platform (AI-enabled research platform)
-- lms-ranking (Google LMS ranking systems)
-Web Research: Staff Software Engineer at Phantom building self-custody solutions. Previously co-founded Phonic (acquired by Infillion), an AI-enabled research platform for qualitative research at scale. Built ranking systems at Google under LMS team. Mechatronics & Robotics background from Waterloo. YC W20 alum.
-
-REASONING CALCULATION: YC founder with successful exit (+25), building self-custody/crypto infrastructure (+20), AI platform experience (+15), elite tech background (Google + Waterloo) (+10)
-SCORE: 90
----
-Example 4:
----
-GitHub Profile:
 Name: Sarah Chen
 Company: @Stripe
 Recent Repos:
+Web Research: Software engineer at Stripe.
 
-SCORE: 30
+REASONING CALCULATION: Role Fit (Assumed Full-Stack at Stripe): +15
+ENGINEER_ARCHETYPE: full-stack
+SCORE: 15
+---
+Example 4: 
+---
+GitHub Profile:
+Name: Mitchell Catoen
+Company: @Phantom
+Recent Repos:
+- self-custody
+- ai-research-platform
+- lms-ranking
+Web Research: Staff SE @ Phantom (crypto wallet), building self-custody. Co-founded Phonic (AI platform, acquired). Built ranking systems @ Google. Mechatronics & Robotics from Waterloo. YC W20 alum.
+
+REASONING CALCULATION: Startup Experience (Co-founded Phonic, YC Alum): +20, Crypto Experience/Interest (Worked at Phantom - crypto): +25, AI Experience (AI platform Phonic, Google ranking): +25, Education (Waterloo): +5, Role Fit (SRE/Infra for self-custody, AI Agent for platform): +20, Other Positive Signals (YC W20 Alum): +5
+ENGINEER_ARCHETYPE: protocol/crypto, backend/infra, ML engineer
+SCORE: 100
 ---
 Engineer in question:
 Name: ${getUserName(user)}
@@ -235,20 +275,24 @@ Recent Repos: ${
           repo.description ? ` (${repo.description})` : ""
         }`
     )
-    .join("\n") || ""
+    .join("\\n") || ""
 }
-Web Research (OpenAI): ${webResearchInfoOpenAI}
+Web Research (OpenAI): ${webResearchInfoOpenAI} 
 Web Research (Gemini): ${webResearchInfoGemini}
 ${user.xBio && `X Profile Bio: ${user.xBio}`}
 ----
 Format response exactly as:
-REASONING CALCULATION: [mimic caclulation like Example above here. Use the same format with numbers in parenthesis]
-SCORE: [between 0 and 100]
+REASONING CALCULATION: [Populate using the point system above, referencing categories explicitly, e.g., Startup Experience (worked at startup): +15, AI Experience (hands-on ML): +25, etc.]
+ENGINEER_ARCHETYPE: [Chosen Archetype(s) from the list: ${EngineerArchetypes.join(
+  ", "
+)}. Comma-separated if multiple.]
+SCORE: [between 0 and 100, sum of points from calculation]
 `;
 
 export async function rateUserV3(user: UserData): Promise<{
   reasoning: string;
   score: number;
+  engineerArchetype: string[];
   webResearchInfoOpenAI: string;
   webResearchInfoGemini: string;
   webResearchPromptText: string;
@@ -293,12 +337,25 @@ export async function rateUserV3(user: UserData): Promise<{
   const response = ratingResult.choices[0]?.message?.content || "";
   const reasoningMatch = response.match(/REASONING CALCULATION: (.*)/);
   const scoreMatch = response.match(/SCORE: (\d+)/);
+  const archetypeMatch = response.match(/ENGINEER_ARCHETYPE: (.*)/);
+
+  let parsedArchetypes: string[] = ["None"];
+  if (archetypeMatch && archetypeMatch[1]) {
+    parsedArchetypes = archetypeMatch[1]
+      .split(",")
+      .map((s) => s.trim())
+      .filter((s) => EngineerArchetypes.includes(s));
+    if (parsedArchetypes.length === 0) {
+      parsedArchetypes = ["Other"]; // Default if specified but not matching known, or empty
+    }
+  }
 
   return {
     reasoning: reasoningMatch
       ? reasoningMatch[1].trim()
       : "No reasoning provided",
     score: scoreMatch ? parseInt(scoreMatch[1]) : 0,
+    engineerArchetype: parsedArchetypes,
     webResearchInfoOpenAI: openAIResult.researchResult,
     webResearchInfoGemini: geminiResult.researchResult,
     webResearchPromptText: webResearchPrompt,
@@ -363,6 +420,7 @@ async function rateAllProcessedUsers() {
               webResearchInfoOpenAI: ratingData.webResearchInfoOpenAI,
               webResearchInfoGemini: ratingData.webResearchInfoGemini,
               webResearchPromptText: ratingData.webResearchPromptText,
+              engineerArchetype: ratingData.engineerArchetype,
               ratedAt: new Date(),
             },
           }
