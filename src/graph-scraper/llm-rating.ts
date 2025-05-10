@@ -203,7 +203,7 @@ Point Guidelines for Reasoning & Score:
     - e.g., Impressive open-source work, clear 'hustler' mentality, notable relevant public achievements/awards: +5 to +15 (Judge)
     - Note: Non-engineering roles (e.g., Investors, pure Eng Managers, PMs, designers) should receive lower scores as we're looking for extremely technical talent.
 
-Help me output a final score (0-100). The score should primarily reflect accumulated positive points from the guidelines. REASONING CALCULATION must explicitly reference these categories.
+Help me output a final score (0-100). The score should primarily reflect accumulated positive points from the guidelines. REASONING_CALCULATION must explicitly reference these categories.
 
 Example 1: 
 ---
@@ -216,7 +216,7 @@ Recent Repos:
 - startup-ideas
 Web Research: Lead AI Research Engineer at Meta (2018-present). Previously Research Scientist at Google AI (2015-2018). PhD in CS from Stanford. Published papers on distributed ML. Advised early-stage companies. Ran a small AI consulting business.
 
-REASONING CALCULATION: Startup Experience (Interest/minor contributions via advising & small sale): +5, AI Experience (Lead AI Research, papers, but less startup-applied): +15, Education (PhD CS Stanford): +10
+REASONING_CALCULATION: Startup Experience (Interest/minor contributions via advising & small sale): +5, AI Experience (Lead AI Research, papers, but less startup-applied): +15, Education (PhD CS Stanford): +10
 ENGINEER_ARCHETYPE: AI researcher, ML engineer
 SCORE: 30
 ---
@@ -231,7 +231,7 @@ Recent Repos:
 - kinema
 Web Research: Co-founded vystem.io (acquired). MS InfoSys from TU Munich. Currently @ PrimeIntellect (our company) building decentralized AI training infrastructure. Work on Kinema (Kubernetes).
 
-REASONING CALCULATION: Startup Experience (Co-founded vystem.io): +20, AI Experience (AI-Scientist repo, current role in decentralized AI): +25, Crypto Experience/Interest (Decentralized AI interest/current role): +5, Education (MS TU Munich): +5, Other positive hustler signals (vystem.io acquisition): +10
+REASONING_CALCULATION: Startup Experience (Co-founded vystem.io): +20, AI Experience (AI-Scientist repo, current role in decentralized AI): +25, Crypto Experience/Interest (Decentralized AI interest/current role): +5, Education (MS TU Munich): +5, Other positive hustler signals (vystem.io acquisition): +10
 ENGINEER_ARCHETYPE: backend/infra, ML engineer
 SCORE: 65
 ---
@@ -246,7 +246,7 @@ Recent Repos:
 - solidity-examples
 Web Research: Software engineer at Stripe, previously at Coinbase.
 
-REASONING CALCULATION: Crypto Experience/Interest (Coinbase): +10
+REASONING_CALCULATION: Crypto Experience/Interest (Coinbase): +10
 ENGINEER_ARCHETYPE: full-stack, protocol/crypto
 SCORE: 10
 ---
@@ -261,7 +261,7 @@ Recent Repos:
 - lms-ranking
 Web Research: Staff SE @ Phantom (crypto wallet), building self-custody. Co-founded Phonic (AI platform, acquired). Built ranking systems @ Google. Mechatronics & Robotics from Waterloo. YC W20 alum.
 
-REASONING CALCULATION: Startup Experience (Co-founded Phonic, YC Alum): +20, Crypto Experience/Interest (Worked at renowned crypto company Phantom - crypto): +25, AI Experience (AI platform Phonic, Google ranking): +25, Education (Waterloo): +5, Other positive hustler signals (YC W20 Alum): +10
+REASONING_CALCULATION: Startup Experience (Co-founded Phonic, YC Alum): +20, Crypto Experience/Interest (Worked at renowned crypto company Phantom - crypto): +25, AI Experience (AI platform Phonic, Google ranking): +25, Education (Waterloo): +5, Other positive hustler signals (YC W20 Alum): +10
 ENGINEER_ARCHETYPE: protocol/crypto, backend/infra, ML engineer
 SCORE: 85
 ---
@@ -284,7 +284,7 @@ Web Research (Gemini): ${webResearchInfoGemini}
 ${user.xBio && `X Profile Bio: ${user.xBio}`}
 ----
 Format response exactly as:
-REASONING CALCULATION: [Populate using the point system above, referencing categories explicitly, e.g., Startup Experience (worked at startup): +15, AI Experience (hands-on ML): +25, etc.]
+REASONING_CALCULATION: [Populate using the point system above, referencing categories explicitly, e.g., Startup Experience (worked at startup): +15, AI Experience (hands-on ML): +25, etc.]
 ENGINEER_ARCHETYPE: [Chosen Archetype(s) from the list: ${EngineerArchetypes.join(
   ", "
 )}. Comma-separated if multiple.]
@@ -292,12 +292,13 @@ SCORE: [between 0 and 100, sum of points from calculation]
 `;
 
 export async function rateUserV3(user: UserData): Promise<{
-  reasoning: string;
+  reasoning: string | undefined;
   score: number;
   engineerArchetype: string[];
   webResearchInfoOpenAI: string;
   webResearchInfoGemini: string;
   webResearchPromptText: string;
+  ratedAt: Date;
 }> {
   console.log(`[${user.login}] Fetching email...`);
   const userEmail = await fetchUserEmailFromEvents(user.login, octokit);
@@ -347,7 +348,7 @@ export async function rateUserV3(user: UserData): Promise<{
   });
   console.log(`[${user.login}] Received rating from OpenAI.`);
   const response = ratingResult.choices[0]?.message?.content || "";
-  const reasoningMatch = response.match(/REASONING CALCULATION: (.*)/);
+  const reasoningMatch = response.match(/REASONING_CALCULATION: (.*)/);
   const scoreMatch = response.match(/SCORE: (\d+)/);
   const archetypeMatch = response.match(/ENGINEER_ARCHETYPE: (.*)/);
 
@@ -363,14 +364,13 @@ export async function rateUserV3(user: UserData): Promise<{
   }
 
   return {
-    reasoning: reasoningMatch
-      ? reasoningMatch[1].trim()
-      : "No reasoning provided",
+    reasoning: reasoningMatch ? reasoningMatch[1].trim() : undefined,
     score: scoreMatch ? parseInt(scoreMatch[1]) : 0,
     engineerArchetype: parsedArchetypes,
     webResearchInfoOpenAI: openAIResult.researchResult,
     webResearchInfoGemini: geminiResult.researchResult,
     webResearchPromptText: webResearchPrompt,
+    ratedAt: new Date(),
   };
 }
 

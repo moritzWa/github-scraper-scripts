@@ -1,6 +1,4 @@
-import { GitHubRepo } from "../types.js";
 import { NormalizedLocation } from "../utils/location.js";
-import { EngineerArchetypes } from "./llm-rating.js";
 
 export interface CalendarWeek {
   contributionDays: CalendarDay[];
@@ -22,6 +20,7 @@ export interface ContributionData {
 }
 
 export interface GraphUser {
+  _id: string;
   login: string;
   profileUrl: string;
   createdAt: string;
@@ -32,7 +31,7 @@ export interface GraphUser {
   company: string | null;
   blog: string | null;
   location: string | null;
-  normalizedLocation: NormalizedLocation;
+  normalizedLocation: NormalizedLocation | null;
   email: string | null;
   twitter_username: string | null;
   xUrl: string | null;
@@ -40,10 +39,10 @@ export interface GraphUser {
   xName: string | null;
   xLocation: string | null;
   public_repos: number;
-  contributions: ContributionData | null | undefined;
+  contributions: ContributionData | null;
   profileReadme: string | null;
   websiteContent: string | null;
-  recentRepositories: Array<GitHubRepo> | null;
+  recentRepositories: any[] | null;
   depth: number;
   status: "pending" | "processing" | "processed" | "ignored";
   ignoredReason?: IgnoredReason;
@@ -57,8 +56,9 @@ export interface GraphUser {
   webResearchInfoOpenAI?: string;
   webResearchInfoGemini?: string;
   webResearchPromptText?: string;
-  engineerArchetype?: (typeof EngineerArchetypes)[number][];
+  engineerArchetype?: string[];
   ratedAt?: Date;
+  repoInteractionScraped: any[];
 }
 
 export interface DbGraphUser extends Omit<GraphUser, "login"> {

@@ -20,7 +20,7 @@ async function listRatedUsers() {
         rating: { $exists: true },
         status: "processed",
       })
-      .sort({ rating: -1 }) // Sort by rating in descending order
+      .sort({ ratingWithRoleFitPoints: -1 }) // Sort by rating in descending order
       .toArray();
 
     // only list the top 20

@@ -103,7 +103,7 @@ async function calculateGraphStats() {
     if (ignoredReasons.length > 0) {
       console.log("\nIgnored Reasons:");
       // Sort reasons by count in descending order
-      ignoredReasons.sort((a, b) => b.count - a.count);
+      ignoredReasons.sort((a, b) => (b.count ?? 0) - (a.count ?? 0));
 
       // Group reasons into categories
       const categories: Record<string, string[]> = {
@@ -142,6 +142,106 @@ async function calculateGraphStats() {
           });
         }
       }
+    }
+
+    // Add Rating Statistics
+    const ratedUsers = await usersCol
+      .find({
+        ratingWithRoleFitPoints: { $exists: true },
+        rating: { $exists: true },
+      })
+      .toArray();
+
+    if (ratedUsers.length > 0) {
+      console.log("\nRating Statistics (with Role Fit Points):");
+      console.log("----------------------------------------");
+
+      // Basic rating stats
+      const ratingsWithRoleFit = ratedUsers.map(
+        (u) => u.ratingWithRoleFitPoints ?? 0
+      );
+      const baseRatings = ratedUsers.map((u) => u.rating ?? 0);
+
+      const avgRatingWithRoleFit =
+        ratingsWithRoleFit.reduce((a, b) => a + b, 0) /
+        ratingsWithRoleFit.length;
+      const avgBaseRating =
+        baseRatings.reduce((a, b) => a + b, 0) / baseRatings.length;
+      const minRating = Math.min(...ratingsWithRoleFit);
+      const maxRating = Math.max(...ratingsWithRoleFit);
+
+      console.log(`Total Rated Users: ${ratedUsers.length}`);
+      console.log(`Average Base Rating: ${avgBaseRating.toFixed(1)}`);
+      console.log(
+        `Average Rating with Role Fit: ${avgRatingWithRoleFit.toFixed(1)}`
+      );
+      console.log(
+        `Average Role Fit Bonus: ${(
+          avgRatingWithRoleFit - avgBaseRating
+        ).toFixed(1)}`
+      );
+      console.log(`Min Rating: ${minRating}`);
+      console.log(`Max Rating: ${maxRating}`);
+
+      // Rating distribution
+      const ratingRanges = [
+        { min: 0, max: 20, label: "0-20" },
+        { min: 21, max: 40, label: "21-40" },
+        { min: 41, max: 60, label: "41-60" },
+        { min: 61, max: 80, label: "61-80" },
+        { min: 81, max: 100, label: "81-100" },
+        { min: 101, max: 120, label: "101-120" },
+      ];
+
+      console.log("\nRating Distribution (with Role Fit):");
+      ratingRanges.forEach((range) => {
+        const count = ratingsWithRoleFit.filter(
+          (r) => r >= range.min && r <= range.max
+        ).length;
+        const percentage = ((count / ratingsWithRoleFit.length) * 100).toFixed(
+          1
+        );
+        console.log(`${range.label}: ${count} (${percentage}%)`);
+      });
+
+      // Role fit bonus distribution
+      const roleFitBonuses = ratedUsers.map(
+        (u) => (u.ratingWithRoleFitPoints ?? 0) - (u.rating ?? 0)
+      );
+      const usersWithRoleFitBonus = roleFitBonuses.filter(
+        (bonus) => bonus > 0
+      ).length;
+
+      console.log("\nRole Fit Bonus Statistics:");
+      console.log(
+        `Users with Role Fit Bonus: ${usersWithRoleFitBonus} (${(
+          (usersWithRoleFitBonus / ratedUsers.length) *
+          100
+        ).toFixed(1)}%)`
+      );
+      console.log(
+        `Average Role Fit Bonus: ${(
+          roleFitBonuses.reduce((a, b) => a + b, 0) / ratedUsers.length
+        ).toFixed(1)}`
+      );
+
+      // Engineer archetype distribution
+      const archetypeCounts: Record<string, number> = {};
+      ratedUsers.forEach((user) => {
+        if (user.engineerArchetype) {
+          user.engineerArchetype.forEach((archetype) => {
+            archetypeCounts[archetype] = (archetypeCounts[archetype] ?? 0) + 1;
+          });
+        }
+      });
+
+      console.log("\nEngineer Archetype Distribution:");
+      Object.entries(archetypeCounts)
+        .sort(([, a], [, b]) => (b ?? 0) - (a ?? 0))
+        .forEach(([archetype, count]) => {
+          const percentage = ((count / ratedUsers.length) * 100).toFixed(1);
+          console.log(`${archetype}: ${count} (${percentage}%)`);
+        });
     }
   } catch (error) {
     console.error("Error calculating graph stats:", error);

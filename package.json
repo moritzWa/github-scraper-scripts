@@ -24,11 +24,12 @@
     "test-contribution-scraper": "node --loader ts-node/esm src/testing/test-contribution-scraper.ts",
     "build-vis": "tsc --project tsconfig.json --outDir dist/vis",
     "serve-vis": "npx http-server .",
-    "scrape": "NODE_OPTIONS='--loader ts-node/esm' node src/graph-scraper/scraper.ts",
+    "scrape": "NODE_OPTIONS='--max-old-space-size=8192 --loader ts-node/esm' node src/graph-scraper/scraper.ts",
     "stats": "node --loader ts-node/esm src/graph-scraper/stats.ts",
     "delete-db": "node --loader ts-node/esm src/graph-scraper/delete-db.ts",
     "rate": "node --loader ts-node/esm src/graph-scraper/llm-rating.ts",
-    "list-rated": "node --loader ts-node/esm src/graph-scraper/list-rated-users.ts"
+    "list-rated": "node --loader ts-node/esm src/graph-scraper/list-rated-users.ts",
+    "best-rated-to-txt": "node --loader ts-node/esm src/graph-scraper/best_rated_to_txt.ts"
   },
   "keywords": [],
   "author": "",

@@ -15,11 +15,11 @@ import {
   fetchXProfileMetadata,
 } from "../utils/profile-data-fetchers.js";
 import {
-  CalendarWeek,
-  ContributionData,
-  GraphUser,
-  IgnoredReason,
-} from "./types.js";
+  isActiveInEnoughMonths,
+  isWeekdayCoder,
+} from "./contribution-patterns.js";
+import { rateUserV3 } from "./llm-rating.js";
+import { ContributionData, GraphUser, IgnoredReason } from "./types.js";
 
 function createIgnoredUser(
   basicUserData: Omit<GraphUser, "status" | "ignoredReason">,
@@ -54,6 +54,7 @@ export async function scrapeUser(
 
     // Basic user data that we'll store regardless of filters
     const basicUserData = {
+      _id: userData.data.login,
       login: userData.data.login,
       profileUrl: userData.data.html_url || "",
       createdAt: userData.data.created_at,
@@ -77,6 +78,7 @@ export async function scrapeUser(
       websiteContent: null,
       recentRepositories: null,
       depth,
+      repoInteractionScraped: [],
     };
 
     if (!bypassFilters) {
@@ -207,22 +209,49 @@ export async function scrapeUser(
         fetchRecentRepositories(username, octokit),
       ]);
 
-    return {
-      user: {
-        ...basicUserData,
-        xUrl: userData.data.twitter_username
-          ? `https://x.com/${userData.data.twitter_username}`
-          : null,
-        xBio: xProfile?.bio || null,
-        xName: xProfile?.name || null,
-        xLocation: xProfile?.location || null,
-        contributions: contributions,
-        profileReadme: profileReadme || null,
-        websiteContent: websiteContent || null,
-        recentRepositories: recentRepositories || null,
-        status: "processed",
-      },
+    // Create the user object with all the fetched data
+    const user: GraphUser = {
+      ...basicUserData,
+      xUrl: userData.data.twitter_username
+        ? `https://x.com/${userData.data.twitter_username}`
+        : null,
+      xBio: xProfile?.bio || null,
+      xName: xProfile?.name || null,
+      xLocation: xProfile?.location || null,
+      contributions: contributions || null,
+      profileReadme: profileReadme || null,
+      websiteContent: websiteContent || null,
+      recentRepositories: recentRepositories || null,
+      status: "processed",
     };
+
+    // Calculate rating for users that passed filters
+    if (!bypassFilters) {
+      console.log(`[${username}] Calculating rating...`);
+      try {
+        const ratingData = await rateUserV3(user);
+        const roleFitPoints = calculateRoleFitPoints(
+          ratingData.engineerArchetype
+        );
+
+        // Add rating data to the user object
+        user.rating = ratingData.score;
+        user.ratingWithRoleFitPoints = ratingData.score + roleFitPoints;
+        user.ratingReasoning = ratingData.reasoning;
+        user.webResearchInfoOpenAI = ratingData.webResearchInfoOpenAI;
+        user.webResearchInfoGemini = ratingData.webResearchInfoGemini;
+        user.webResearchPromptText = ratingData.webResearchPromptText;
+        user.engineerArchetype = ratingData.engineerArchetype;
+        user.ratedAt = new Date();
+
+        console.log(`[${username}] Rating calculated: ${ratingData.score}`);
+      } catch (error) {
+        console.error(`[${username}] Error calculating rating:`, error);
+        // Continue without rating data if there's an error
+      }
+    }
+
+    return { user };
   } catch (error) {
     console.error(`Error scraping user ${username}:`, error);
     return {
@@ -231,55 +260,10 @@ export async function scrapeUser(
   }
 }
 
-export function isActiveInEnoughMonths(
-  calendarWeeks: CalendarWeek[],
-  minMonths: number = 8
-): boolean {
-  if (!calendarWeeks) return false;
-
-  const activeMonths = new Set<string>();
-
-  calendarWeeks.forEach((week) => {
-    week.contributionDays.forEach((day) => {
-      if (day.contributionCount > 0) {
-        const monthKey = day.date.substring(0, 7);
-        activeMonths.add(monthKey);
-      }
-    });
-  });
-
-  return activeMonths.size >= minMonths;
-}
-
-export function isWeekdayCoder(
-  calendarWeeks: CalendarWeek[],
-  weekdayThreshold: number = 0.9
-): boolean {
-  if (!calendarWeeks) return false;
-
-  let weekdayContributions = 0;
-  let weekendContributions = 0;
-
-  calendarWeeks.forEach((week) => {
-    week.contributionDays.forEach((day) => {
-      const date = new Date(day.date);
-      const dayOfWeek = date.getUTCDay();
-
-      if (day.contributionCount > 0) {
-        if (dayOfWeek >= 1 && dayOfWeek <= 5) {
-          weekdayContributions += day.contributionCount;
-        } else {
-          weekendContributions += day.contributionCount;
-        }
-      }
-    });
-  });
-
-  const totalContributions = weekdayContributions + weekendContributions;
-  if (totalContributions === 0) {
-    return false;
-  }
-
-  const weekdayRatio = weekdayContributions / totalContributions;
-  return weekdayRatio >= weekdayThreshold;
+// Helper function to calculate role fit points
+function calculateRoleFitPoints(archetypes: string[]): number {
+  const targetRoles = ["protocol/crypto", "backend/infra", "full-stack"];
+  return archetypes.some((archetype) => targetRoles.includes(archetype))
+    ? 20
+    : 0;
 }

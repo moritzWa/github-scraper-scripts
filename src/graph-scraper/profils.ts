@@ -11,15 +11,6 @@ export const topProfiles = [
   "https://github.com/btorressz",
   "https://github.com/WillGarman",
   "https://github.com/tgberkeley",
-];
-
-export const topProfilesFinal = [
-  "https://github.com/mi-yu",
-  "https://github.com/steebchen",
-  "https://github.com/btorressz",
-  "https://github.com/WillGarman",
-  "https://github.com/tgberkeley",
-  // new johannes recs
   "https://github.com/fouad-openai",
   "https://github.com/alpayariyak",
   "https://github.com/erik-dunteman",
@@ -44,6 +35,9 @@ export const topProfilesFinal = [
   "https://github.com/ToniRV",
   "https://github.com/yusufhilmi",
   "https://github.com/jeffchuber",
+];
+
+export const topProfilesAdditional = [
   "https://github.com/varunshenoy",
   "https://github.com/himat",
   "https://github.com/dzhng",
