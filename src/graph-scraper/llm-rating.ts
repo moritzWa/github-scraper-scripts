@@ -5,7 +5,10 @@ import { MongoClient } from "mongodb";
 import { OpenAI } from "openai";
 import path from "path";
 import { UserData } from "../types.js";
-import { fetchRecentRepositories } from "../utils/profile-data-fetchers.js";
+import {
+  fetchRecentRepositories,
+  fetchUserEmailFromEvents,
+} from "../utils/profile-data-fetchers.js";
 import { DbGraphUser } from "./types.js";
 
 config();
@@ -18,32 +21,136 @@ const octokit = new Octokit({
   auth: process.env.GITHUB_ACCESS_TOKEN,
 });
 
-const webResearchInfoPrompt = (user: UserData) =>
+// Types for Google Gemini API Response (simplified)
+interface GooglePart {
+  text: string;
+}
+
+interface GoogleCandidate {
+  content?: {
+    parts: GooglePart[];
+    role?: string;
+  };
+  // We are ignoring groundingMetadata for now
+}
+
+interface GoogleResponse {
+  candidates?: GoogleCandidate[];
+}
+
+const webResearchInfoPrompt = (user: UserData, email?: string | null) =>
   `In a few bullet points tell me more about the background and skills of ${
-    user.name
-  } (Software Engineer). ${user.xBio || user.bio ? "Their bio reads:" : ""} ${
+    user.name || user.login
+  } (Software Engineer)${
+    email ? ` (email for disambiguation: ${email})` : ""
+  }. ${user.xBio || user.bio ? "Their bio reads:" : ""} ${
     user.xBio ? user.xBio : user.bio ? user.bio : ""
   }${
     user.blog ? `Blog is: ${user.blog}` : ""
-  }. If you can't identify the person based on the above information, just say "No additional information found." Focus on previous company and job experience (i.e. which specific copanies and roles they had), interests, and current role. No need for complete sentences. Max 250 words.`;
+  }. If you can't identify the person based on the above information, just say "No additional information found." Focus on most recent job/company experience (i.e. which specific copanies and roles they had most recently), interests, and current role. No need for complete sentences. Max 250 words.`;
 
-async function getWebResearchInfo(user: UserData) {
+async function getWebResearchInfoOpenAI(
+  user: UserData,
+  email?: string | null
+): Promise<{ promptText: string; researchResult: string }> {
+  const promptText = webResearchInfoPrompt(user, email);
   try {
     const response = await openai.responses.create({
       model: "gpt-4o",
       tools: [
         {
           type: "web_search_preview",
-          search_context_size: "medium", // balanced context and cost
+          search_context_size: "medium",
         },
       ],
-      input: webResearchInfoPrompt(user),
+      input: promptText,
     });
-
-    return response.output_text;
+    return {
+      promptText,
+      researchResult:
+        response.output_text || "No additional information found (OpenAI).",
+    };
   } catch (error) {
-    console.error("Error performing web research:", error);
-    return "No additional information found.";
+    console.error("Error performing OpenAI web research:", error);
+    return {
+      promptText,
+      researchResult: "No additional information found (OpenAI).",
+    };
+  }
+}
+
+async function getWebResearchInfoGemini(
+  user: UserData,
+  email?: string | null
+): Promise<{ promptText: string; researchResult: string }> {
+  const promptText = webResearchInfoPrompt(user, email);
+  try {
+    const response = await fetch(
+      "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=" +
+        process.env.GOOGLE_API_KEY,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          system_instruction: {
+            parts: [
+              {
+                text: "You are a helpful assistant performing web research to find background and skills information about a software engineer.",
+              },
+            ],
+          },
+          contents: [
+            {
+              parts: [{ text: promptText }],
+            },
+          ],
+          tools: [
+            {
+              google_search: {},
+            },
+          ],
+        }),
+      }
+    );
+
+    if (!response.ok) {
+      const errorBody = await response.text();
+      console.error("Google API Error:", response.status, errorBody);
+      throw new Error(
+        `Google API request failed with status ${response.status}`
+      );
+    }
+
+    const completion = (await response.json()) as GoogleResponse;
+    const candidate = completion.candidates?.[0];
+
+    if (!candidate?.content?.parts) {
+      console.error(
+        "Bad completion from Google API",
+        JSON.stringify(completion, null, 2)
+      );
+      return {
+        promptText,
+        researchResult: "No additional information found (Gemini).",
+      };
+    }
+
+    const geminiResult = candidate.content.parts
+      .map((part: GooglePart) => part.text)
+      .join("\n");
+    return {
+      promptText,
+      researchResult:
+        geminiResult || "No additional information found (Gemini).",
+    };
+  } catch (error) {
+    console.error("Error performing Gemini web research:", error);
+    return {
+      promptText,
+      researchResult: "No additional information found (Gemini).",
+    };
   }
 }
 
@@ -51,31 +158,32 @@ const getUserName = (user: UserData) =>
   `${user.name || user.login} ${user.xName ? `(${user.xName})` : ""}`;
 
 const RatingPrompt = (
-  webResearchInfo: string,
+  webResearchInfoOpenAI: string,
+  webResearchInfoGemini: string,
   user: UserData
 ) => `I'm hiring for several roles for my series A Founders Fund-backed decentralised AI training startup.
 
 We are reviewing GitHub profiles and making educated guesses (using a point system) about how good of a fit these engineers are.
-1. Bio & Background: We'll use the github bio, readme, and twitter profile information to learn about their background and interest. 
+1. Bio & Background: We'll use the github bio, readme, X bio, and web research information to learn about their career and interest. 
 2. Repositories: There are often helpful to asses if a user has shown interest in topics related to our company or is a potential cultural fit. 
-3. Web Research: We want startup hustlers, NOT big-tech-wagies or academics, people that are excited about startups, crypto, and LLMs.
-4. Role Fit: We are hiring for Full-Stack, SRE/Infra, AI Agent Engineers. Give negative points for Investors, Eng Managers, PMs, designers, etc. 
+3. Desired Traits: We are looking for startup hustlers and individuals excited about startups, crypto, and LLMs. Award points for these attributes. Note if experience leans heavily towards large corporations or primarily academic research in the reasoning, but focus the score on positive indicators.
+4. Role Fit: We are primarily hiring for Full-Stack, SRE/Infra, and AI Agent Engineers. Focus on awarding points for skills and experience aligning with these roles. No points here for Eng Managers, PMs, designers, etc.
 
-Help me output a final score between -100 and 100 for the user.
+Help me output a final score between 0 and 100 for the user. The score should primarily reflect the accumulation of positive points for desired attributes.
 
 Example 1: 
 ---
 GitHub Profile:
 Name: Xiangyi Li
-Company: AI Consultant
+Company: AI Research Lead @ TechCorp
 Recent Repos:
-- deep-learning-papers (Collection of academic ML papers)
-- tensorflow-experiments (Research implementations)
-- consulting-projects (Enterprise ML solutions)
-Web Research: Principal Research Scientist at Meta AI (2010-2022). PhD in Computer Science from Stanford (2005). Previously Research Staff at IBM Watson. Currently independent consultant for AI companies on ML/AI implementation. Published 10+ papers in top ML conferences.
+- ml-model-serving (Production ML model deployment framework)
+- distributed-training (Distributed ML training infrastructure)
+- startup-ideas (Collection of AI startup concepts)
+Web Research: Lead AI Research Engineer at TechCorp (2018-present). Previously Research Scientist at Google AI (2015-2018). PhD in Computer Science from Stanford. Published several papers on distributed ML systems. Active in AI startup community, advising early-stage companies. Built and sold a small AI consulting business in 2020.
 
-REASONING CALCULATION: purely academic (-10), big tech background (-15), likely older than 30 and thus less hard working (-20), senior management/consulting focus (-10), no startup (-10) or crypto experience (-15), displayed intellectual interest in AI (+5)
-SCORE: -50
+REASONING CALCULATION: startup experience but not co-founder or similar (+5), big tech background (+0), academic focus (+0), no crypto experience (+0), strong infra engineering skills (+20)
+SCORE: 25
 ---
 Example 2:
 ---
@@ -83,13 +191,13 @@ GitHub Profile:
 Name: Jannik St
 Company: @PrimeIntellect-ai
 Recent Repos: 
-- python-nomad (Client library Hashicorp Nomad)
+- kubernetes-cluster-utilization (Kubernetes cluster utilization)
 - AI-Scientist (The AI Scientist: Towards Fully Automated Open-Ended Scientific Discovery 🧑‍🔬)
 - kinema (Holistic rescheduling system for Kubernetes to optimize cluster utilization)
 - react-big-calendar (gcal/outlook like calendar component
 Web Research: Founded vystem.io (acquired 2023), a WebRTC-based video platform scaling to 10K+ concurrent users. MS in Information Systems from TU Munich, thesis on Kubernetes scheduling. Previously at IBM in USA/Germany dual program. Strong background in distributed systems, cloud infrastructure, and AI compute orchestration. Currently building decentralized AI training infrastructure at Prime Intellect.
 
-REASONING CALCULATION: prev co-founder of startup and now at Prime Intellect i.e. ai startup (+20), displayed interest in Agentic AI (AI Scientist), decentralized AI (current role at Prime) (+20), and infra (Kubernetes cluster utilization) (+20)
+REASONING CALCULATION: prev co-founder of startup (+20) and now at Prime Intellect i.e. ai startup (+20), displayed interest in Agentic AI (AI Scientist) and decentralized AI (+25), and infra (Kubernetes cluster utilization) (+20)
 SCORE: 85
 ---
 Example 3: 
@@ -106,6 +214,15 @@ Web Research: Staff Software Engineer at Phantom building self-custody solutions
 REASONING CALCULATION: YC founder with successful exit (+25), building self-custody/crypto infrastructure (+20), AI platform experience (+15), elite tech background (Google + Waterloo) (+10)
 SCORE: 90
 ---
+Example 4:
+---
+GitHub Profile:
+Name: Sarah Chen
+Company: @Stripe
+Recent Repos:
+
+SCORE: 30
+---
 Engineer in question:
 Name: ${getUserName(user)}
 ${user.company ? `Company: ${user.company}` : ""}
@@ -120,21 +237,37 @@ Recent Repos: ${
     )
     .join("\n") || ""
 }
-Web Research: ${webResearchInfo}
+Web Research (OpenAI): ${webResearchInfoOpenAI}
+Web Research (Gemini): ${webResearchInfoGemini}
+${user.xBio && `X Profile Bio: ${user.xBio}`}
 ----
 Format response exactly as:
 REASONING CALCULATION: [mimic caclulation like Example above here. Use the same format with numbers in parenthesis]
-SCORE: [between -100 and 100]
+SCORE: [between 0 and 100]
 `;
 
-// Export a new async function rateUserV2 that takes a UserData object and returns a Promise<{ reasoning: string; score: number }>
-export async function rateUserV3(
-  user: UserData
-): Promise<{ reasoning: string; score: number; webResearchInfo: string }> {
-  const webResearchInfo = await getWebResearchInfo(user);
-  const ratingPrompt = RatingPrompt(webResearchInfo, user);
+export async function rateUserV3(user: UserData): Promise<{
+  reasoning: string;
+  score: number;
+  webResearchInfoOpenAI: string;
+  webResearchInfoGemini: string;
+  webResearchPromptText: string;
+}> {
+  const userEmail = await fetchUserEmailFromEvents(user.login, octokit);
 
-  // Log the prompt to a file
+  const [openAIResult, geminiResult] = await Promise.all([
+    getWebResearchInfoOpenAI(user, userEmail),
+    getWebResearchInfoGemini(user, userEmail),
+  ]);
+
+  const webResearchPrompt = openAIResult.promptText;
+
+  const ratingPromptContent = RatingPrompt(
+    openAIResult.researchResult,
+    geminiResult.researchResult,
+    user
+  );
+
   const logDir = path.join(process.cwd(), "logs");
   if (!fs.existsSync(logDir)) {
     fs.mkdirSync(logDir);
@@ -145,24 +278,30 @@ export async function rateUserV3(
   );
   fs.appendFileSync(
     logFile,
-    `\n\n=== Rating Prompt for ${
+    `\n\n=== Web Research Prompt for ${
       user.login
-    } at ${new Date().toISOString()} ===\n${ratingPrompt}\n`
+    } at ${new Date().toISOString()} ===\n${webResearchPrompt}\n` +
+      `\n\n=== Rating Prompt for ${
+        user.login
+      } at ${new Date().toISOString()} ===\n${ratingPromptContent}\n`
   );
 
   const ratingResult = await openai.chat.completions.create({
     model: "gpt-4o",
-    messages: [{ role: "user", content: ratingPrompt }],
+    messages: [{ role: "user", content: ratingPromptContent }],
   });
   const response = ratingResult.choices[0]?.message?.content || "";
   const reasoningMatch = response.match(/REASONING CALCULATION: (.*)/);
   const scoreMatch = response.match(/SCORE: (\d+)/);
+
   return {
     reasoning: reasoningMatch
       ? reasoningMatch[1].trim()
       : "No reasoning provided",
     score: scoreMatch ? parseInt(scoreMatch[1]) : 0,
-    webResearchInfo: webResearchInfo,
+    webResearchInfoOpenAI: openAIResult.researchResult,
+    webResearchInfoGemini: geminiResult.researchResult,
+    webResearchPromptText: webResearchPrompt,
   };
 }
 
@@ -175,14 +314,18 @@ async function rateAllProcessedUsers() {
     await client.connect();
     const db = client.db(dbName);
     const usersCol = db.collection<DbGraphUser>("users");
+    const ONLY_RATE_NEW_USERS = false;
 
-    // Find all processed users that don't have a rating yet
-    const processedUsers = await usersCol
-      .find({
-        status: "processed",
-        rating: { $exists: false },
-      })
-      .toArray();
+    const query: any = {
+      status: "processed",
+    };
+
+    if (ONLY_RATE_NEW_USERS) {
+      query.rating = { $exists: false };
+      query.ratedAt = { $exists: false };
+    }
+
+    const processedUsers = await usersCol.find(query).toArray();
 
     console.log(`Found ${processedUsers.length} processed users to rate`);
 
@@ -190,12 +333,10 @@ async function rateAllProcessedUsers() {
       try {
         console.log(`Rating user: ${user._id}`);
 
-        // Fetch recent repositories if not already present
         let recentRepositories = user.recentRepositories;
         if (!recentRepositories) {
           console.log(`Fetching recent repositories for ${user.profileUrl}`);
           recentRepositories = await fetchRecentRepositories(user._id, octokit);
-          // Update the user document with the fetched repositories
           if (recentRepositories) {
             await usersCol.updateOne(
               { _id: user._id },
@@ -204,7 +345,6 @@ async function rateAllProcessedUsers() {
           }
         }
 
-        // Convert DbGraphUser to UserData
         const userData: UserData = {
           ...user,
           login: user._id,
@@ -212,27 +352,27 @@ async function rateAllProcessedUsers() {
           recentRepositories: recentRepositories || null,
         };
 
-        const rating = await rateUserV3(userData);
+        const ratingData = await rateUserV3(userData);
 
-        // Update the user document with the rating information
         await usersCol.updateOne(
           { _id: user._id },
           {
             $set: {
-              rating: rating.score,
-              ratingReasoning: rating.reasoning,
-              webResearchInfo: rating.webResearchInfo,
+              rating: ratingData.score,
+              ratingReasoning: ratingData.reasoning,
+              webResearchInfoOpenAI: ratingData.webResearchInfoOpenAI,
+              webResearchInfoGemini: ratingData.webResearchInfoGemini,
+              webResearchPromptText: ratingData.webResearchPromptText,
               ratedAt: new Date(),
             },
           }
         );
 
         console.log(
-          `Successfully rated ${user._id} with score: ${rating.score}`
+          `Successfully rated ${user._id} with score: ${ratingData.score}`
         );
       } catch (error) {
         console.error(`Error rating user ${user._id}:`, error);
-        // Continue with next user even if one fails
         continue;
       }
     }
@@ -245,7 +385,6 @@ async function rateAllProcessedUsers() {
   }
 }
 
-// Run the rating job if this file is executed directly
 if (import.meta.url === `file://${process.argv[1]}`) {
   rateAllProcessedUsers().catch(console.error);
 }

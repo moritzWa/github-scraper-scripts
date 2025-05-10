@@ -32,6 +32,15 @@ async function listRatedUsers() {
       if (user.ratingReasoning) {
         console.log(`   Reasoning: ${user.ratingReasoning}`);
       }
+      if (user.webResearchInfoOpenAI) {
+        console.log(`   Web Research (OpenAI): ${user.webResearchInfoOpenAI}`);
+      }
+      if (user.webResearchInfoGemini) {
+        console.log(`   Web Research (Gemini): ${user.webResearchInfoGemini}`);
+      }
+      if (user.webResearchPromptText) {
+        console.log(`   Web Research Prompt: ${user.webResearchPromptText}`);
+      }
       console.log("----------------------------------------");
     });
 

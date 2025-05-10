@@ -188,6 +188,61 @@ export async function fetchRecentRepositories(
   }
 }
 
+export async function fetchUserEmailFromEvents(
+  username: string,
+  octokit: Octokit
+): Promise<string | null> {
+  let mostRecentNoreplyEmail: string | null = null;
+  const MAX_PAGES_TO_CHECK = 3;
+
+  try {
+    for (let page = 1; page <= MAX_PAGES_TO_CHECK; page++) {
+      const events = await withRateLimitRetry(() =>
+        octokit.request("GET /users/{username}/events/public", {
+          username,
+          per_page: 30, // Fetch 30 events per page
+          page: page,
+        })
+      );
+
+      if (events.data && events.data.length > 0) {
+        for (const event of events.data) {
+          if (event.type === "PushEvent" && event.payload) {
+            const payload = event.payload as any;
+            if (payload.commits && payload.commits.length > 0) {
+              for (const commit of payload.commits) {
+                if (commit.author && commit.author.email) {
+                  const email = commit.author.email as string;
+                  // Prefer non-noreply emails
+                  if (!email.endsWith("@users.noreply.github.com")) {
+                    return email; // Found a non-noreply email, return immediately
+                  }
+                  // Keep track of the first noreply email encountered (which will be the most recent)
+                  if (!mostRecentNoreplyEmail) {
+                    mostRecentNoreplyEmail = email;
+                  }
+                }
+              }
+            }
+          }
+        }
+      } else {
+        // No more events to fetch for this user
+        break;
+      }
+    }
+    // If loop finishes, it means no non-noreply email was found.
+    // Return the most recent noreply email found, or null if none.
+    return mostRecentNoreplyEmail;
+  } catch (error) {
+    console.error(
+      `Error fetching user email from events for ${username}:`,
+      error
+    );
+    return null;
+  }
+}
+
 export async function fetchXProfileMetadata(username: string): Promise<{
   bio: string | null;
   name: string | null;

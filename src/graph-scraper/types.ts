@@ -52,7 +52,9 @@ export interface GraphUser {
   };
   rating?: number;
   ratingReasoning?: string;
-  webResearchInfo?: string;
+  webResearchInfoOpenAI?: string;
+  webResearchInfoGemini?: string;
+  webResearchPromptText?: string;
   ratedAt?: Date;
 }
 
