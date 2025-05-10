@@ -23,10 +23,13 @@ async function listRatedUsers() {
       .sort({ rating: -1 }) // Sort by rating in descending order
       .toArray();
 
+    // only list the top 20
+    const top20RatedUsers = ratedUsers.slice(0, 30);
+
     console.log("\nRated Users (Sorted by Score):");
     console.log("----------------------------------------");
 
-    ratedUsers.forEach((user: DbGraphUser, index) => {
+    top20RatedUsers.forEach((user: DbGraphUser, index) => {
       console.log(`${index + 1}. https://github.com/${user._id}`);
       console.log(`   Score: ${user.rating}`);
       console.log(`   Score w/ roleFitPoints: ${user.ratingWithRoleFitPoints}`);

@@ -299,12 +299,20 @@ export async function rateUserV3(user: UserData): Promise<{
   webResearchInfoGemini: string;
   webResearchPromptText: string;
 }> {
+  console.log(`[${user.login}] Fetching email...`);
   const userEmail = await fetchUserEmailFromEvents(user.login, octokit);
+  console.log(`[${user.login}] Fetched email: ${userEmail || "not found"}`);
+
+  console.log(`[${user.login}] Performing OpenAI web research...`);
+  const openAIResultPromise = getWebResearchInfoOpenAI(user, userEmail);
+  console.log(`[${user.login}] Performing Gemini web research...`);
+  const geminiResultPromise = getWebResearchInfoGemini(user, userEmail);
 
   const [openAIResult, geminiResult] = await Promise.all([
-    getWebResearchInfoOpenAI(user, userEmail),
-    getWebResearchInfoGemini(user, userEmail),
+    openAIResultPromise,
+    geminiResultPromise,
   ]);
+  console.log(`[${user.login}] OpenAI research done. Gemini research done.`);
 
   const webResearchPrompt = openAIResult.promptText;
 
@@ -332,10 +340,12 @@ export async function rateUserV3(user: UserData): Promise<{
       } at ${new Date().toISOString()} ===\n${ratingPromptContent}\n`
   );
 
+  console.log(`[${user.login}] Sending rating prompt to OpenAI...`);
   const ratingResult = await openai.chat.completions.create({
     model: "gpt-4o",
     messages: [{ role: "user", content: ratingPromptContent }],
   });
+  console.log(`[${user.login}] Received rating from OpenAI.`);
   const response = ratingResult.choices[0]?.message?.content || "";
   const reasoningMatch = response.match(/REASONING CALCULATION: (.*)/);
   const scoreMatch = response.match(/SCORE: (\d+)/);
@@ -371,16 +381,18 @@ function calculateRoleFitPoints(archetypes: string[]): number {
     : 0;
 }
 
+// SCRIPT
 async function rateAllProcessedUsers() {
   const mongoUri = process.env.MONGODB_URI || "mongodb://localhost:27017";
   const dbName = process.env.MONGODB_DB || "githubGraph";
+  const BATCH_SIZE = 10;
 
   const client = new MongoClient(mongoUri);
   try {
     await client.connect();
     const db = client.db(dbName);
     const usersCol = db.collection<DbGraphUser>("users");
-    const ONLY_RATE_NEW_USERS = false;
+    const ONLY_RATE_NEW_USERS = true;
 
     const query: any = {
       status: "processed",
@@ -395,57 +407,86 @@ async function rateAllProcessedUsers() {
 
     console.log(`Found ${processedUsers.length} processed users to rate`);
 
-    for (const user of processedUsers) {
-      try {
-        console.log(`Rating user: ${user._id}`);
+    for (let i = 0; i < processedUsers.length; i += BATCH_SIZE) {
+      const batch = processedUsers.slice(i, i + BATCH_SIZE);
+      console.log(
+        `Processing batch of ${batch.length} users (starting from index ${i})`
+      );
 
-        let recentRepositories = user.recentRepositories;
-        if (!recentRepositories) {
-          console.log(`Fetching recent repositories for ${user.profileUrl}`);
-          recentRepositories = await fetchRecentRepositories(user._id, octokit);
-          if (recentRepositories) {
+      await Promise.all(
+        batch.map(async (user) => {
+          try {
+            console.log(`[${user._id}] Starting rating process.`);
+
+            let recentRepositories = user.recentRepositories;
+            if (!recentRepositories) {
+              console.log(
+                `[${user._id}] Fetching recent repositories for ${user.profileUrl}`
+              );
+              recentRepositories = await fetchRecentRepositories(
+                user._id,
+                octokit
+              );
+              console.log(`[${user._id}] Fetched recent repositories.`);
+              if (recentRepositories) {
+                console.log(
+                  `[${user._id}] Updating user with recent repositories in DB...`
+                );
+                await usersCol.updateOne(
+                  { _id: user._id },
+                  { $set: { recentRepositories } }
+                );
+                console.log(
+                  `[${user._id}] Updated user with recent repositories in DB.`
+                );
+              }
+            }
+
+            const userData: UserData = {
+              ...user,
+              login: user._id,
+              repoInteractionScraped: [],
+              recentRepositories: recentRepositories || null,
+            };
+
+            console.log(`[${user._id}] Calling rateUserV3...`);
+            const ratingData = await rateUserV3(userData);
+            console.log(`[${user._id}] Received data from rateUserV3.`);
+            const roleFitPoints = calculateRoleFitPoints(
+              ratingData.engineerArchetype
+            );
+
+            console.log(`[${user._id}] Updating user rating in DB...`);
             await usersCol.updateOne(
               { _id: user._id },
-              { $set: { recentRepositories } }
+              {
+                $set: {
+                  rating: ratingData.score,
+                  ratingWithRoleFitPoints: ratingData.score + roleFitPoints,
+                  ratingReasoning: ratingData.reasoning,
+                  webResearchInfoOpenAI: ratingData.webResearchInfoOpenAI,
+                  webResearchInfoGemini: ratingData.webResearchInfoGemini,
+                  webResearchPromptText: ratingData.webResearchPromptText,
+                  engineerArchetype: ratingData.engineerArchetype,
+                  ratedAt: new Date(),
+                },
+              }
             );
+            console.log(`[${user._id}] Updated user rating in DB.`);
+
+            console.log(
+              `[${user._id}] Successfully rated https://github.com/${user._id} with score: ${ratingData.score}`
+            );
+          } catch (error) {
+            console.error(
+              `[${user._id}] Error rating user ${user._id}:`,
+              error
+            );
+            // Continue with the next user in the batch
           }
-        }
-
-        const userData: UserData = {
-          ...user,
-          login: user._id,
-          repoInteractionScraped: [],
-          recentRepositories: recentRepositories || null,
-        };
-
-        const ratingData = await rateUserV3(userData);
-        const roleFitPoints = calculateRoleFitPoints(
-          ratingData.engineerArchetype
-        );
-
-        await usersCol.updateOne(
-          { _id: user._id },
-          {
-            $set: {
-              rating: ratingData.score,
-              ratingWithRoleFitPoints: ratingData.score + roleFitPoints,
-              ratingReasoning: ratingData.reasoning,
-              webResearchInfoOpenAI: ratingData.webResearchInfoOpenAI,
-              webResearchInfoGemini: ratingData.webResearchInfoGemini,
-              webResearchPromptText: ratingData.webResearchPromptText,
-              engineerArchetype: ratingData.engineerArchetype,
-              ratedAt: new Date(),
-            },
-          }
-        );
-
-        console.log(
-          `Successfully rated ${user._id} with score: ${ratingData.score}`
-        );
-      } catch (error) {
-        console.error(`Error rating user ${user._id}:`, error);
-        continue;
-      }
+        })
+      );
+      console.log(`Finished processing batch (starting from index ${i})`);
     }
 
     console.log("Finished rating all processed users");

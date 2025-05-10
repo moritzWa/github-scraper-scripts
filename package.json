@@ -4,7 +4,7 @@
   "description": "",
   "main": "index.js",
   "type": "module",
-  "scripts": {
+  "scripts-old": {
     "scrape": "node --loader ts-node/esm src/utils/prime-scraper.ts",
     "scrape-ideal": "node --loader ts-node/esm src/testing/prime-profile-link-scraper.ts",
     "rate": "node --loader ts-node/esm src/rating/rate-users.ts",
@@ -16,16 +16,18 @@
     "clean": "node --loader ts-node/esm src/repo-interaction-scraper/clean.ts",
     "links": "node --loader ts-node/esm src/utils/generate-profile-links.ts",
     "scrape-orgs": "node --loader ts-node/esm src/testing/scrape-repos-from-organizations.ts",
-    "analyze-contributions": "node --loader ts-node/esm src/utils/analyze-contributions.ts",
+    "analyze-contributions": "node --loader ts-node/esm src/utils/analyze-contributions.ts"
+  },
+  "scripts": {
     "scrape-top-profiles": "node --loader ts-node/esm src/graph-scraper/top-profiles-scraper.ts",
     "rank-top-profiles": "node --loader ts-node/esm src/graph-scraper/top-profiles-ranker.ts",
     "test-contribution-scraper": "node --loader ts-node/esm src/testing/test-contribution-scraper.ts",
     "build-vis": "tsc --project tsconfig.json --outDir dist/vis",
     "serve-vis": "npx http-server .",
-    "scrape-graph": "NODE_OPTIONS='--loader ts-node/esm' node src/graph-scraper/scraper.ts",
-    "scrape-stats": "node --loader ts-node/esm src/graph-scraper/stats.ts",
+    "scrape": "NODE_OPTIONS='--loader ts-node/esm' node src/graph-scraper/scraper.ts",
+    "stats": "node --loader ts-node/esm src/graph-scraper/stats.ts",
     "delete-db": "node --loader ts-node/esm src/graph-scraper/delete-db.ts",
-    "rate-graph": "node --loader ts-node/esm src/graph-scraper/llm-rating.ts",
+    "rate": "node --loader ts-node/esm src/graph-scraper/llm-rating.ts",
     "list-rated": "node --loader ts-node/esm src/graph-scraper/list-rated-users.ts"
   },
   "keywords": [],

@@ -67,6 +67,23 @@ async function calculateGraphStats() {
       console.log(`${_id}: ${count} (${percentage}%)`);
     });
 
+    // Add new stat for rated users among processed
+    const processedStatusCount =
+      statusCounts.find((s) => s._id === "processed")?.count || 0;
+    if (processedStatusCount > 0) {
+      const ratedUsersCount = await usersCol.countDocuments({
+        status: "processed",
+        rating: { $exists: true },
+      });
+      const percentageRated = (
+        (ratedUsersCount / processedStatusCount) *
+        100
+      ).toFixed(1);
+      console.log(
+        `  - Of which, Rated: ${ratedUsersCount} (${percentageRated}%)`
+      );
+    }
+
     console.log("\nDepth Distribution:");
     depthCounts.forEach(({ _id, count }) => {
       const percentage = ((count / totalUsers) * 100).toFixed(1);

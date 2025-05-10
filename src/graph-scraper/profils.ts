@@ -2,8 +2,15 @@ export const topProfiles = [
   "https://github.com/JannikSt",
   "https://github.com/alpayariyak",
   "https://github.com/lukasmasuch",
-  // "https://github.com/erik-dunteman",
-  // "https://github.com/wuweiweiwu",
+  "https://github.com/Jackmin801",
+  "https://github.com/felix-red-panda",
+  "https://github.com/erik-dunteman",
+  "https://github.com/wuweiweiwu",
+  "https://github.com/mi-yu",
+  "https://github.com/steebchen",
+  "https://github.com/btorressz",
+  "https://github.com/WillGarman",
+  "https://github.com/tgberkeley",
 ];
 
 export const topProfilesFinal = [
@@ -69,9 +76,7 @@ export const topProfilesFinal = [
   "https://github.com/jwstanly",
   "https://github.com/maccman",
   "https://github.com/JohannesHa",
-  "https://github.com/JannikSt",
-  "https://github.com/Jackmin801",
-  "https://github.com/felix-red-panda",
+
   "https://github.com/manveerxyz",
   "https://github.com/justusmattern27",
   "https://github.com/mikex86",
