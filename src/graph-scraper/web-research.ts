@@ -1,5 +1,5 @@
-import OpenAI from "openai";
 import { UserData } from "../types.js";
+import openai from "./openai.js";
 
 interface GooglePart {
   text: string;
@@ -16,10 +16,6 @@ interface GoogleCandidate {
 interface GoogleResponse {
   candidates?: GoogleCandidate[];
 }
-
-const openai = new OpenAI({
-  apiKey: process.env.OPENAI_API_KEY,
-});
 
 export const webResearchInfoPrompt = (user: UserData, email?: string | null) =>
   `In a few bullet points tell me more about the background and skills of ${

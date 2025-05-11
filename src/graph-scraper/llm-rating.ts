@@ -2,13 +2,13 @@ import { Octokit } from "@octokit/core";
 import { config } from "dotenv";
 import fs from "fs";
 import { MongoClient } from "mongodb";
-import OpenAI from "openai";
 import path from "path";
 import { UserData } from "../types.js";
 import {
   fetchRecentRepositories,
   fetchUserEmailFromEvents,
 } from "../utils/profile-data-fetchers.js";
+import openai from "./openai.js";
 import { DbGraphUser } from "./types.js";
 import {
   getWebResearchInfoGemini,
@@ -20,12 +20,6 @@ config();
 const octokit = new Octokit({
   auth: process.env.GITHUB_ACCESS_TOKEN,
 });
-
-const openai = new OpenAI({
-  apiKey: process.env.OPENAI_API_KEY,
-});
-
-// Types for Google Gemini API Response (simplified)
 
 const getUserName = (user: UserData) =>
   `${user.name || user.login} ${user.xName ? `(${user.xName})` : ""}`;
@@ -61,8 +55,8 @@ We prioritize startup hustlers excited about startups, crypto, and LLMs.
 Point Guidelines for Reasoning & Score:
 - Startup Experience: (Focus on demonstrated startup drive; extensive big corp/academic-only experience will naturally receive fewer points in this specific category)
     - Interest/minor startup project contributions: +5
-    - Recently worked at a startup (clear role): +15
-    - Co-founded a startup OR founding engineer at relevant startup: +20
+    - Recently worked at a startup or bootstraped saas company (clear role): +10
+    - Co-founded a startup OR founding engineer at notable and relevant startup: +20
 - Crypto Experience/Interest:
     - Expressed interest or minor projects in crypto/decentralized tech: +5
     - Substantial work/role at a crypto/web3 focused company/project: +25
@@ -74,7 +68,7 @@ Point Guidelines for Reasoning & Score:
     - Elite CS (or highly relevant engineering/math) degree from such a university: +10
 - Other Positive Signals (Discretionary):
     - e.g., Impressive open-source work, clear 'hustler' mentality, notable relevant public achievements/awards: +5 to +15 (Judge)
-    - Note: Non-engineering roles (e.g., Investors, pure Eng Managers, PMs, designers) should receive lower scores as we're looking for extremely technical talent.
+    - Note: Non-engineering roles (e.g., Investors, pure Eng Managers, PMs, designers) should receive 0-scores as we're looking for extremely technical talent.
 
 Help me output a final score (0-100). The score should primarily reflect accumulated positive points from the guidelines. REASONING_CALCULATION must explicitly reference these categories.
 
@@ -152,6 +146,8 @@ Recent Repos: ${
     )
     .join("\\n") || ""
 }
+Linkedin Summary: 
+${user.linkedinExperienceSummary}
 Web Research (OpenAI): ${webResearchInfoOpenAI} 
 Web Research (Gemini): ${webResearchInfoGemini}
 ${user.xBio && `X Profile Bio: ${user.xBio}`}
@@ -172,6 +168,7 @@ export async function rateUserV3(user: UserData): Promise<{
   webResearchInfoGemini: string;
   webResearchPromptText: string;
   ratedAt: Date;
+  email: string | null | undefined;
 }> {
   console.log(`[${user.login}] Fetching email...`);
   const userEmail = await fetchUserEmailFromEvents(user.login, octokit);
@@ -244,6 +241,7 @@ export async function rateUserV3(user: UserData): Promise<{
     webResearchInfoGemini: geminiResult.researchResult,
     webResearchPromptText: webResearchPrompt,
     ratedAt: new Date(),
+    email: userEmail,
   };
 }
 

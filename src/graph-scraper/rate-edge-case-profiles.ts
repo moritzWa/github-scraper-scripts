@@ -2,7 +2,11 @@ import { Octokit } from "@octokit/core";
 import { config } from "dotenv";
 import { MongoClient } from "mongodb";
 import { UserData } from "../types.js";
-import { fetchRecentRepositories } from "../utils/profile-data-fetchers.js";
+import {
+  fetchLinkedInExperienceViaRapidAPI,
+  fetchLinkedInProfileUsingGemini,
+  generateLinkedInExperienceSummary,
+} from "./linkedin-research.js";
 import { rateUserV3 } from "./llm-rating.js"; // Assuming llm-rating.ts will be updated
 import { DbGraphUser } from "./types.js";
 
@@ -17,11 +21,11 @@ const dbName = process.env.MONGODB_DB || "githubGraph";
 
 // List of edge-case GitHub usernames to re-evaluate
 const edgeCaseUsernames: string[] = [
-  "mjafri118", // Mohib Jafri
-  "mhw32", // Mike Wu
   "n0rlant1s", // Bani Singh
-  "RaghavSood", // Raghav Sood
-  "edgarriba", // Edgar Riba
+  // "mjafri118", // Mohib Jafri
+  // "mhw32", // Mike Wu
+  // "RaghavSood", // Raghav Sood
+  // "edgarriba", // Edgar Riba
 ];
 
 async function fetchUserDataForRating(
@@ -38,58 +42,11 @@ async function fetchUserDataForRating(
       console.warn(
         `[${username}] User not found in DB. Attempting to construct partial UserData.`
       );
-      // For users not in DB, we might only have login.
-      // rateUserV3 needs more, but we can try with what we can guess or fetch.
-      // In a real scenario, these users should ideally be processed and in the DB.
-      const recentRepositories = await fetchRecentRepositories(
-        username,
-        octokit
-      );
-      return {
-        login: username,
-        name: null, // Will be fetched by web research if possible
-        company: null,
-        bio: null,
-        blog: null,
-        profileUrl: `https://github.com/${username}`,
-        location: null,
-        normalizedLocation: null,
-        email: null,
-        twitter_username: null, // userData.xUsername might map to this if available elsewhere
-        xBio: null,
-        xName: null,
-        xUrl: null,
-        xLocation: null,
-        public_repos: 0,
-        followers: 0,
-        following: 0,
-        createdAt: new Date().toISOString(),
-        contributions: null,
-        profileReadme: null,
-        websiteContent: null, // If you scrape website content
-        linkedinUrl: null,
-        repoInteractionScraped: [],
-        recentRepositories: recentRepositories || null,
-      };
+      return null;
     }
-
-    // Ensure recent repositories are fetched if not already present
-    let recentRepositories = userFromDb.recentRepositories;
-    if (!recentRepositories) {
-      console.log(
-        `[${username}] Fetching recent repositories for ${
-          userFromDb.profileUrl || username
-        }`
-      );
-      recentRepositories = await fetchRecentRepositories(username, octokit);
-      // Note: Not updating the DB in this script, just using for current run
-    }
-
     const userData: UserData = {
       ...userFromDb,
-      login: userFromDb._id, // Ensure login is set from _id
-      repoInteractionScraped: userFromDb.repoInteractionScraped || [],
-      recentRepositories: recentRepositories || null,
+      login: userFromDb._id,
     };
 
     return userData;
@@ -103,6 +60,8 @@ async function rateAndLogEdgeCases() {
   console.log("Starting rating process for edge case profiles...");
 
   const client = new MongoClient(mongoUri);
+  await client.connect();
+  const db = client.db(dbName);
 
   try {
     await client.connect();
@@ -123,17 +82,56 @@ async function rateAndLogEdgeCases() {
         console.log(
           `[${username}] Calling rateUserV3 (with updated prompt logic)..."`
         );
-        // Ensure that rateUserV3 uses the refined prompt we discussed.
-        // The actual modification of rateUserV3\'s prompt is outside this script\'s direct action,
-        // but this script is designed to test those changes.
+
+        // fetch linkedin url if not part of blog url
+        const linkedinUrl = userData.blog?.includes("linkedin.com")
+          ? userData.blog
+          : await fetchLinkedInProfileUsingGemini(userData);
+
+        if (linkedinUrl) {
+          userData.linkedinUrl = linkedinUrl;
+        }
+
+        console.log("userData.linkedinUrl", userData.linkedinUrl);
+
+        // fetch linkedin experience if not part of userData
+        if (userData.linkedinUrl && !userData.linkedinExperience) {
+          const linkedinExperience = await fetchLinkedInExperienceViaRapidAPI(
+            userData.linkedinUrl
+          );
+          userData.linkedinExperience = linkedinExperience;
+        } else {
+          userData.linkedinExperience = null;
+        }
+
+        // generate linkedinExperienceSummary if not part of userData
+        if (userData.linkedinUrl && !userData.linkedinExperienceSummary) {
+          if (userData.linkedinExperience) {
+            const linkedinExperienceSummary =
+              await generateLinkedInExperienceSummary(
+                userData.linkedinExperience
+              );
+            userData.linkedinExperienceSummary = linkedinExperienceSummary;
+          } else {
+            userData.linkedinExperienceSummary = null;
+          }
+        }
+
+        console.log(
+          "userData.linkedinExperienceSummary",
+          userData.linkedinExperienceSummary
+        );
+
         const ratingResult = await rateUserV3(userData);
 
+        // update the object in the database
+        const usersCol = db.collection<DbGraphUser>("users");
+        await usersCol.updateOne({ _id: username }, { $set: userData });
+
+        // log the results
         console.log(`[${username}] Rating Complete:`);
         console.log(`  Profile: https://github.com/${username}`);
         console.log(`  Score: ${ratingResult.score}`);
-        // Note: ratingWithRoleFitPoints is calculated inside rateAllProcessedUsers,
-        // we might want to replicate that logic here or add it to rateUserV3 if needed for this script.
-        // For now, focusing on the direct output of rateUserV3.
         console.log(
           `  Archetypes: ${ratingResult.engineerArchetype.join(", ")}`
         );
@@ -144,7 +142,11 @@ async function rateAndLogEdgeCases() {
         console.log(
           `  Web Research (Gemini): ${ratingResult.webResearchInfoGemini}`
         );
-        // console.log(\`  Web Research Prompt Used: ${ratingResult.webResearchPromptText}\`);
+        // log linkedin experience summary
+        console.log(
+          `  LinkedIn Experience Summary: ${userData.linkedinExperienceSummary}`
+        );
+
         console.log("----------------------------------------");
       } catch (error) {
         console.error(`[${username}] Error during rating:`, error);

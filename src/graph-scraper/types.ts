@@ -1,4 +1,5 @@
 import { NormalizedLocation } from "../utils/location.js";
+import { LinkedInProfile } from "./linkedin-research.js";
 
 export interface CalendarWeek {
   contributionDays: CalendarDay[];
@@ -60,6 +61,8 @@ export interface GraphUser {
   ratedAt?: Date;
   repoInteractionScraped: any[];
   linkedinUrl?: string | null;
+  linkedinExperience?: LinkedInProfile | null;
+  linkedinExperienceSummary?: string | null | undefined;
 }
 
 export interface DbGraphUser extends Omit<GraphUser, "login"> {
