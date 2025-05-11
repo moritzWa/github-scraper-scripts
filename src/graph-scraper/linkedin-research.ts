@@ -105,7 +105,8 @@ interface LinkedInProfile {
 const RAPIDAPI_HOST = "linkedin-data-api.p.rapidapi.com";
 const EXAMPLE_API_KEY = "0d3445840fmshb924d806f5383bdp122411jsn444d71ae4cf7"; // Replace with your key
 
-async function fetchLinkedInExperience(
+// $175/month for up to 50k requests
+async function fetchLinkedInExperienceViaRapidAPI(
   username: string
 ): Promise<LinkedInProfile | null> {
   const apiKey = process.env.RAPIDAPI_KEY || EXAMPLE_API_KEY;
@@ -158,32 +159,25 @@ async function fetchLinkedInExperience(
 
 // Script execution part
 (async () => {
-  // The username is derived from the URL: https://www.linkedin.com/in/banisgh/
+  // The username is derived from the URL: and https://www.linkedin.com/in/banisgh/
   const targetUsername = "banisgh";
 
   console.log(
-    `Fetching LinkedIn profile data for username: ${targetUsername}...`
+    `Fetching LinkedIn profile data for username (RapidAPI): ${targetUsername}...`
+  );
+  const profileDataRapidAPI = await fetchLinkedInExperienceViaRapidAPI(
+    targetUsername
   );
 
-  const profileData = await fetchLinkedInExperience(targetUsername);
-
-  if (profileData) {
-    console.log("Successfully fetched LinkedIn Profile Data:");
-    console.log(JSON.stringify(profileData, null, 2));
+  if (profileDataRapidAPI) {
+    console.log("Successfully fetched LinkedIn Profile Data (RapidAPI):");
+    console.log(JSON.stringify(profileDataRapidAPI, null, 2));
   } else {
-    console.log(`Could not fetch LinkedIn profile data for ${targetUsername}.`);
+    console.log(
+      `Could not fetch LinkedIn profile data via RapidAPI for ${targetUsername}.`
+    );
   }
 })();
 
 // To run this script, you might need ts-node:
-// npm install -g ts-node (if not already installed)
-// ts-node src/graph-scraper/linkedin-research.ts
-//
-// Or compile it to JavaScript first:
-// npx tsc src/graph-scraper/linkedin-research.ts
-// node src/graph-scraper/linkedin-research.js
-//
-// Remember to set your RAPIDAPI_KEY environment variable.
-// You can do this by creating a .env file in the root of your project:
-// RAPIDAPI_KEY=your_actual_api_key
-// And then use a library like 'dotenv' to load it (uncomment the import at the top).
+// ... existing code ...

@@ -29,7 +29,8 @@
     "delete-db": "node --loader ts-node/esm src/graph-scraper/delete-db.ts",
     "rate": "node --loader ts-node/esm src/graph-scraper/llm-rating.ts",
     "list-rated": "node --loader ts-node/esm src/graph-scraper/list-rated-users.ts",
-    "best-rated-to-txt": "node --loader ts-node/esm src/graph-scraper/best_rated_to_txt.ts"
+    "best-rated-to-txt": "node --loader ts-node/esm src/graph-scraper/best_rated_to_txt.ts",
+    "linkedin-research": "node --loader ts-node/esm src/graph-scraper/linkedin-research.ts"
   },
   "keywords": [],
   "author": "",
