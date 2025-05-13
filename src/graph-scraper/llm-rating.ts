@@ -229,7 +229,7 @@ Recent Repos:
 - product-hunt-scraper
 Web Research: Founded "HelpfulSaaS" (customer support tool, profitable, 10k users) 2 years ago. Previously Product Manager at BigTech (2019-2022). LinkedIn mentions current interest in "exploring AI applications" but no specific AI/ML projects or roles detailed. Web search mentions "working on a new AI venture in stealth" but no details.
 
-REASONING_CALCULATION: Startup Experience (Founded HelpfulSaaS, non-AI/infra, some validation: +10), Crypto Experience/Interest (Old smart contract tutorial, very dated, minor: +0), AI Experience (General interest, "stealth venture" lacks verifiable details or hands-on evidence: +5), Other Positive Signals (Entrepreneurial success with HelpfulSaaS: +10)
+REASONING_CALCULATION: Startup Experience (Founded HelpfulSaaS, non-AI/infra, some validation: +10), Crypto Experience/Interest (Old smart contract tutorial, very dated, minor: +0), AI Experience (General interest, "stealth venture" lacks verifiable details or hands-on Software Engineering evidence: +5), Other Positive Signals (Entrepreneurial success with HelpfulSaaS: +10)
 ENGINEER_ARCHETYPE: full-stack, Other
 SCORE: 20
 ---
