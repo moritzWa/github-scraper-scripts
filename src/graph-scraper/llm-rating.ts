@@ -4,10 +4,7 @@ import fs from "fs";
 import { MongoClient } from "mongodb";
 import path from "path";
 import { UserData } from "../types.js";
-import {
-  fetchRecentRepositories,
-  fetchUserEmailFromEvents,
-} from "../utils/profile-data-fetchers.js";
+import { fetchRecentRepositories } from "../utils/profile-data-fetchers.js";
 import openai from "./openai.js";
 import { DbGraphUser } from "./types.js";
 import {
@@ -264,16 +261,11 @@ export async function rateUserV3(user: UserData): Promise<{
   webResearchInfoGemini: string;
   webResearchPromptText: string;
   ratedAt: Date;
-  email: string | null | undefined;
 }> {
-  console.log(`[${user.login}] Fetching email...`);
-  const userEmail = await fetchUserEmailFromEvents(user.login, octokit);
-  console.log(`[${user.login}] Fetched email: ${userEmail || "not found"}`);
-
   console.log(`[${user.login}] Performing OpenAI web research...`);
-  const openAIResultPromise = getWebResearchInfoOpenAI(user, userEmail);
+  const openAIResultPromise = getWebResearchInfoOpenAI(user, user.email);
   console.log(`[${user.login}] Performing Gemini web research...`);
-  const geminiResultPromise = getWebResearchInfoGemini(user, userEmail);
+  const geminiResultPromise = getWebResearchInfoGemini(user, user.email);
 
   const [openAIResult, geminiResult] = await Promise.all([
     openAIResultPromise,
@@ -347,7 +339,6 @@ SCORE: [between 0 and 100, sum of points from calculation]`;
     webResearchInfoGemini: geminiResult.researchResult,
     webResearchPromptText: webResearchPrompt,
     ratedAt: new Date(),
-    email: userEmail,
   };
 }
 

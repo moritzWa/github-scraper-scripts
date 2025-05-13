@@ -7,7 +7,9 @@ dotenv.config(); // Load environment variables at the very top
 // dotenv.config();
 
 import { UserData } from "../types.js";
+import { isLinkedInDomain } from "../utils/prime-scraper-api-utils.js";
 import openai from "./openai.js"; // Import the shared OpenAI client
+import { DbGraphUser } from "./types.js";
 
 // If you are in an environment where fetch is not globally available (e.g., older Node.js versions),
 // you might need to import it:
@@ -442,11 +444,16 @@ interface BraveSearchResponse {
 }
 
 export async function fetchLinkedInProfileUsingBrave(
-  user: UserData
+  user: UserData,
+  optimizedQuery?: string
 ): Promise<string | null> {
-  const searchQuery = `site:linkedin.com/in/ ${user.name || user.login} ${
-    user.email ? `email:${user.email}` : ""
-  } ${user.xBio || user.bio || ""}`;
+  const searchQuery = optimizedQuery
+    ? `site:linkedin.com/in/ ${optimizedQuery}`
+    : `site:linkedin.com/in/ ${user.name || user.login} ${
+        user.email ? `email:${user.email}` : ""
+      } ${user.xBio || user.bio || ""} (Software Engineer)`;
+
+  console.log("fetchLinkedInProfileUsingBrave searchQuery", searchQuery);
 
   try {
     if (!process.env.BRAVE_API_KEY) {
@@ -551,6 +558,88 @@ export async function generateLinkedInExperienceSummary(
   }
 
   return summary.trim() ? summary.trim() : null;
+}
+
+export async function generateOptimizedSearchQuery(
+  user: DbGraphUser
+): Promise<string> {
+  const prompt = `You are a skilled detective specializing in finding people's LinkedIn profiles of Software Engineers. Your task is to craft the perfect search query that will lead us to the correct LinkedIn profile.
+
+You have access to various clues about the person:
+- Their GitHub username and display name
+- Their email address (which might contain their full name)
+- Their bio and social media presence
+- Their current and past roles
+
+Your mission is to combine these clues into a precise search query that will help us find their LinkedIn profile. Think like a detective - what unique combinations of information would make this person stand out in a search?
+
+Here are some examples of how you've solved similar cases:
+
+Case 1:
+Clues:
+- Name: Aman Karmani
+- Email: aman@tmm1.net
+- Bio: building Cursor @anysphere. full stack tinkerer and perf nerd. formerly vp of infra @github + ruby-core committer. founder @getchannels + ffmpeg committer.
+
+Your Solution: "Aman Karmani Cursor VP infra Github"
+Reasoning: Combined their full name with their current role at Cursor and their notable position at GitHub to create a unique identifier.
+
+Case 2:
+Clues:
+- Name: JannikSt
+- Email: info@jannik-straube.de
+- Bio: Software Engineer
+
+Your Solution: "Jannik Straube Software Engineer"
+Reasoning: Extracted their full name from the email since the GitHub username was incomplete, and added their role for context.
+
+Current Case:
+Clues:
+- Name: ${user.name || user._id}
+- Email: ${user.email || "Not provided"}
+- Bio: ${user.bio || "Not provided"}
+- X Bio: ${user.xBio || "Not provided"}
+
+What's your search query, detective?`;
+
+  try {
+    const response = await openai.chat.completions.create({
+      model: "gpt-4o-mini",
+      messages: [{ role: "user", content: prompt }],
+    });
+
+    return response.choices[0]?.message?.content?.trim() || "";
+  } catch (error) {
+    console.error("Error generating optimized search query:", error);
+    return "";
+  }
+}
+
+export function findLinkedInUrlInProfileData(user: UserData): string | null {
+  // Check blog field first
+  if (user.blog && isLinkedInDomain(user.blog)) {
+    return user.blog;
+  }
+
+  // Check profile readme for LinkedIn URLs
+  if (user.profileReadme) {
+    // Look for common LinkedIn URL patterns in the readme
+    const linkedinPatterns = [
+      /https?:\/\/(?:www\.)?linkedin\.com\/in\/[a-zA-Z0-9-]+/g,
+      /https?:\/\/(?:www\.)?linkedin\.com\/profile\/[a-zA-Z0-9-]+/g,
+      /https?:\/\/lnkd\.in\/[a-zA-Z0-9-]+/g,
+    ];
+
+    for (const pattern of linkedinPatterns) {
+      const matches = user.profileReadme.match(pattern);
+      if (matches && matches.length > 0) {
+        // Return the first match, removing any query parameters
+        return matches[0].split("?")[0];
+      }
+    }
+  }
+
+  return null;
 }
 
 // Script execution part

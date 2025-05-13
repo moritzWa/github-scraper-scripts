@@ -249,7 +249,6 @@ async function rateAndLogEdgeCases() {
               webResearchInfoGemini: ratingResult.webResearchInfoGemini,
               webResearchPromptText: ratingResult.webResearchPromptText,
               ratedAt: ratingResult.ratedAt,
-              email: ratingResult.email,
             },
           }
         );

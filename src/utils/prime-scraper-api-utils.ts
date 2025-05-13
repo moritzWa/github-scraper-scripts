@@ -1,6 +1,6 @@
 import { ContributionData } from "../graph-scraper/types.js";
 
-function isLinkedInDomain(url: string): boolean {
+export function isLinkedInDomain(url: string): boolean {
   try {
     const hostname = new URL(url).hostname.toLowerCase();
     return hostname.includes("linkedin.com") || hostname.endsWith("lnkd.in");

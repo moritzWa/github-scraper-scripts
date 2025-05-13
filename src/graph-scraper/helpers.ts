@@ -10,7 +10,6 @@ import {
   withRateLimitRetry,
 } from "../utils/prime-scraper-api-utils.js";
 import {
-  fetchLinkedInProfile,
   fetchProfileReadme,
   fetchRecentRepositories,
   fetchWebsiteContent,
@@ -251,18 +250,10 @@ export async function scrapeUser(
         const openai = new OpenAI({
           apiKey: process.env.OPENAI_API_KEY,
         });
-        const linkedInUrl = await fetchLinkedInProfile(
-          {
-            name: user.name,
-            login: user.login,
-            company: user.company,
-            bio: user.bio,
-            xBio: user.xBio,
-            email: user.email,
-          },
-          openai
-        );
-        user.linkedinUrl = linkedInUrl;
+
+        // Todo add linkedin logic
+        // const linkedInUrl = await fetchLinkedInExperienceViaRapidAPI(user);
+        // user.linkedinUrl = linkedInUrl;
 
         console.log(`[${username}] Rating calculated: ${ratingData.score}`);
       } catch (error) {
@@ -281,7 +272,7 @@ export async function scrapeUser(
 }
 
 // Helper function to calculate role fit points
-function calculateRoleFitPoints(archetypes: string[]): number {
+export function calculateRoleFitPoints(archetypes: string[]): number {
   const targetRoles = ["protocol/crypto", "backend/infra", "full-stack"];
   return archetypes.some((archetype) => targetRoles.includes(archetype))
     ? 20

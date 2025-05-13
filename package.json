@@ -31,7 +31,9 @@
     "list-rated": "node --loader ts-node/esm src/graph-scraper/list-rated-users.ts",
     "best-rated-to-txt": "node --loader ts-node/esm src/graph-scraper/best_rated_to_txt.ts",
     "linkedin-research": "node --loader ts-node/esm src/graph-scraper/linkedin-research.ts",
-    "rate-edge-case-profiles": "node --loader ts-node/esm src/graph-scraper/rate-edge-case-profiles.ts"
+    "rate-edge-case-profiles": "node --loader ts-node/esm src/graph-scraper/rate-edge-case-profiles.ts",
+    "re-rate-users": "node --loader ts-node/esm src/graph-scraper/re-rate-users.ts",
+    "debug-linkedin": "node --loader ts-node/esm src/graph-scraper/debug-linkedin-search.ts"
   },
   "keywords": [],
   "author": "",
