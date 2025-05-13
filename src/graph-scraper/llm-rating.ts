@@ -125,13 +125,9 @@ Point Guidelines for Reasoning & Score:
 *   Use the Linkedin Summary (including dates) to clarify roles and their duration. If it shows extended non-technical focus or only very old technical roles, temper scores even if GitHub has technical projects.
 *   IMPORTANT: Final score MUST be between 0-100. If calculation exceeds 100, cap at 100.
 *   For archetype assignment:
-    - Only assign 'protocol/crypto' if there is substantial, recent (last 3-5 years) hands-on engineering work in blockchain/crypto
-    - Only assign 'ML engineer' or 'AI researcher' if there is substantial, recent hands-on ML/AI work
-    - If primarily management or research-focused without recent hands-on work, use 'Other' or 'None'
+    - Only assign technical archetypes if there is substantial, recent (last 3-5 years) hands-on engineering work in that area
+    - Research roles without clear evidence of recent hands-on work should use 'AI researcher/scientist'
     - Err on the side of caution - if unsure about hands-on work, do not assign technical archetypes
-    - CRITICAL: For any technical archetype, the candidate MUST have done hands-on work in that area within the last 3-5 years. Old projects or dated experience do not qualify for archetype assignment, even if they were substantial at the time.
-    - IMPORTANT: Research roles (Research Engineer, Research Scientist, etc.) without clear evidence of recent hands-on engineering work should NOT automatically qualify for technical archetypes
-    - For crypto/web3: Having built tools or worked on crypto projects in the past is not enough. Must have substantial, recent hands-on engineering work in blockchain/crypto systems
 
 - Startup Experience:
     - Interest/minor startup project contributions (incl. some OS projects): +5
@@ -247,16 +243,16 @@ Example 7:
 ---
 GitHub Profile:
 Name: David Kumar
-Company: Engineering Director @ BigTech AI
+Company: Chief Scientist @ AI Lab
 Recent Repos:
 - ml-model-serving (5 years ago)
 - distributed-training (6 years ago)
 - startup-ideas
-Web Research: Engineering Director at BigTech AI (2020-present). Previously Engineering Manager at AI Startup (2018-2020). Co-founded "AICommunity" (non-profit AI education platform, 2016-2018). PhD in CS from good regional university. Published papers on distributed ML. Regular speaker at AI conferences. Built a small AI consulting business.
+Web Research: Chief Scientist at AI Lab (2020-present). Previously Research Engineer at Meta AI (2018-2020). Co-founded "AICommunity" (non-profit AI education platform, 2016-2018). PhD in CS from Stanford. Published papers on distributed ML. Regular speaker at AI conferences. Note: While he has impressive research credentials and past engineering work, his recent roles are research-focused without clear hands-on engineering work.
 
-REASONING_CALCULATION: Startup Experience (Co-founded non-profit AI education platform, no commercial validation: +5), AI Experience (Engineering Director role, but primarily management, dated hands-on work: +10), Education (PhD from non-elite university: +0), Other Positive Signals (Conference speaking, community building - not relevant for hands-on role: +0)
-ENGINEER_ARCHETYPE: Other
-SCORE: 15
+REASONING_CALCULATION: Startup Experience (Co-founded non-profit AI education platform, no commercial validation: +5), AI Experience (Research role but no clear hands-on engineering: +10), Education (PhD Stanford: +10), Other Positive Signals (Conference speaking, community building - not relevant for hands-on role: +0)
+ENGINEER_ARCHETYPE: AI researcher/scientist
+SCORE: 25
 ---
 `; // End of static prompt template
 

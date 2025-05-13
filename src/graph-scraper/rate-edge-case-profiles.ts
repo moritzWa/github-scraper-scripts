@@ -83,7 +83,7 @@ const OLD_RATINGS: OldRatings = {
 const edgeCaseUsernames: string[] = [
   // "n0rlant1s", // Bani Singh
   // "mjafri118", // Mohib Jafri
-  "mhw32", // Mike Wu
+  // "mhw32", // Mike Wu
   // "RaghavSood", // Raghav Sood
   // "edgarriba", // Edgar Riba
 ];
