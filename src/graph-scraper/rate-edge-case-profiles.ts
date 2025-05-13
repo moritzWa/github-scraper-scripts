@@ -19,13 +19,72 @@ const octokit = new Octokit({
 const mongoUri = process.env.MONGODB_URI || "mongodb://localhost:27017";
 const dbName = process.env.MONGODB_DB || "githubGraph";
 
+// Add type definitions
+type OldRating = {
+  score: number;
+  archetypes: string[];
+  reasoning: string;
+  reviewerComment: string;
+};
+
+type OldRatings = {
+  [key: string]: OldRating;
+};
+
+// Update OLD_RATINGS with proper type and reviewer comments
+const OLD_RATINGS: OldRatings = {
+  n0rlant1s: {
+    // Bani Singh
+    score: 65,
+    archetypes: ["full-stack", "protocol/crypto"],
+    reasoning:
+      "Startup Experience (Founded, scaled, and sold several software businesses): +20, AI Experience (Current role working on new AI technologies in stealth mode, interest in AI technologies): +25, Crypto Experience/Interest (Template-Ethereum-Smart-Contract-Interaction repo): +5, Other Positive Signals (Entrepreneurial success and hustle with multiple businesses): +15",
+    reviewerComment:
+      "Less impressive than this says. Doesn't deserve protocol/crypto classification just because of a smart contract related repo from 7 years ago. Had a small bootstrapped saas company but big parts of background is as a product manager and hasn't worked at any AI infra related companies",
+  },
+  mjafri118: {
+    // Mohib Jafri
+    score: 75,
+    archetypes: ["ML engineer", "backend/infra", "Other"],
+    reasoning: "No reasoning provided",
+    reviewerComment:
+      "No real software engineering experience. Was engineer manager at Tesla and did some embedded systems engineering",
+  },
+  mhw32: {
+    // Mike Wu
+    score: 70,
+    archetypes: ["ML engineer", "AI researcher", "protocol/crypto"],
+    reasoning: "No reasoning provided",
+    reviewerComment:
+      "Most recent roles were all research heavy so not sure why he got the protocol/crypto classification",
+  },
+  RaghavSood: {
+    // Raghav Sood
+    score: 60,
+    archetypes: ["backend/infra", "protocol/crypto", "frontend"],
+    reasoning:
+      "Startup Experience (CEO/Founder of Appaholics): +20, Crypto Experience/Interest (Engineer at Coinhako in blockchain): +25, Education (Attended Carnegie Mellon University): +5, Other Positive Signals (Authored 'Pro Android Augmented Reality' at age 15, founded HackIndia): +10",
+    reviewerComment:
+      "No AI interest, very old (ideally we find people that are younger) and Singapore based",
+  },
+  edgarriba: {
+    // Edgar Riba
+    score: 60,
+    archetypes: ["AI researcher", "ML engineer", "backend/infra"],
+    reasoning:
+      "Startup Experience (Co-founded Kornia.org, involvement in multiple entrepreneurial projects): +20, AI Experience (Significant contributions to AI through Kornia library, hands-on ML projects): +25, Education (PhD in Computer Science from Universitat Autònoma de Barcelona): +5, Other Positive Signals (Notable for open-source contributions, community building in AI and CV): +10",
+    reviewerComment:
+      "Founded company which is not successful at all. Shouldn't be +20. +5 for low tier (Universitat Autònoma de Barcelona) PhD - don't give points for universities that nobody has heard of. Community building is not relevant for our very technical senior engineering role",
+  },
+};
+
 // List of edge-case GitHub usernames to re-evaluate
 const edgeCaseUsernames: string[] = [
   "n0rlant1s", // Bani Singh
   "mjafri118", // Mohib Jafri
-  // "mhw32", // Mike Wu
-  // "RaghavSood", // Raghav Sood
-  // "edgarriba", // Edgar Riba
+  "mhw32", // Mike Wu
+  "RaghavSood", // Raghav Sood
+  "edgarriba", // Edgar Riba
 ];
 
 async function fetchUserDataForRating(
@@ -56,6 +115,46 @@ async function fetchUserDataForRating(
   }
 }
 
+function compareRatings(
+  username: string,
+  oldRating: OldRating,
+  newRating: any
+) {
+  console.log(`\n=== Comparison for ${username} ===`);
+  console.log(`Profile: https://github.com/${username}`);
+
+  console.log("\nREVIEWER COMMENTS:");
+  console.log(oldRating.reviewerComment);
+
+  console.log("\nOLD RATING:");
+  console.log(`Score: ${oldRating.score}`);
+  console.log(`Archetypes: ${oldRating.archetypes.join(", ")}`);
+  console.log(`Reasoning: ${oldRating.reasoning}`);
+
+  console.log("\nNEW RATING:");
+  console.log(`Score: ${newRating.score}`);
+  console.log(`Archetypes: ${newRating.engineerArchetype.join(", ")}`);
+  console.log(`Reasoning: ${newRating.reasoning}`);
+
+  console.log("\nDIFFERENCES:");
+  console.log(`Score Change: ${newRating.score - oldRating.score}`);
+  console.log(
+    `Archetype Changes: ${JSON.stringify(
+      {
+        removed: oldRating.archetypes.filter(
+          (a: string) => !newRating.engineerArchetype.includes(a)
+        ),
+        added: newRating.engineerArchetype.filter(
+          (a: string) => !oldRating.archetypes.includes(a)
+        ),
+      },
+      null,
+      2
+    )}`
+  );
+  console.log("----------------------------------------");
+}
+
 async function rateAndLogEdgeCases() {
   console.log("Starting rating process for edge case profiles...");
 
@@ -68,7 +167,7 @@ async function rateAndLogEdgeCases() {
     console.log("Connected to MongoDB (for fetching user data).");
 
     for (const username of edgeCaseUsernames) {
-      console.log(`--- Processing: ${username} ---`);
+      console.log(`\nProcessing: ${username}`);
       const userData = await fetchUserDataForRating(username, client);
 
       if (!userData) {
@@ -79,10 +178,6 @@ async function rateAndLogEdgeCases() {
       }
 
       try {
-        console.log(
-          `[${username}] Calling rateUserV3 (with updated prompt logic)..."`
-        );
-
         // fetch linkedin url if not part of blog url
         const linkedinUrl = userData.blog?.includes("linkedin.com")
           ? userData.blog
@@ -92,66 +187,37 @@ async function rateAndLogEdgeCases() {
           userData.linkedinUrl = linkedinUrl;
         }
 
-        console.log("userData.linkedinUrl", userData.linkedinUrl);
-
         // fetch linkedin experience if not part of userData
         if (userData.linkedinUrl && !userData.linkedinExperience) {
-          // if (userData.linkedinUrl) {
-          console.log("fetching linkedin experience");
           const linkedinExperience = await fetchLinkedInExperienceViaRapidAPI(
             userData.linkedinUrl
           );
           userData.linkedinExperience = linkedinExperience;
-        } else {
-          userData.linkedinExperience = null;
         }
 
         // generate linkedinExperienceSummary if not part of userData
-        if (userData.linkedinUrl && !userData.linkedinExperienceSummary) {
-          // if (userData.linkedinUrl) {
-          console.log("generating linkedin experience summary");
-          if (userData.linkedinExperience) {
-            const linkedinExperienceSummary =
-              await generateLinkedInExperienceSummary(
-                userData.linkedinExperience
-              );
-            userData.linkedinExperienceSummary = linkedinExperienceSummary;
-          } else {
-            userData.linkedinExperienceSummary = null;
-          }
+        if (
+          userData.linkedinUrl &&
+          !userData.linkedinExperienceSummary &&
+          userData.linkedinExperience
+        ) {
+          const linkedinExperienceSummary =
+            await generateLinkedInExperienceSummary(
+              userData.linkedinExperience
+            );
+          userData.linkedinExperienceSummary = linkedinExperienceSummary;
         }
 
-        console.log(
-          "userData.linkedinExperienceSummary",
-          userData.linkedinExperienceSummary
-        );
-
         const ratingResult = await rateUserV3(userData);
+
+        // Compare with old rating
+        if (OLD_RATINGS[username]) {
+          compareRatings(username, OLD_RATINGS[username], ratingResult);
+        }
 
         // update the object in the database
         const usersCol = db.collection<DbGraphUser>("users");
         await usersCol.updateOne({ _id: username }, { $set: userData });
-
-        // log the results
-        console.log(`[${username}] Rating Complete:`);
-        console.log(`  Profile: https://github.com/${username}`);
-        console.log(`  Score: ${ratingResult.score}`);
-        console.log(
-          `  Archetypes: ${ratingResult.engineerArchetype.join(", ")}`
-        );
-        console.log(`  Reasoning: ${ratingResult.reasoning}`);
-        // console.log(
-        //   `  Web Research (OpenAI): ${ratingResult.webResearchInfoOpenAI}`
-        // );
-        // console.log(
-        //   `  Web Research (Gemini): ${ratingResult.webResearchInfoGemini}`
-        // );
-        // log linkedin experience summary
-        // console.log(
-        //   `  LinkedIn Experience Summary: ${userData.linkedinExperienceSummary}`
-        // );
-
-        console.log("----------------------------------------");
       } catch (error) {
         console.error(`[${username}] Error during rating:`, error);
         console.log("----------------------------------------");
@@ -161,7 +227,7 @@ async function rateAndLogEdgeCases() {
     console.error("Error in rateAndLogEdgeCases script:", error);
   } finally {
     await client.close();
-    console.log("\\nMongoDB connection closed. Edge case processing finished.");
+    console.log("\nMongoDB connection closed. Edge case processing finished.");
   }
 }
 

@@ -61,7 +61,7 @@ Point Guidelines for Reasoning & Score:
     - Expressed interest or minor projects in crypto/decentralized tech: +5
     - Substantial work/role at a crypto/web3 focused company/project: +25
 - AI Experience:
-    - General interest in AI/ML (courses, conceptual discussions): +5
+    - Interest in AI/ML (courses, conceptual discussions): +5
     - Significant hands-on AI/ML projects OR AI infrastructure development: +25
 - Education:
     - Degree from a globally top-tier/renowned university: +5
