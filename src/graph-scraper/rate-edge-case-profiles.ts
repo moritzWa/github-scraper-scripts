@@ -95,8 +95,8 @@ async function rateAndLogEdgeCases() {
         console.log("userData.linkedinUrl", userData.linkedinUrl);
 
         // fetch linkedin experience if not part of userData
-        // if (userData.linkedinUrl && !userData.linkedinExperience) {
-        if (userData.linkedinUrl) {
+        if (userData.linkedinUrl && !userData.linkedinExperience) {
+          // if (userData.linkedinUrl) {
           console.log("fetching linkedin experience");
           const linkedinExperience = await fetchLinkedInExperienceViaRapidAPI(
             userData.linkedinUrl
@@ -107,8 +107,8 @@ async function rateAndLogEdgeCases() {
         }
 
         // generate linkedinExperienceSummary if not part of userData
-        // if (userData.linkedinUrl && !userData.linkedinExperienceSummary) {
-        if (userData.linkedinUrl) {
+        if (userData.linkedinUrl && !userData.linkedinExperienceSummary) {
+          // if (userData.linkedinUrl) {
           console.log("generating linkedin experience summary");
           if (userData.linkedinExperience) {
             const linkedinExperienceSummary =
@@ -140,16 +140,16 @@ async function rateAndLogEdgeCases() {
           `  Archetypes: ${ratingResult.engineerArchetype.join(", ")}`
         );
         console.log(`  Reasoning: ${ratingResult.reasoning}`);
-        console.log(
-          `  Web Research (OpenAI): ${ratingResult.webResearchInfoOpenAI}`
-        );
-        console.log(
-          `  Web Research (Gemini): ${ratingResult.webResearchInfoGemini}`
-        );
+        // console.log(
+        //   `  Web Research (OpenAI): ${ratingResult.webResearchInfoOpenAI}`
+        // );
+        // console.log(
+        //   `  Web Research (Gemini): ${ratingResult.webResearchInfoGemini}`
+        // );
         // log linkedin experience summary
-        console.log(
-          `  LinkedIn Experience Summary: ${userData.linkedinExperienceSummary}`
-        );
+        // console.log(
+        //   `  LinkedIn Experience Summary: ${userData.linkedinExperienceSummary}`
+        // );
 
         console.log("----------------------------------------");
       } catch (error) {

@@ -153,7 +153,7 @@ export async function fetchLinkedInExperienceViaRapidAPI(
     }
 
     const text = await response.text();
-    console.log("Raw RapidAPI LinkedIn response:", text);
+    // console.log("Raw RapidAPI LinkedIn response:", text);
     const data: LinkedInProfile = JSON.parse(text);
     return data;
   } catch (error) {
