@@ -516,14 +516,32 @@ export async function generateLinkedInExperienceSummary(
   }
 
   let summary = "";
-  for (const position of experience.fullPositions) {
-    summary += `Title: ${position.title}\n`;
+  // Sort positions by end date (most recent first), handling null end dates (current positions)
+  const sortedPositions = [...experience.fullPositions].sort((a, b) => {
+    const endA = a.end?.year ?? Infinity;
+    const endB = b.end?.year ?? Infinity;
+    if (endA !== endB) return endB - endA; // Most recent year first
+    // If years are the same (or both are current), sort by start year (most recent first)
+    const startA = a.start?.year ?? -Infinity;
+    const startB = b.start?.year ?? -Infinity;
+    return startB - startA;
+  });
+
+  for (const position of sortedPositions) {
+    const startDate = position.start
+      ? `${position.start.month}/${position.start.year}`
+      : "N/A";
+    const endDate = position.end
+      ? `${position.end.month}/${position.end.year}`
+      : "Present";
+    const durationStr = `${startDate} - ${endDate}`;
+
+    summary += `Title: ${position.title} (${durationStr})\n`;
     summary += `Company: ${position.companyName}\n`;
     if (position.location) {
       summary += `Location: ${position.location}\n`;
     }
     if (position.description) {
-      // Replace multiple newlines with a single one, then indent description
       const cleanedDescription = position.description
         .replace(/\n+/g, "\n")
         .replace(/^/gm, "  ");

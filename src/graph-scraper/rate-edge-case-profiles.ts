@@ -161,6 +161,8 @@ async function rateAndLogEdgeCases() {
   const client = new MongoClient(mongoUri);
   await client.connect();
   const db = client.db(dbName);
+  const regenerateLinkedInExperience = false; // Flag to force regeneration
+  const refetchLinkedInExperience = false; // Flag to force refetch
 
   try {
     await client.connect();
@@ -178,36 +180,48 @@ async function rateAndLogEdgeCases() {
       }
 
       try {
-        // fetch linkedin url if not part of blog url
-        const linkedinUrl = userData.blog?.includes("linkedin.com")
-          ? userData.blog
-          : await fetchLinkedInProfileUsingBrave(userData);
+        if (!userData.linkedinUrl || refetchLinkedInExperience) {
+          console.log(`[${username}] Attempting to find LinkedIn URL...`);
+          const linkedinUrl = userData.blog?.includes("linkedin.com")
+            ? userData.blog
+            : await fetchLinkedInProfileUsingBrave(userData);
 
-        if (linkedinUrl) {
-          userData.linkedinUrl = linkedinUrl;
+          if (linkedinUrl) {
+            userData.linkedinUrl = linkedinUrl;
+            console.log(`[${username}] Found LinkedIn URL: ${linkedinUrl}`);
+          } else {
+            console.log(`[${username}] Could not find LinkedIn URL.`);
+          }
         }
 
-        // fetch linkedin experience if not part of userData
-        if (userData.linkedinUrl && !userData.linkedinExperience) {
+        if (
+          userData.linkedinUrl &&
+          (!userData.linkedinExperience || regenerateLinkedInExperience)
+        ) {
+          console.log(`[${username}] Fetching LinkedIn experience...`);
           const linkedinExperience = await fetchLinkedInExperienceViaRapidAPI(
             userData.linkedinUrl
           );
           userData.linkedinExperience = linkedinExperience;
         }
 
-        // generate linkedinExperienceSummary if not part of userData
+        // Generate summary only if experience is present and either summary is missing or regeneration is forced
         if (
-          userData.linkedinUrl &&
-          !userData.linkedinExperienceSummary &&
-          userData.linkedinExperience
+          userData.linkedinExperience &&
+          (!userData.linkedinExperienceSummary || regenerateLinkedInExperience)
         ) {
+          console.log(
+            `[${username}] Generating LinkedIn experience summary...`
+          );
           const linkedinExperienceSummary =
             await generateLinkedInExperienceSummary(
               userData.linkedinExperience
             );
           userData.linkedinExperienceSummary = linkedinExperienceSummary;
+          console.log(`[${username}] Generated LinkedIn summary.`);
         }
 
+        console.log(`[${username}] Calling rateUserV3...`);
         const ratingResult = await rateUserV3(userData);
 
         // Compare with old rating
@@ -215,9 +229,30 @@ async function rateAndLogEdgeCases() {
           compareRatings(username, OLD_RATINGS[username], ratingResult);
         }
 
-        // update the object in the database
+        // Update the user object in the database (including potentially updated LinkedIn data)
+        console.log(`[${username}] Updating user data in DB...`);
         const usersCol = db.collection<DbGraphUser>("users");
-        await usersCol.updateOne({ _id: username }, { $set: userData });
+        // Make sure to update all potentially modified fields
+        await usersCol.updateOne(
+          { _id: username },
+          {
+            $set: {
+              linkedinUrl: userData.linkedinUrl,
+              linkedinExperience: userData.linkedinExperience,
+              linkedinExperienceSummary: userData.linkedinExperienceSummary,
+              // Include rating fields as well, in case they need updating based on new summary
+              rating: ratingResult.score,
+              ratingReasoning: ratingResult.reasoning,
+              engineerArchetype: ratingResult.engineerArchetype,
+              webResearchInfoOpenAI: ratingResult.webResearchInfoOpenAI,
+              webResearchInfoGemini: ratingResult.webResearchInfoGemini,
+              webResearchPromptText: ratingResult.webResearchPromptText,
+              ratedAt: ratingResult.ratedAt,
+              email: ratingResult.email,
+            },
+          }
+        );
+        console.log(`[${username}] Updated user data in DB.`);
       } catch (error) {
         console.error(`[${username}] Error during rating:`, error);
         console.log("----------------------------------------");

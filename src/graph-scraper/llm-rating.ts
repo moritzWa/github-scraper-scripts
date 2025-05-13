@@ -24,6 +24,42 @@ const octokit = new Octokit({
 const getUserName = (user: UserData) =>
   `${user.name || user.login} ${user.xName ? `(${user.xName})` : ""}`;
 
+// Helper function to format relative time
+function formatRelativeTime(
+  dateString: string | null | undefined
+): string | null {
+  if (!dateString) {
+    return null;
+  }
+  try {
+    const pushedDate = new Date(dateString);
+    const now = new Date();
+    const diffMs = now.getTime() - pushedDate.getTime();
+
+    // Check for invalid date
+    if (isNaN(diffMs)) {
+      return null; // Or some indicator of invalid date
+    }
+
+    const diffYears = Math.floor(diffMs / (1000 * 60 * 60 * 24 * 365.25));
+    const diffMonths = Math.floor(diffMs / (1000 * 60 * 60 * 24 * 30.44)); // Approx
+    const diffDays = Math.floor(diffMs / (1000 * 60 * 60 * 24));
+
+    if (diffYears > 0) {
+      return `${diffYears} year${diffYears > 1 ? "s" : ""} ago`;
+    } else if (diffMonths > 0) {
+      return `${diffMonths} month${diffMonths > 1 ? "s" : ""} ago`;
+    } else if (diffDays > 0) {
+      return `${diffDays} day${diffDays > 1 ? "s" : ""} ago`;
+    } else {
+      return "today"; // Or 'less than a day ago'
+    }
+  } catch (e) {
+    console.error("Error formatting relative time:", e);
+    return null; // Return null on error
+  }
+}
+
 export const EngineerArchetypes = [
   "full-stack",
   "ML engineer",
@@ -37,40 +73,77 @@ export const EngineerArchetypes = [
   "None",
 ];
 
-const RatingPrompt = (
+// Function to format the dynamic part of the prompt for a user
+const formatEngineerInQuestion = (
+  user: UserData,
   webResearchInfoOpenAI: string,
-  webResearchInfoGemini: string,
-  user: UserData
-) => `Hiring for roles at a Series A, Founders Fund-backed, decentralized AI training startup.
+  webResearchInfoGemini: string
+) => {
+  const reposText =
+    user.recentRepositories
+      ?.slice(0, 3) // Increased slice to 5
+      .map((repo) => {
+        const repoName = `${repo.is_fork ? "[Fork] " : ""}${repo.name}${
+          repo.description ? ` (${repo.description.slice(0, 100)})` : ""
+        }`;
+        const relativeTime = formatRelativeTime(repo.last_pushed_at);
+        const timeInfo = relativeTime ? ` (pushed ${relativeTime})` : "";
+        return `- ${repoName}${timeInfo}`;
+      })
+      .join("\n") || "No recent repositories found.";
 
-Reviewing GitHub profiles to assess user fit using a point system.
+  return `Engineer in question:
+Name: ${getUserName(user)}
+${user.company ? `Company: ${user.company}` : ""}
+Recent Repos:
+${reposText}
+Linkedin Summary: 
+${user.linkedinExperienceSummary || "N/A"}
+Web Research (OpenAI): ${webResearchInfoOpenAI || "N/A"}
+Web Research (Gemini): ${webResearchInfoGemini || "N/A"}
+${user.xBio ? `X Profile Bio: ${user.xBio}` : ""}
+----`;
+};
+
+// Modify RatingPrompt to be only the static part
+const RatingPrompt = `Hiring deeply technical engineers for a Series A, Founders Fund-backed, decentralized AI training startup. Maintain a very high bar; we need exceptional 'hustlers'. Err on the side of caution if experience is ambiguous.
+
+Reviewing GitHub profiles to assess fit:
 1. Bio & Background: Use GitHub bio, readme, X bio, and web research for career/interest insights.
-2. Repositories: Assess for interest in our company's topics or cultural fit.
-3. Engineer Archetype: Based on all available information, categorize the engineer into one or more of the following archetypes: ${EngineerArchetypes.join(
+2. Repositories: Assess for interest in our company's topics (LLMs, decentralized systems, crypto, high-performance computing) or cultural fit.
+3. Engineer Archetype: Categorize into one or more: ${EngineerArchetypes.join(
   ", "
-)}. If multiple apply, list them separated by a comma. If none seem to fit well or it's unclear, use "Other" or "None".
-
-We prioritize startup hustlers excited about startups, crypto, and LLMs. 
+)}. Use 'Other' or 'None' if unclear. Base archetypes like 'protocol/crypto' on substantial, recent (last 3-5 years) hands-on engineering work, not minor/old projects.
 
 Point Guidelines for Reasoning & Score:
-- Startup Experience: (Focus on demonstrated startup drive; extensive big corp/academic-only experience will naturally receive fewer points in this specific category)
-    - Interest/minor startup project contributions: +5
-    - Recently worked at a startup or bootstraped saas company (clear role): +10
-    - Co-founded a startup OR founding engineer at notable and relevant startup: +20
-- Crypto Experience/Interest:
-    - Expressed interest or minor projects in crypto/decentralized tech: +5
-    - Substantial work/role at a crypto/web3 focused company/project: +25
-- AI Experience:
-    - Interest in AI/ML (courses, conceptual discussions): +5
-    - Significant hands-on AI/ML projects OR AI infrastructure development: +25
-- Education:
-    - Degree from a globally top-tier/renowned university: +5
-    - Elite CS (or highly relevant engineering/math) degree from such a university: +10
-- Other Positive Signals (Discretionary):
-    - e.g., Impressive open-source work, clear 'hustler' mentality, notable relevant public achievements/awards: +5 to +15 (Judge)
-    - Note: Non-engineering roles (e.g., Investors, pure Eng Managers, PMs, designers) should receive 0-scores as we're looking for extremely technical talent.
+*   CRITICAL: Focus on recent (last 5-7 years) hands-on technical contributions (coding, system design, applied research). Use provided dates in LinkedIn Summary to verify recency.
+*   Managerial roles (Engineering Manager, Tech Lead, etc.) should be evaluated based on:
+    - If they still do hands-on coding/technical work: Count as technical role
+    - If primarily management/product focused: Count as non-technical role
+    - If unclear: Err on side of caution and count as non-technical
+*   Use the Linkedin Summary (including dates) to clarify roles and their duration. If it shows extended non-technical focus or only very old technical roles, temper scores even if GitHub has technical projects.
 
-Help me output a final score (0-100). The score should primarily reflect accumulated positive points from the guidelines. REASONING_CALCULATION must explicitly reference these categories.
+- Startup Experience:
+    - Interest/minor startup project contributions (incl. some OS projects): +5
+    - Recently worked hands-on at a startup OR successful bootstrapped SaaS (non-AI/infra focused, or AI/infra focused but lacking strong external validation): +10
+    - Co-founded a *commercially focused* startup (non-AI/infra) with clear external validation (e.g., significant funding, high traction, acquisition) OR key founding engineer role at such a startup: +15
+    - Recently worked hands-on at an *AI/Infra focused* startup with early signs of validation OR successful bootstrapped *AI/Infra* SaaS: +20
+    - Co-founded a *commercially focused AI/Infra* startup with strong external validation (e.g., significant funding, high traction, acquisition) OR key founding engineer role at such an *AI/Infra* startup: +25
+    - Note: Non-technical roles (Investors, pure Eng Managers, PMs, Designers) get 0 points. "External validation" is critical for higher scores; ventures without it, in unrelated fields (e.g., general VC tools, non-tech products), or where the candidate's role was non-technical, score lower in this category.
+- Crypto Experience/Interest:
+    - Interest, conceptual discussions, or minor/dated (older than 3-5 years) projects: +5 (Does not typically warrant 'protocol/crypto' archetype alone)
+    - Substantial, recent (last 3-5 years) hands-on engineering work/role at a crypto/web3 company/project: +25 (Strong indicator for 'protocol/crypto' archetype)
+- AI Experience:
+    - General interest (recent relevant courses/discussions/projects): +5 (Passive/dated signals may not qualify)
+    - Significant hands-on AI/ML projects OR AI infra development: +25 (Evaluate leadership roles for technical depth vs. pure management)
+- Education:
+    - Degree from a globally top-tier/renowned university (e.g., Ivy League, Stanford, MIT, Berkeley, CMU, Oxbridge, Imperial, ETHZ, Tsinghua, Waterloo CS/Eng or equivalent global rank): +5
+    - Elite CS/Eng/Math PhD/Master's from *one of these specifically*: +10 (Award 0 if university isn't in this top echelon)
+- Other Positive Signals (Discretionary):
+    - Impressive OS work (showing skill), clear 'hustler' mentality (shipping tech), relevant public technical achievements: +5 to +15 (Judge). (Weight general community building less)
+    - Note: Non-technical roles (Investors, pure Eng Managers, PMs, Designers) get 0 scores.
+
+Help me output a final score (0-100). REASONING_CALCULATION must explicitly reference these categories and points.
 
 Example 1: 
 ---
@@ -132,33 +205,35 @@ REASONING_CALCULATION: Startup Experience (Co-founded Phonic, YC Alum): +20, Cry
 ENGINEER_ARCHETYPE: protocol/crypto, backend/infra, ML engineer
 SCORE: 85
 ---
-Engineer in question:
-Name: ${getUserName(user)}
-${user.company ? `Company: ${user.company}` : ""}
-Recent Repos: ${
-  user.recentRepositories
-    ?.slice(0, 3)
-    .map(
-      (repo) =>
-        `- ${repo.is_fork ? "[Fork] " : ""}${repo.name}${
-          repo.description ? ` (${repo.description})` : ""
-        }`
-    )
-    .join("\\n") || ""
-}
-Linkedin Summary: 
-${user.linkedinExperienceSummary}
-Web Research (OpenAI): ${webResearchInfoOpenAI} 
-Web Research (Gemini): ${webResearchInfoGemini}
-${user.xBio && `X Profile Bio: ${user.xBio}`}
-----
-Format response exactly as:
-REASONING_CALCULATION: [Populate using the point system above, referencing categories explicitly, e.g., Startup Experience (worked at startup): +15, AI Experience (hands-on ML): +25, etc.]
-ENGINEER_ARCHETYPE: [Chosen Archetype(s) from the list: ${EngineerArchetypes.join(
-  ", "
-)}. Comma-separated if multiple.]
-SCORE: [between 0 and 100, sum of points from calculation]
-`;
+Example 5:
+---
+GitHub Profile:
+Name: Alex Chen
+Company: Ex-Lead @ BigTech AI Division
+Recent Repos:
+- project-management-scripts
+- old-uni-project
+Web Research: Led a major AI hardware project ("Project X") at BigTech (2019-2024, role: Director of Engineering). Previously Senior Engineering Manager. Co-founded "VCAnalyticsTool" (a CRM for VCs, 2017-2019, some user adoption, no major funding/exit) and "QuickSaaSTool" (general small business SaaS, 2016-2017, moderate revenue). LinkedIn shows primarily management roles for last 7+ years.
+
+REASONING_CALCULATION: Startup Experience (Co-founded VCAnalyticsTool, non-AI/infra, some validation but not strong: +5; QuickSaaSTool, non-AI/infra, some validation: +5), AI Experience (Led major AI hardware project 'Project X' but as Director, primarily managerial, limited recent hands-on coding evidence: +10), Education (Relevant CS degree from a good university: +5)
+ENGINEER_ARCHETYPE: Other, backend/infra (historical)
+SCORE: 25
+---
+Example 6:
+---
+GitHub Profile:
+Name: Priya Sharma
+Company: Founder @ SaaS Startup | Ex-PM @ BigTech
+Recent Repos:
+- smart-contract-tutorial (7 years ago)
+- product-hunt-scraper
+Web Research: Founded "HelpfulSaaS" (customer support tool, profitable, 10k users) 2 years ago. Previously Product Manager at BigTech (2019-2022). LinkedIn mentions current interest in "exploring AI applications" but no specific AI/ML projects or roles detailed. Web search mentions "working on a new AI venture in stealth" but no details.
+
+REASONING_CALCULATION: Startup Experience (Founded HelpfulSaaS, non-AI/infra, some validation: +10), Crypto Experience/Interest (Old smart contract tutorial, very dated, minor: +0), AI Experience (General interest, "stealth venture" lacks verifiable details or hands-on evidence: +5), Other Positive Signals (Entrepreneurial success with HelpfulSaaS: +10)
+ENGINEER_ARCHETYPE: full-stack, Other
+SCORE: 20
+---
+`; // End of static prompt template
 
 export async function rateUserV3(user: UserData): Promise<{
   reasoning: string | undefined;
@@ -187,12 +262,25 @@ export async function rateUserV3(user: UserData): Promise<{
 
   const webResearchPrompt = openAIResult.promptText;
 
-  const ratingPromptContent = RatingPrompt(
+  // Generate the dynamic part of the prompt
+  const engineerInQuestionContent = formatEngineerInQuestion(
+    user,
     openAIResult.researchResult,
-    geminiResult.researchResult,
-    user
+    geminiResult.researchResult
   );
 
+  // Combine static template and dynamic part for the LLM
+  const ratingPromptContent =
+    RatingPrompt +
+    engineerInQuestionContent +
+    `Format response exactly as:
+REASONING_CALCULATION: [Populate using the point system above, referencing categories explicitly, e.g., Startup Experience (worked at startup): +15, AI Experience (hands-on ML): +25, etc.]
+ENGINEER_ARCHETYPE: [Chosen Archetype(s) from the list: ${EngineerArchetypes.join(
+      ", "
+    )}. Comma-separated if multiple.]
+SCORE: [between 0 and 100, sum of points from calculation]`;
+
+  // Log only the dynamic part
   const logDir = path.join(process.cwd(), "logs");
   if (!fs.existsSync(logDir)) {
     fs.mkdirSync(logDir);
@@ -203,12 +291,9 @@ export async function rateUserV3(user: UserData): Promise<{
   );
   fs.appendFileSync(
     logFile,
-    `\n\n=== Web Research Prompt for ${
+    `\n\n=== Rating Data for ${
       user.login
-    } at ${new Date().toISOString()} ===\n${webResearchPrompt}\n` +
-      `\n\n=== Rating Prompt for ${
-        user.login
-      } at ${new Date().toISOString()} ===\n${ratingPromptContent}\n`
+    } at ${new Date().toISOString()} ===\n${engineerInQuestionContent}\n` // Log only the dynamic part
   );
 
   console.log(`[${user.login}] Sending rating prompt to OpenAI...`);
