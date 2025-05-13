@@ -63,7 +63,8 @@ function formatRelativeTime(
 export const EngineerArchetypes = [
   "full-stack",
   "ML engineer",
-  "AI researcher",
+  "AI engineer",
+  "AI researcher/scientist",
   "backend/infra",
   "frontend",
   "protocol/crypto",
@@ -122,6 +123,15 @@ Point Guidelines for Reasoning & Score:
     - If primarily management/product focused: Count as non-technical role
     - If unclear: Err on side of caution and count as non-technical
 *   Use the Linkedin Summary (including dates) to clarify roles and their duration. If it shows extended non-technical focus or only very old technical roles, temper scores even if GitHub has technical projects.
+*   IMPORTANT: Final score MUST be between 0-100. If calculation exceeds 100, cap at 100.
+*   For archetype assignment:
+    - Only assign 'protocol/crypto' if there is substantial, recent (last 3-5 years) hands-on engineering work in blockchain/crypto
+    - Only assign 'ML engineer' or 'AI researcher' if there is substantial, recent hands-on ML/AI work
+    - If primarily management or research-focused without recent hands-on work, use 'Other' or 'None'
+    - Err on the side of caution - if unsure about hands-on work, do not assign technical archetypes
+    - CRITICAL: For any technical archetype, the candidate MUST have done hands-on work in that area within the last 3-5 years. Old projects or dated experience do not qualify for archetype assignment, even if they were substantial at the time.
+    - IMPORTANT: Research roles (Research Engineer, Research Scientist, etc.) without clear evidence of recent hands-on engineering work should NOT automatically qualify for technical archetypes
+    - For crypto/web3: Having built tools or worked on crypto projects in the past is not enough. Must have substantial, recent hands-on engineering work in blockchain/crypto systems
 
 - Startup Experience:
     - Interest/minor startup project contributions (incl. some OS projects): +5
@@ -184,11 +194,11 @@ Recent Repos:
 - stripe-api
 - stripe-node
 - solidity-examples
-Web Research: Software engineer at Stripe, previously at Coinbase.
+Web Research: Software engineer at Stripe, previously at Coinbase (2019-2021) where she worked on their token system and smart contract infrastructure. Built and maintained core components of their token platform, including smart contract development and integration with their trading systems. Currently working on Stripe's crypto payment infrastructure.
 
-REASONING_CALCULATION: Crypto Experience/Interest (Coinbase): +10
+REASONING_CALCULATION: Crypto Experience/Interest (Hands-on work on token systems and smart contracts at Coinbase, current crypto work at Stripe: +25)
 ENGINEER_ARCHETYPE: full-stack, protocol/crypto
-SCORE: 10
+SCORE: 25
 ---
 Example 4: 
 ---
@@ -232,6 +242,21 @@ Web Research: Founded "HelpfulSaaS" (customer support tool, profitable, 10k user
 REASONING_CALCULATION: Startup Experience (Founded HelpfulSaaS, non-AI/infra, some validation: +10), Crypto Experience/Interest (Old smart contract tutorial, very dated, minor: +0), AI Experience (General interest, "stealth venture" lacks verifiable details or hands-on Software Engineering evidence: +5), Other Positive Signals (Entrepreneurial success with HelpfulSaaS: +10)
 ENGINEER_ARCHETYPE: full-stack, Other
 SCORE: 20
+---
+Example 7:
+---
+GitHub Profile:
+Name: David Kumar
+Company: Engineering Director @ BigTech AI
+Recent Repos:
+- ml-model-serving (5 years ago)
+- distributed-training (6 years ago)
+- startup-ideas
+Web Research: Engineering Director at BigTech AI (2020-present). Previously Engineering Manager at AI Startup (2018-2020). Co-founded "AICommunity" (non-profit AI education platform, 2016-2018). PhD in CS from good regional university. Published papers on distributed ML. Regular speaker at AI conferences. Built a small AI consulting business.
+
+REASONING_CALCULATION: Startup Experience (Co-founded non-profit AI education platform, no commercial validation: +5), AI Experience (Engineering Director role, but primarily management, dated hands-on work: +10), Education (PhD from non-elite university: +0), Other Positive Signals (Conference speaking, community building - not relevant for hands-on role: +0)
+ENGINEER_ARCHETYPE: Other
+SCORE: 15
 ---
 `; // End of static prompt template
 

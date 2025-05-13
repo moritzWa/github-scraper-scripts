@@ -21,6 +21,7 @@ const dbName = process.env.MONGODB_DB || "githubGraph";
 
 // Add type definitions
 type OldRating = {
+  name: string;
   score: number;
   archetypes: string[];
   reasoning: string;
@@ -33,58 +34,58 @@ type OldRatings = {
 
 // Update OLD_RATINGS with proper type and reviewer comments
 const OLD_RATINGS: OldRatings = {
-  n0rlant1s: {
-    // Bani Singh
-    score: 65,
-    archetypes: ["full-stack", "protocol/crypto"],
-    reasoning:
-      "Startup Experience (Founded, scaled, and sold several software businesses): +20, AI Experience (Current role working on new AI technologies in stealth mode, interest in AI technologies): +25, Crypto Experience/Interest (Template-Ethereum-Smart-Contract-Interaction repo): +5, Other Positive Signals (Entrepreneurial success and hustle with multiple businesses): +15",
-    reviewerComment:
-      "Less impressive than this says. Doesn't deserve protocol/crypto classification just because of a smart contract related repo from 7 years ago. Had a small bootstrapped saas company but big parts of background is as a product manager and hasn't worked at any AI infra related companies",
-  },
-  mjafri118: {
-    // Mohib Jafri
-    score: 75,
-    archetypes: ["ML engineer", "backend/infra", "Other"],
-    reasoning: "No reasoning provided",
-    reviewerComment:
-      "No real software engineering experience. Was engineer manager at Tesla and did some embedded systems engineering",
-  },
+  // n0rlant1s: {
+  //   name: "Bani Singh",
+  //   score: 65,
+  //   archetypes: ["full-stack", "protocol/crypto"],
+  //   reasoning:
+  //     "Startup Experience (Founded, scaled, and sold several software businesses): +20, AI Experience (Current role working on new AI technologies in stealth mode, interest in AI technologies): +25, Crypto Experience/Interest (Template-Ethereum-Smart-Contract-Interaction repo): +5, Other Positive Signals (Entrepreneurial success and hustle with multiple businesses): +15",
+  //   reviewerComment:
+  //     "Less impressive than this says. Doesn't deserve protocol/crypto classification just because of a smart contract related repo from 7 years ago. Had a small bootstrapped saas company but big parts of background is as a product manager and hasn't worked at any AI infra related companies",
+  // },
+  // mjafri118: {
+  //   name: "Mohib Jafri",
+  //   score: 75,
+  //   archetypes: ["ML engineer", "backend/infra", "Other"],
+  //   reasoning: "No reasoning provided",
+  //   reviewerComment:
+  //     "No real software engineering experience. Was engineer manager at Tesla and did some embedded systems engineering",
+  // },
   mhw32: {
-    // Mike Wu
+    name: "Mike Wu",
     score: 70,
     archetypes: ["ML engineer", "AI researcher", "protocol/crypto"],
     reasoning: "No reasoning provided",
     reviewerComment:
       "Most recent roles were all research heavy so not sure why he got the protocol/crypto classification",
   },
-  RaghavSood: {
-    // Raghav Sood
-    score: 60,
-    archetypes: ["backend/infra", "protocol/crypto", "frontend"],
-    reasoning:
-      "Startup Experience (CEO/Founder of Appaholics): +20, Crypto Experience/Interest (Engineer at Coinhako in blockchain): +25, Education (Attended Carnegie Mellon University): +5, Other Positive Signals (Authored 'Pro Android Augmented Reality' at age 15, founded HackIndia): +10",
-    reviewerComment:
-      "No AI interest, very old (ideally we find people that are younger) and Singapore based",
-  },
-  edgarriba: {
-    // Edgar Riba
-    score: 60,
-    archetypes: ["AI researcher", "ML engineer", "backend/infra"],
-    reasoning:
-      "Startup Experience (Co-founded Kornia.org, involvement in multiple entrepreneurial projects): +20, AI Experience (Significant contributions to AI through Kornia library, hands-on ML projects): +25, Education (PhD in Computer Science from Universitat Autònoma de Barcelona): +5, Other Positive Signals (Notable for open-source contributions, community building in AI and CV): +10",
-    reviewerComment:
-      "Founded company which is not successful at all. Shouldn't be +20. +5 for low tier (Universitat Autònoma de Barcelona) PhD - don't give points for universities that nobody has heard of. Community building is not relevant for our very technical senior engineering role",
-  },
+  // RaghavSood: {
+  //   name: "Raghav Sood",
+  //   score: 60,
+  //   archetypes: ["backend/infra", "protocol/crypto", "frontend"],
+  //   reasoning:
+  //     "Startup Experience (CEO/Founder of Appaholics): +20, Crypto Experience/Interest (Engineer at Coinhako in blockchain): +25, Education (Attended Carnegie Mellon University): +5, Other Positive Signals (Authored 'Pro Android Augmented Reality' at age 15, founded HackIndia): +10",
+  //   reviewerComment:
+  //     "No AI interest, very old (ideally we find people that are younger) and Singapore based",
+  // },
+  // edgarriba: {
+  //   name: "Edgar Riba",
+  //   score: 60,
+  //   archetypes: ["AI researcher", "ML engineer", "backend/infra"],
+  //   reasoning:
+  //     "Startup Experience (Co-founded Kornia.org, involvement in multiple entrepreneurial projects): +20, AI Experience (Significant contributions to AI through Kornia library, hands-on ML projects): +25, Education (PhD in Computer Science from Universitat Autònoma de Barcelona): +5, Other Positive Signals (Notable for open-source contributions, community building in AI and CV): +10",
+  //   reviewerComment:
+  //     "Founded company which is not successful at all. Shouldn't be +20. +5 for low tier (Universitat Autònoma de Barcelona) PhD - don't give points for universities that nobody has heard of. Community building is not relevant for our very technical senior engineering role",
+  // },
 };
 
 // List of edge-case GitHub usernames to re-evaluate
 const edgeCaseUsernames: string[] = [
-  "n0rlant1s", // Bani Singh
-  "mjafri118", // Mohib Jafri
+  // "n0rlant1s", // Bani Singh
+  // "mjafri118", // Mohib Jafri
   "mhw32", // Mike Wu
-  "RaghavSood", // Raghav Sood
-  "edgarriba", // Edgar Riba
+  // "RaghavSood", // Raghav Sood
+  // "edgarriba", // Edgar Riba
 ];
 
 async function fetchUserDataForRating(
