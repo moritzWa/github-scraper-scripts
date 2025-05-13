@@ -35,6 +35,9 @@ export const topProfiles = [
   "https://github.com/ToniRV",
   "https://github.com/yusufhilmi",
   "https://github.com/jeffchuber",
+  "https://github.com/jacobcwright",
+  "https://github.com/atemaguer",
+  "https://github.com/rohrz4nge/",
 ];
 
 export const topProfilesAdditional = [

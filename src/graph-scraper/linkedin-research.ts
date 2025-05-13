@@ -110,19 +110,13 @@ export interface LinkedInProfile {
 }
 
 const RAPIDAPI_HOST = "linkedin-data-api.p.rapidapi.com";
-const EXAMPLE_API_KEY = "0d3445840fmshb924d806f5383bdp122411jsn444d71ae4cf7"; // Replace with your key
 
 // $175/month for up to 50k requests
 export async function fetchLinkedInExperienceViaRapidAPI(
   url: string
 ): Promise<LinkedInProfile | null> {
-  const apiKey = process.env.RAPIDAPI_KEY || EXAMPLE_API_KEY;
+  const apiKey = process.env.RAPIDAPI_KEY;
 
-  if (apiKey === EXAMPLE_API_KEY) {
-    console.warn(
-      "Warning: Using example RapidAPI key. Please set your RAPIDAPI_KEY environment variable for reliable use."
-    );
-  }
   if (!apiKey) {
     console.error(
       "Error: RAPIDAPI_KEY is not set. Please set this environment variable."
@@ -130,10 +124,10 @@ export async function fetchLinkedInExperienceViaRapidAPI(
     return null;
   }
 
-  // https://www.linkedin.com/in/banisgh/
-  // https://www.linkedin.com/in/sigil/
+  const match = url.match(/linkedin\.com\/in\/([^/?#]+)/i);
+  const username = match ? match[1] : url;
 
-  const username = url.split("/in/")[1];
+  console.log("fetchLinkedInExperienceViaRapidAPI username", username);
 
   const options = {
     method: "GET",
@@ -158,7 +152,9 @@ export async function fetchLinkedInExperienceViaRapidAPI(
       return null;
     }
 
-    const data: LinkedInProfile = await response.json();
+    const text = await response.text();
+    console.log("Raw RapidAPI LinkedIn response:", text);
+    const data: LinkedInProfile = JSON.parse(text);
     return data;
   } catch (error) {
     console.error(
@@ -175,11 +171,11 @@ export async function fetchLinkedInProfileUsingOpenai(
   try {
     const prompt = `Find the LinkedIn profile URL for ${
       user.name || user.login
-    } (Software Engineer)${
-      user.email ? ` (email for disambiguation: ${user.email})` : ""
-    }. ${user.xBio || user.bio ? "Their bio reads:" : ""} ${
-      user.xBio ? user.xBio : user.bio ? user.bio : ""
-    }. Return ONLY the full LinkedIn profile URL. If you cannot find the LinkedIn profile, return null.`;
+    } (Software Engineer).
+  Use the following information for disambiguation if multiple profiles are found:
+  ${user.email ? `- Email: ${user.email}` : ""}
+  ${user.xBio || user.bio ? `- Bio hints: ${user.xBio || user.bio}` : ""}
+  Return ONLY the full LinkedIn profile URL. If you cannot confidently identify the correct profile, return null.`;
 
     const response = await openai.responses.create({
       model: "gpt-4.1",
@@ -316,6 +312,192 @@ Return ONLY the full LinkedIn profile URL. If you cannot confidently identify th
   } catch (error) {
     console.error(
       `Error fetching LinkedIn profile with Gemini for ${user.login}:`,
+      error
+    );
+    return null;
+  }
+}
+
+// Define Perplexity response structure based on the provided snippet
+interface PerplexityMessage {
+  role: "system" | "user" | "assistant";
+  content: string;
+}
+
+interface PerplexityChoice {
+  index: number;
+  message: PerplexityMessage;
+  finish_reason?: string; // Optional, as it might not always be present or needed
+}
+
+interface PerplexityResponse {
+  id?: string; // Optional fields based on typical API responses
+  model?: string;
+  object?: string;
+  created?: number;
+  choices: PerplexityChoice[];
+  usage?: unknown; // Define more specifically if needed
+}
+
+export async function fetchLinkedInProfileUsingPerplexity(
+  user: UserData
+): Promise<string | null> {
+  const question = `Find the LinkedIn profile URL for ${
+    user.name || user.login
+  } (Software Engineer).
+Use the following information for disambiguation if multiple profiles are found:
+${user.email ? `- Email: ${user.email}` : ""}
+${user.xBio || user.bio ? `- Bio hints: ${user.xBio || user.bio}` : ""}
+Return ONLY the full LinkedIn profile URL as a string.`;
+
+  const SYSTEM_PROMPT = `You are an expert assistant specialized in finding LinkedIn profile URLs using web search. You only return the URL as a string, or the string "null" if no suitable profile is found.`;
+
+  console.log("fetchLinkedInProfileUsingPerplexity question", question);
+
+  try {
+    if (!process.env.PERPLEXITY_API_KEY) {
+      console.error(
+        "Error: PERPLEXITY_API_KEY is not set. Please set this environment variable."
+      );
+      return null;
+    }
+
+    const response = await fetch("https://api.perplexity.ai/chat/completions", {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${process.env.PERPLEXITY_API_KEY}`,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        model: "sonar-pro",
+        messages: [
+          {
+            role: "system",
+            content: SYSTEM_PROMPT,
+          },
+          {
+            role: "user",
+            content: question,
+          },
+        ],
+      }),
+    });
+
+    if (!response.ok) {
+      const errorBody = await response.text();
+      console.error("Perplexity API Error:", response.status, errorBody);
+      return null;
+    }
+
+    const completion = (await response.json()) as PerplexityResponse;
+    console.log(
+      "fetchLinkedInProfile (Perplexity) raw completion:",
+      JSON.stringify(completion, null, 2)
+    );
+
+    if (
+      completion.choices &&
+      completion.choices.length > 0 &&
+      completion.choices[0].message &&
+      completion.choices[0].message.content
+    ) {
+      const resultText = completion.choices[0].message.content.trim();
+      console.log("fetchLinkedInProfile (Perplexity) result text:", resultText);
+      if (
+        resultText.toLowerCase() === "null" ||
+        !resultText.includes("linkedin.com")
+      ) {
+        return null;
+      }
+      return resultText;
+    } else {
+      console.error(
+        "Invalid or empty response from Perplexity API:",
+        completion
+      );
+      return null;
+    }
+  } catch (error) {
+    console.error(
+      `Error fetching LinkedIn profile with Perplexity for ${user.login}:`,
+      error
+    );
+    return null;
+  }
+}
+
+interface BraveSearchResult {
+  title: string;
+  url: string;
+  description?: string;
+}
+
+interface BraveSearchResponse {
+  query: {
+    original: string;
+  };
+  web?: {
+    results: BraveSearchResult[];
+  };
+}
+
+export async function fetchLinkedInProfileUsingBrave(
+  user: UserData
+): Promise<string | null> {
+  const searchQuery = `site:linkedin.com/in/ ${user.name || user.login} ${
+    user.email ? `email:${user.email}` : ""
+  } ${user.xBio || user.bio || ""}`;
+
+  try {
+    if (!process.env.BRAVE_API_KEY) {
+      console.error(
+        "Error: BRAVE_API_KEY is not set. Please set this environment variable."
+      );
+      return null;
+    }
+
+    const response = await fetch(
+      `https://api.search.brave.com/res/v1/web/search?q=${encodeURIComponent(
+        searchQuery
+      )}&count=5&safesearch=moderate`,
+      {
+        method: "GET",
+        headers: {
+          Accept: "application/json",
+          "Accept-Encoding": "gzip",
+          "X-Subscription-Token": process.env.BRAVE_API_KEY,
+        },
+      }
+    );
+
+    // console.log("Brave Search Response:", response);
+
+    if (!response.ok) {
+      const errorBody = await response.text();
+      console.error("Brave API Error:", response.status, errorBody);
+      return null;
+    }
+
+    const data = (await response.json()) as BraveSearchResponse;
+    // console.log("Brave Search Response:", JSON.stringify(data, null, 2));
+
+    // Look for LinkedIn profile URLs in the results
+    if (data.web?.results) {
+      for (const result of data.web.results) {
+        if (result.url.includes("linkedin.com/in/")) {
+          // Extract the LinkedIn profile URL
+          const linkedinUrl = result.url.split("?")[0]; // Remove any query parameters
+          console.log("Found LinkedIn URL:", linkedinUrl);
+          return linkedinUrl;
+        }
+      }
+    }
+
+    console.log("No LinkedIn profile found in Brave search results");
+    return null;
+  } catch (error) {
+    console.error(
+      `Error fetching LinkedIn profile with Brave for ${user.login}:`,
       error
     );
     return null;

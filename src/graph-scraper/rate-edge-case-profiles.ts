@@ -4,7 +4,7 @@ import { MongoClient } from "mongodb";
 import { UserData } from "../types.js";
 import {
   fetchLinkedInExperienceViaRapidAPI,
-  fetchLinkedInProfileUsingGemini,
+  fetchLinkedInProfileUsingBrave,
   generateLinkedInExperienceSummary,
 } from "./linkedin-research.js";
 import { rateUserV3 } from "./llm-rating.js"; // Assuming llm-rating.ts will be updated
@@ -22,7 +22,7 @@ const dbName = process.env.MONGODB_DB || "githubGraph";
 // List of edge-case GitHub usernames to re-evaluate
 const edgeCaseUsernames: string[] = [
   "n0rlant1s", // Bani Singh
-  // "mjafri118", // Mohib Jafri
+  "mjafri118", // Mohib Jafri
   // "mhw32", // Mike Wu
   // "RaghavSood", // Raghav Sood
   // "edgarriba", // Edgar Riba
@@ -86,7 +86,7 @@ async function rateAndLogEdgeCases() {
         // fetch linkedin url if not part of blog url
         const linkedinUrl = userData.blog?.includes("linkedin.com")
           ? userData.blog
-          : await fetchLinkedInProfileUsingGemini(userData);
+          : await fetchLinkedInProfileUsingBrave(userData);
 
         if (linkedinUrl) {
           userData.linkedinUrl = linkedinUrl;
@@ -95,7 +95,9 @@ async function rateAndLogEdgeCases() {
         console.log("userData.linkedinUrl", userData.linkedinUrl);
 
         // fetch linkedin experience if not part of userData
-        if (userData.linkedinUrl && !userData.linkedinExperience) {
+        // if (userData.linkedinUrl && !userData.linkedinExperience) {
+        if (userData.linkedinUrl) {
+          console.log("fetching linkedin experience");
           const linkedinExperience = await fetchLinkedInExperienceViaRapidAPI(
             userData.linkedinUrl
           );
@@ -105,7 +107,9 @@ async function rateAndLogEdgeCases() {
         }
 
         // generate linkedinExperienceSummary if not part of userData
-        if (userData.linkedinUrl && !userData.linkedinExperienceSummary) {
+        // if (userData.linkedinUrl && !userData.linkedinExperienceSummary) {
+        if (userData.linkedinUrl) {
+          console.log("generating linkedin experience summary");
           if (userData.linkedinExperience) {
             const linkedinExperienceSummary =
               await generateLinkedInExperienceSummary(
