@@ -2,6 +2,7 @@ import { Octokit } from "@octokit/core";
 import { config } from "dotenv";
 import { MongoClient } from "mongodb";
 import { UserData } from "../types.js";
+import { fetchUserEmailFromEvents } from "../utils/profile-data-fetchers.js";
 import { calculateRoleFitPoints } from "./helpers.js";
 import {
   fetchLinkedInExperienceViaRapidAPI,
@@ -10,8 +11,12 @@ import {
   generateLinkedInExperienceSummary,
   generateOptimizedSearchQuery,
 } from "./linkedin-research.js";
-import { rateUserV3 } from "./llm-rating.js"; // Assuming llm-rating.ts will be updated
+import { rateUserV3 } from "./llm-rating.js";
 import { DbGraphUser } from "./types.js";
+import {
+  getWebResearchInfoGemini,
+  getWebResearchInfoOpenAI,
+} from "./web-research.js";
 
 config(); // Load .env variables
 
@@ -185,6 +190,16 @@ async function rateAndLogEdgeCases() {
       }
 
       try {
+        // First, fetch email if not already present
+        if (!userData.email) {
+          console.log(`[${username}] Fetching email...`);
+          const email = await fetchUserEmailFromEvents(username, octokit);
+          if (email) {
+            userData.email = email;
+            console.log(`[${username}] Found email: ${email}`);
+          }
+        }
+
         if (!userData.linkedinUrl || refetchLinkedInExperience) {
           console.log(`[${username}] Attempting to find LinkedIn URL...`);
 
@@ -236,8 +251,66 @@ async function rateAndLogEdgeCases() {
           }
         }
 
+        // Get web research results
+        console.log(`[${username}] Checking web research status...`);
+
+        let webResearchInfo: {
+          openAI: { promptText: string; researchResult: string | null };
+          gemini: { promptText: string; researchResult: string | null } | null;
+        };
+
+        // Only fetch new data if we don't have any
+        if (
+          !userData.webResearchInfoOpenAI &&
+          !userData.webResearchInfoGemini
+        ) {
+          console.log(
+            `[${username}] No web research found, performing OpenAI web research...`
+          );
+          const openAIResult = await getWebResearchInfoOpenAI(
+            userData,
+            userData.email
+          );
+
+          // Only use Gemini if OpenAI returned null
+          let geminiResult = null;
+          if (!openAIResult.researchResult) {
+            console.log(`[${username}] OpenAI returned null, trying Gemini...`);
+            geminiResult = await getWebResearchInfoGemini(
+              userData,
+              userData.email
+            );
+          }
+
+          webResearchInfo = {
+            openAI: openAIResult,
+            gemini: geminiResult,
+          };
+
+          // Update userData with new results
+          userData.webResearchInfoOpenAI =
+            openAIResult.researchResult || undefined;
+          userData.webResearchInfoGemini =
+            geminiResult?.researchResult || undefined;
+          userData.webResearchPromptText = openAIResult.promptText;
+        } else {
+          console.log(`[${username}] Using existing web research data`);
+          webResearchInfo = {
+            openAI: {
+              promptText: userData.webResearchPromptText || "",
+              researchResult: userData.webResearchInfoOpenAI || null,
+            },
+            gemini: userData.webResearchInfoGemini
+              ? {
+                  promptText: userData.webResearchPromptText || "",
+                  researchResult: userData.webResearchInfoGemini,
+                }
+              : null,
+          };
+        }
+
         console.log(`[${username}] Calling rateUserV3...`);
-        const ratingResult = await rateUserV3(userData);
+        const ratingResult = await rateUserV3(userData, webResearchInfo);
 
         // Compare with old rating
         if (OLD_RATINGS[username]) {
@@ -256,17 +329,17 @@ async function rateAndLogEdgeCases() {
           { _id: username },
           {
             $set: {
+              email: userData.email,
               linkedinUrl: userData.linkedinUrl,
               linkedinExperience: userData.linkedinExperience,
               linkedinExperienceSummary: userData.linkedinExperienceSummary,
-              // Include rating fields as well, in case they need updating based on new summary
               rating: ratingResult.score,
               ratingWithRoleFitPoints: ratingResult.score + roleFitPoints,
               ratingReasoning: ratingResult.reasoning,
               engineerArchetype: ratingResult.engineerArchetype,
-              webResearchInfoOpenAI: ratingResult.webResearchInfoOpenAI,
-              webResearchInfoGemini: ratingResult.webResearchInfoGemini,
-              webResearchPromptText: ratingResult.webResearchPromptText,
+              webResearchInfoOpenAI: userData.webResearchInfoOpenAI,
+              webResearchInfoGemini: userData.webResearchInfoGemini,
+              webResearchPromptText: userData.webResearchPromptText,
               ratedAt: ratingResult.ratedAt,
             },
           }

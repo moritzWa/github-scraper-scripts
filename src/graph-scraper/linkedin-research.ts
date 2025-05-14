@@ -128,7 +128,7 @@ export async function fetchLinkedInExperienceViaRapidAPI(
   const match = url.match(/linkedin\.com\/in\/([^/?#]+)/i);
   const username = match ? match[1] : url;
 
-  console.log("fetchLinkedInExperienceViaRapidAPI username", username);
+  // console.log("fetchLinkedInExperienceViaRapidAPI username", username);
 
   const options = {
     method: "GET",
@@ -452,7 +452,7 @@ export async function fetchLinkedInProfileUsingBrave(
         user.email ? `email:${user.email}` : ""
       } ${user.xBio || user.bio || ""} (Software Engineer)`;
 
-  console.log("fetchLinkedInProfileUsingBrave searchQuery", searchQuery);
+  // console.log("fetchLinkedInProfileUsingBrave searchQuery", searchQuery);
 
   try {
     if (!process.env.BRAVE_API_KEY) {
@@ -493,7 +493,7 @@ export async function fetchLinkedInProfileUsingBrave(
         if (result.url.includes("linkedin.com/in/")) {
           // Extract the LinkedIn profile URL
           const linkedinUrl = result.url.split("?")[0]; // Remove any query parameters
-          console.log("Found LinkedIn URL:", linkedinUrl);
+          // console.log("Found LinkedIn URL:", linkedinUrl);
           return linkedinUrl;
         }
       }
@@ -605,6 +605,7 @@ Clues:
 - Name: ${user.name || user.login}
 - Email: ${user.email || "Not provided"}
 - Bio: ${user.bio || "Not provided"}
+- Company: ${user.company || "Not provided"}
 - X Bio: ${user.xBio || "Not provided"}
 
 What's your solution, detective? Remember to format as REASONING: and QUERY:`;

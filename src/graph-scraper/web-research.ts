@@ -18,20 +18,18 @@ interface GoogleResponse {
 }
 
 export const webResearchInfoPrompt = (user: UserData, email?: string | null) =>
-  `In a few bullet points tell me more about the background and skills of ${
-    user.name || user.login
-  } (Software Engineer)${
+  `Find key information about ${user.name || user.login} (Software Engineer)${
     email ? ` (email for disambiguation: ${email})` : ""
   }. ${user.xBio || user.bio ? "Their bio reads:" : ""} ${
     user.xBio ? user.xBio : user.bio ? user.bio : ""
   }${
     user.blog ? `Blog is: ${user.blog}` : ""
-  }. Focus on most recent job/company experience (i.e. which specific copanies and roles they had most recently), interests, and current role.  No need for complete sentences. Max 250 words.`;
+  }. Focus on most recent job/company experience, interests, and current role. Return null if no additional information found. Max 150 words.`;
 
 export async function getWebResearchInfoOpenAI(
   user: UserData,
   email?: string | null
-): Promise<{ promptText: string; researchResult: string }> {
+): Promise<{ promptText: string; researchResult: string | null }> {
   const promptText = webResearchInfoPrompt(user, email);
   try {
     const response = await openai.responses.create({
@@ -44,16 +42,16 @@ export async function getWebResearchInfoOpenAI(
       ],
       input: promptText,
     });
+    const result = response.output_text?.trim();
     return {
       promptText,
-      researchResult:
-        response.output_text || "No additional information found (OpenAI).",
+      researchResult: result && result !== "null" ? result : null,
     };
   } catch (error) {
     console.error("Error performing OpenAI web research:", error);
     return {
       promptText,
-      researchResult: "No additional information found (OpenAI).",
+      researchResult: null,
     };
   }
 }
@@ -61,11 +59,11 @@ export async function getWebResearchInfoOpenAI(
 export async function getWebResearchInfoGemini(
   user: UserData,
   email?: string | null
-): Promise<{ promptText: string; researchResult: string }> {
+): Promise<{ promptText: string; researchResult: string | null }> {
   const promptText = webResearchInfoPrompt(user, email);
   try {
     const response = await fetch(
-      "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=" +
+      "https://generativelanguage.googleapis.com/v1/models/gemini-1.5-flash:generateContent?key=" +
         process.env.GOOGLE_API_KEY,
       {
         method: "POST",
@@ -73,23 +71,16 @@ export async function getWebResearchInfoGemini(
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          system_instruction: {
-            parts: [
-              {
-                text: "You are a helpful assistant performing web research to find background and skills information about a software engineer.",
-              },
-            ],
-          },
           contents: [
             {
               parts: [{ text: promptText }],
             },
           ],
-          tools: [
-            {
-              google_search: {},
-            },
-          ],
+          generationConfig: {
+            temperature: 0.7,
+            topP: 0.8,
+            topK: 40,
+          },
         }),
       }
     );
@@ -112,23 +103,25 @@ export async function getWebResearchInfoGemini(
       );
       return {
         promptText,
-        researchResult: "No additional information found (Gemini).",
+        researchResult: null,
       };
     }
 
     const geminiResult = candidate.content.parts
       .map((part: GooglePart) => part.text)
-      .join("\n");
+      .join("\n")
+      .trim();
+
     return {
       promptText,
       researchResult:
-        geminiResult || "No additional information found (Gemini).",
+        geminiResult && geminiResult !== "null" ? geminiResult : null,
     };
   } catch (error) {
     console.error("Error performing Gemini web research:", error);
     return {
       promptText,
-      researchResult: "No additional information found (Gemini).",
+      researchResult: null,
     };
   }
 }

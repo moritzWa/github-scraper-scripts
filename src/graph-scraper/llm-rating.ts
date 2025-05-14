@@ -7,10 +7,6 @@ import { UserData } from "../types.js";
 import { fetchRecentRepositories } from "../utils/profile-data-fetchers.js";
 import openai from "./openai.js";
 import { DbGraphUser } from "./types.js";
-import {
-  getWebResearchInfoGemini,
-  getWebResearchInfoOpenAI,
-} from "./web-research.js";
 
 config();
 
@@ -74,33 +70,54 @@ export const EngineerArchetypes = [
 // Function to format the dynamic part of the prompt for a user
 const formatEngineerInQuestion = (
   user: UserData,
-  webResearchInfoOpenAI: string,
-  webResearchInfoGemini: string
+  webResearchInfoOpenAI: string | null,
+  webResearchInfoGemini: string | null
 ) => {
-  const reposText =
-    user.recentRepositories
-      ?.slice(0, 3) // Increased slice to 5
-      .map((repo) => {
-        const repoName = `${repo.is_fork ? "[Fork] " : ""}${repo.name}${
-          repo.description ? ` (${repo.description.slice(0, 100)})` : ""
-        }`;
-        const relativeTime = formatRelativeTime(repo.last_pushed_at);
-        const timeInfo = relativeTime ? ` (pushed ${relativeTime})` : "";
-        return `- ${repoName}${timeInfo}`;
-      })
-      .join("\n") || "No recent repositories found.";
+  const reposText = user.recentRepositories
+    ?.slice(0, 3)
+    .map((repo) => {
+      const repoName = `${repo.is_fork ? "[Fork] " : ""}${repo.name}${
+        repo.description ? ` (${repo.description.slice(0, 100)})` : ""
+      }`;
+      const relativeTime = formatRelativeTime(repo.last_pushed_at);
+      const timeInfo = relativeTime ? ` (pushed ${relativeTime})` : "";
+      return `- ${repoName}${timeInfo}`;
+    })
+    .join("\n");
 
-  return `Engineer in question:
-Name: ${getUserName(user)}
-${user.company ? `Company: ${user.company}` : ""}
-Recent Repos:
-${reposText}
-Linkedin Summary: 
-${user.linkedinExperienceSummary || "N/A"}
-Web Research (OpenAI): ${webResearchInfoOpenAI || "N/A"}
-Web Research (Gemini): ${webResearchInfoGemini || "N/A"}
-${user.xBio ? `X Profile Bio: ${user.xBio}` : ""}
-----`;
+  // Group profile information together
+  const profileSections = [
+    `Name: ${getUserName(user)}`,
+    user.company ? `Company: ${user.company}` : null,
+    user.xBio ? `X Profile Bio: ${user.xBio}` : null,
+  ].filter(Boolean);
+
+  // Group technical information together
+  const technicalSections = [
+    reposText ? `Recent Repos:\n${reposText}` : null,
+    user.linkedinExperienceSummary
+      ? `Linkedin Summary:\n${user.linkedinExperienceSummary}`
+      : null,
+  ].filter(Boolean);
+
+  // Group research information together
+  const researchSections = [
+    webResearchInfoOpenAI
+      ? `Web Research (OpenAI): ${webResearchInfoOpenAI}`
+      : null,
+    webResearchInfoGemini
+      ? `Web Research (Gemini): ${webResearchInfoGemini}`
+      : null,
+  ].filter(Boolean);
+
+  // Combine all sections with appropriate spacing
+  const sections = [
+    ...profileSections,
+    ...technicalSections,
+    ...researchSections,
+  ].join("\n");
+
+  return `Engineer in question:\n${sections}\n----`;
 };
 
 // Modify RatingPrompt to be only the static part
@@ -253,33 +270,31 @@ SCORE: 25
 ---
 `; // End of static prompt template
 
-export async function rateUserV3(user: UserData): Promise<{
+interface WebResearchResult {
+  promptText: string;
+  researchResult: string | null;
+}
+
+export async function rateUserV3(
+  user: UserData,
+  webResearchInfo: {
+    openAI: WebResearchResult;
+    gemini: WebResearchResult | null;
+  }
+): Promise<{
   reasoning: string | undefined;
   score: number;
   engineerArchetype: string[];
-  webResearchInfoOpenAI: string;
-  webResearchInfoGemini: string;
+  webResearchInfoOpenAI?: string;
+  webResearchInfoGemini?: string;
   webResearchPromptText: string;
   ratedAt: Date;
 }> {
-  console.log(`[${user.login}] Performing OpenAI web research...`);
-  const openAIResultPromise = getWebResearchInfoOpenAI(user, user.email);
-  console.log(`[${user.login}] Performing Gemini web research...`);
-  const geminiResultPromise = getWebResearchInfoGemini(user, user.email);
-
-  const [openAIResult, geminiResult] = await Promise.all([
-    openAIResultPromise,
-    geminiResultPromise,
-  ]);
-  console.log(`[${user.login}] OpenAI research done. Gemini research done.`);
-
-  const webResearchPrompt = openAIResult.promptText;
-
   // Generate the dynamic part of the prompt
   const engineerInQuestionContent = formatEngineerInQuestion(
     user,
-    openAIResult.researchResult,
-    geminiResult.researchResult
+    webResearchInfo.openAI.researchResult || "",
+    webResearchInfo.gemini?.researchResult || ""
   );
 
   // Combine static template and dynamic part for the LLM
@@ -306,7 +321,7 @@ SCORE: [between 0 and 100, sum of points from calculation]`;
     logFile,
     `\n\n=== Rating Data for ${
       user.login
-    } at ${new Date().toISOString()} ===\n${engineerInQuestionContent}\n` // Log only the dynamic part
+    } at ${new Date().toISOString()} ===\n${engineerInQuestionContent}\n`
   );
 
   console.log(`[${user.login}] Sending rating prompt to OpenAI...`);
@@ -327,7 +342,7 @@ SCORE: [between 0 and 100, sum of points from calculation]`;
       .map((s) => s.trim())
       .filter((s) => EngineerArchetypes.includes(s));
     if (parsedArchetypes.length === 0) {
-      parsedArchetypes = ["Other"]; // Default if specified but not matching known, or empty
+      parsedArchetypes = ["Other"];
     }
   }
 
@@ -335,9 +350,9 @@ SCORE: [between 0 and 100, sum of points from calculation]`;
     reasoning: reasoningMatch ? reasoningMatch[1].trim() : undefined,
     score: scoreMatch ? parseInt(scoreMatch[1]) : 0,
     engineerArchetype: parsedArchetypes,
-    webResearchInfoOpenAI: openAIResult.researchResult,
-    webResearchInfoGemini: geminiResult.researchResult,
-    webResearchPromptText: webResearchPrompt,
+    webResearchInfoOpenAI: webResearchInfo.openAI.researchResult || undefined,
+    webResearchInfoGemini: webResearchInfo.gemini?.researchResult || undefined,
+    webResearchPromptText: webResearchInfo.openAI.promptText,
     ratedAt: new Date(),
   };
 }
@@ -350,6 +365,7 @@ function calculateRoleFitPoints(archetypes: string[]): number {
 }
 
 // SCRIPT
+// TODO this is partly duplicated in re-rate-users.ts
 async function rateAllProcessedUsers() {
   const mongoUri = process.env.MONGODB_URI || "mongodb://localhost:27017";
   const dbName = process.env.MONGODB_DB || "githubGraph";
@@ -418,7 +434,13 @@ async function rateAllProcessedUsers() {
             };
 
             console.log(`[${user._id}] Calling rateUserV3...`);
-            const ratingData = await rateUserV3(userData);
+            const ratingData = await rateUserV3(userData, {
+              openAI: {
+                promptText: "",
+                researchResult: "",
+              },
+              gemini: null,
+            });
             console.log(`[${user._id}] Received data from rateUserV3.`);
             const roleFitPoints = calculateRoleFitPoints(
               ratingData.engineerArchetype
