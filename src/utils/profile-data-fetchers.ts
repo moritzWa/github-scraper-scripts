@@ -1,7 +1,6 @@
 import { Readability } from "@mozilla/readability";
 import { Octokit } from "@octokit/core";
 import { JSDOM, VirtualConsole } from "jsdom";
-import { OpenAI } from "openai";
 import { GitHubUser } from "../graph-scraper/types.js";
 import { GitHubRepo } from "../types.js";
 import { withRateLimitRetry } from "./prime-scraper-api-utils.js";
@@ -214,6 +213,13 @@ export async function fetchUserEmailFromEvents(
               for (const commit of payload.commits) {
                 if (commit.author && commit.author.email) {
                   const email = commit.author.email as string;
+                  // Skip bot emails and GitHub Actions emails
+                  if (
+                    email.includes("[bot]") ||
+                    email.includes("github-actions")
+                  ) {
+                    continue;
+                  }
                   // Prefer non-noreply emails
                   if (!email.endsWith("@users.noreply.github.com")) {
                     return email; // Found a non-noreply email, return immediately

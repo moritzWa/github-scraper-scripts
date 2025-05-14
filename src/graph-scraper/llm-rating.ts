@@ -311,7 +311,7 @@ SCORE: [between 0 and 100, sum of points from calculation]`;
 
   console.log(`[${user.login}] Sending rating prompt to OpenAI...`);
   const ratingResult = await openai.chat.completions.create({
-    model: "gpt-4o",
+    model: "gpt-4.1",
     messages: [{ role: "user", content: ratingPromptContent }],
   });
   console.log(`[${user.login}] Received rating from OpenAI.`);

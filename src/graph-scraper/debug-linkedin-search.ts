@@ -59,7 +59,9 @@ async function debugLinkedInSearch() {
 
     // Test 2: Optimized Search Query
     console.log("\nTest 2: Optimized Search Query");
-    const optimizedQuery = await generateOptimizedSearchQuery(userFromDb);
+    const optimizedQuery = await generateOptimizedSearchQuery(
+      convertToUserData(userFromDb)
+    );
     console.log("Optimized Query:", optimizedQuery);
     const optimizedUrl = await fetchLinkedInProfileUsingBrave(
       convertToUserData(userFromDb),

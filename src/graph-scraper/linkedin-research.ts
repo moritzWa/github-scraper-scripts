@@ -9,7 +9,6 @@ dotenv.config(); // Load environment variables at the very top
 import { UserData } from "../types.js";
 import { isLinkedInDomain } from "../utils/prime-scraper-api-utils.js";
 import openai from "./openai.js"; // Import the shared OpenAI client
-import { DbGraphUser } from "./types.js";
 
 // If you are in an environment where fetch is not globally available (e.g., older Node.js versions),
 // you might need to import it:
@@ -561,7 +560,7 @@ export async function generateLinkedInExperienceSummary(
 }
 
 export async function generateOptimizedSearchQuery(
-  user: DbGraphUser
+  user: UserData
 ): Promise<string> {
   const prompt = `You are a skilled detective specializing in finding people's LinkedIn profiles of Software Engineers. Your task is to craft the perfect search query that will lead us to the correct LinkedIn profile.
 
@@ -573,6 +572,14 @@ You have access to various clues about the person:
 
 Your mission is to combine these clues into a precise search query that will help us find their LinkedIn profile. Think like a detective - what unique combinations of information would make this person stand out in a search?
 
+IMPORTANT RULES:
+1. Keep the search query extremely concise - maximum 6 words
+2. Focus ONLY on name and current/most notable role
+3. Ignore historical roles, minor contributions, or technical details
+4. Format your response exactly as:
+REASONING: [Your detective work here]
+QUERY: [Your 6-word-or-less search query]
+
 Here are some examples of how you've solved similar cases:
 
 Case 1:
@@ -581,8 +588,8 @@ Clues:
 - Email: aman@tmm1.net
 - Bio: building Cursor @anysphere. full stack tinkerer and perf nerd. formerly vp of infra @github + ruby-core committer. founder @getchannels + ffmpeg committer.
 
-Your Solution: "Aman Karmani Cursor VP infra Github"
-Reasoning: Combined their full name with their current role at Cursor and their notable position at GitHub to create a unique identifier.
+REASONING: The bio contains too much information that could confuse the search. We should focus only on their current role at Cursor and their most notable position at GitHub.
+QUERY: Aman Karmani Cursor VP
 
 Case 2:
 Clues:
@@ -590,25 +597,28 @@ Clues:
 - Email: info@jannik-straube.de
 - Bio: Software Engineer
 
-Your Solution: "Jannik Straube Software Engineer"
-Reasoning: Extracted their full name from the email since the GitHub username was incomplete, and added their role for context.
+REASONING: The GitHub username is incomplete, but we can extract their full name from the email. Their role is already concise and clear.
+QUERY: Jannik Straube Software Engineer
 
 Current Case:
 Clues:
-- Name: ${user.name || user._id}
+- Name: ${user.name || user.login}
 - Email: ${user.email || "Not provided"}
 - Bio: ${user.bio || "Not provided"}
 - X Bio: ${user.xBio || "Not provided"}
 
-What's your search query, detective?`;
+What's your solution, detective? Remember to format as REASONING: and QUERY:`;
 
   try {
     const response = await openai.chat.completions.create({
-      model: "gpt-4o-mini",
+      model: "gpt-4o",
       messages: [{ role: "user", content: prompt }],
     });
 
-    return response.choices[0]?.message?.content?.trim() || "";
+    const result = response.choices[0]?.message?.content?.trim() || "";
+    // Extract just the query part, ignoring the reasoning
+    const queryMatch = result.match(/QUERY:\s*(.+)/i);
+    return queryMatch ? queryMatch[1].trim() : "";
   } catch (error) {
     console.error("Error generating optimized search query:", error);
     return "";

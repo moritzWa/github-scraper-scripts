@@ -2,10 +2,13 @@ import { Octokit } from "@octokit/core";
 import { config } from "dotenv";
 import { MongoClient } from "mongodb";
 import { UserData } from "../types.js";
+import { calculateRoleFitPoints } from "./helpers.js";
 import {
   fetchLinkedInExperienceViaRapidAPI,
   fetchLinkedInProfileUsingBrave,
+  findLinkedInUrlInProfileData,
   generateLinkedInExperienceSummary,
+  generateOptimizedSearchQuery,
 } from "./linkedin-research.js";
 import { rateUserV3 } from "./llm-rating.js"; // Assuming llm-rating.ts will be updated
 import { DbGraphUser } from "./types.js";
@@ -81,6 +84,7 @@ const OLD_RATINGS: OldRatings = {
 
 // List of edge-case GitHub usernames to re-evaluate
 const edgeCaseUsernames: string[] = [
+  "JannikSt",
   // "n0rlant1s", // Bani Singh
   // "mjafri118", // Mohib Jafri
   // "mhw32", // Mike Wu
@@ -162,8 +166,8 @@ async function rateAndLogEdgeCases() {
   const client = new MongoClient(mongoUri);
   await client.connect();
   const db = client.db(dbName);
-  const regenerateLinkedInExperience = false; // Flag to force regeneration
-  const refetchLinkedInExperience = false; // Flag to force refetch
+  const regenerateLinkedInExperience = true; // Flag to force regeneration
+  const refetchLinkedInExperience = true; // Flag to force refetch
 
   try {
     await client.connect();
@@ -183,43 +187,53 @@ async function rateAndLogEdgeCases() {
       try {
         if (!userData.linkedinUrl || refetchLinkedInExperience) {
           console.log(`[${username}] Attempting to find LinkedIn URL...`);
-          const linkedinUrl = userData.blog?.includes("linkedin.com")
-            ? userData.blog
-            : await fetchLinkedInProfileUsingBrave(userData);
 
-          if (linkedinUrl) {
-            userData.linkedinUrl = linkedinUrl;
-            console.log(`[${username}] Found LinkedIn URL: ${linkedinUrl}`);
+          // First check if URL exists in profile data
+          const linkedinUrlFromProfile = findLinkedInUrlInProfileData(userData);
+          if (linkedinUrlFromProfile) {
+            console.log(
+              `[${username}] Found LinkedIn URL in profile data: ${linkedinUrlFromProfile}`
+            );
+            userData.linkedinUrl = linkedinUrlFromProfile;
           } else {
-            console.log(`[${username}] Could not find LinkedIn URL.`);
+            console.log(`[${username}] Generating optimized search query...`);
+            const optimizedQuery = await generateOptimizedSearchQuery(userData);
+            console.log(`[${username}] Optimized query: ${optimizedQuery}`);
+
+            const linkedinUrl = await fetchLinkedInProfileUsingBrave(
+              userData,
+              optimizedQuery
+            );
+            if (linkedinUrl) {
+              console.log(
+                `[${username}] Found LinkedIn URL via Brave: ${linkedinUrl}`
+              );
+              userData.linkedinUrl = linkedinUrl;
+            } else {
+              console.log(`[${username}] Could not find LinkedIn URL.`);
+            }
           }
         }
 
-        if (
-          userData.linkedinUrl &&
-          (!userData.linkedinExperience || regenerateLinkedInExperience)
-        ) {
+        if (!userData.linkedinExperience || regenerateLinkedInExperience) {
           console.log(`[${username}] Fetching LinkedIn experience...`);
-          const linkedinExperience = await fetchLinkedInExperienceViaRapidAPI(
-            userData.linkedinUrl
-          );
-          userData.linkedinExperience = linkedinExperience;
-        }
-
-        // Generate summary only if experience is present and either summary is missing or regeneration is forced
-        if (
-          userData.linkedinExperience &&
-          (!userData.linkedinExperienceSummary || regenerateLinkedInExperience)
-        ) {
-          console.log(
-            `[${username}] Generating LinkedIn experience summary...`
-          );
-          const linkedinExperienceSummary =
-            await generateLinkedInExperienceSummary(
-              userData.linkedinExperience
+          if (userData.linkedinUrl) {
+            const linkedinExperience = await fetchLinkedInExperienceViaRapidAPI(
+              userData.linkedinUrl
             );
-          userData.linkedinExperienceSummary = linkedinExperienceSummary;
-          console.log(`[${username}] Generated LinkedIn summary.`);
+            userData.linkedinExperience = linkedinExperience;
+
+            // Generate summary immediately after fetching new experience
+            if (linkedinExperience) {
+              console.log(
+                `[${username}] Generating LinkedIn experience summary...`
+              );
+              const linkedinExperienceSummary =
+                await generateLinkedInExperienceSummary(linkedinExperience);
+              userData.linkedinExperienceSummary = linkedinExperienceSummary;
+              console.log(`[${username}] Generated LinkedIn summary.`);
+            }
+          }
         }
 
         console.log(`[${username}] Calling rateUserV3...`);
@@ -229,6 +243,10 @@ async function rateAndLogEdgeCases() {
         if (OLD_RATINGS[username]) {
           compareRatings(username, OLD_RATINGS[username], ratingResult);
         }
+
+        const roleFitPoints = calculateRoleFitPoints(
+          ratingResult.engineerArchetype
+        );
 
         // Update the user object in the database (including potentially updated LinkedIn data)
         console.log(`[${username}] Updating user data in DB...`);
@@ -243,6 +261,7 @@ async function rateAndLogEdgeCases() {
               linkedinExperienceSummary: userData.linkedinExperienceSummary,
               // Include rating fields as well, in case they need updating based on new summary
               rating: ratingResult.score,
+              ratingWithRoleFitPoints: ratingResult.score + roleFitPoints,
               ratingReasoning: ratingResult.reasoning,
               engineerArchetype: ratingResult.engineerArchetype,
               webResearchInfoOpenAI: ratingResult.webResearchInfoOpenAI,
