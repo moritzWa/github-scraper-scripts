@@ -37,10 +37,7 @@ export const topProfiles = [
   "https://github.com/jeffchuber",
   "https://github.com/jacobcwright",
   "https://github.com/atemaguer",
-  "https://github.com/rohrz4nge/",
-];
-
-export const topProfilesAdditional = [
+  "https://github.com/rohrz4nge",
   "https://github.com/varunshenoy",
   "https://github.com/himat",
   "https://github.com/dzhng",
@@ -50,6 +47,9 @@ export const topProfilesAdditional = [
   "https://github.com/seeARMS",
   "https://github.com/Flaque",
   "https://github.com/yasyf",
+];
+
+export const topProfilesAdditional = [
   "https://github.com/shaoruu",
   "https://github.com/joshpxyne",
   "https://github.com/nqn",
@@ -73,7 +73,7 @@ export const topProfilesAdditional = [
   "https://github.com/jwstanly",
   "https://github.com/maccman",
   "https://github.com/JohannesHa",
-
+  // next
   "https://github.com/manveerxyz",
   "https://github.com/justusmattern27",
   "https://github.com/mikex86",
