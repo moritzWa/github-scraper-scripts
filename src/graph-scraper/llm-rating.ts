@@ -330,8 +330,16 @@ SCORE: [between 0 and 100, sum of points from calculation]`;
     messages: [{ role: "user", content: ratingPromptContent }],
   });
   console.log(`[${user.login}] Received rating from OpenAI.`);
+
+  // console.log(
+  //   "ratingResult.choices[0]?.message?.content (for debuggings)",
+  //   ratingResult.choices[0]?.message?.content
+  // );
+
   const response = ratingResult.choices[0]?.message?.content || "";
-  const reasoningMatch = response.match(/REASONING_CALCULATION: (.*)/);
+  const reasoningMatch = response.match(
+    /REASONING_CALCULATION: (.*?)(?=\nENGINEER_ARCHETYPE:|$)/s
+  );
   const scoreMatch = response.match(/SCORE: (\d+)/);
   const archetypeMatch = response.match(/ENGINEER_ARCHETYPE: (.*)/);
 
