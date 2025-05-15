@@ -562,6 +562,13 @@ export async function generateLinkedInExperienceSummary(
 export async function generateOptimizedSearchQuery(
   user: UserData
 ): Promise<string> {
+  // Get recent repositories if available
+  const recentRepos =
+    user.recentRepos
+      ?.slice(0, 2)
+      .map((repo: { name: string }) => repo.name)
+      .join(", ") || "Not provided";
+
   const prompt = `You are a skilled detective specializing in finding people's LinkedIn profiles of Software Engineers. Your task is to craft the perfect search query that will lead us to the correct LinkedIn profile.
 
 You have access to various clues about the person:
@@ -569,6 +576,7 @@ You have access to various clues about the person:
 - Their email address (which might contain their full name)
 - Their bio and social media presence
 - Their current and past roles
+- Their recent repositories: ${recentRepos}
 
 Your mission is to combine these clues into a precise search query that will help us find their LinkedIn profile. Think like a detective - what unique combinations of information would make this person stand out in a search?
 
@@ -587,15 +595,26 @@ Clues:
 - Name: Aman Karmani
 - Email: aman@tmm1.net
 - Bio: building Cursor @anysphere. full stack tinkerer and perf nerd. formerly vp of infra @github + ruby-core committer. founder @getchannels + ffmpeg committer.
+- Recent Repos: cursor, anysphere
 
 REASONING: The bio contains too much information that could confuse the search. We should focus only on their current role at Cursor and their most notable position at GitHub.
 QUERY: Aman Karmani Cursor VP
 
-Case 2:
+case 2:
+Clues:
+- Name: Jeff Huber
+- Recent Repos: chroma-doom, jekyll-bootstrap-boilerplate
+- Bio: Not provided
+
+REASONING: Chroma DB is a popular vector database. This might be a hint. As always when we dont have much information we add "Software Engineer" to the query.
+QUERY: Jeff Huber Chroma Software Engineer
+
+Case 3:
 Clues:
 - Name: JannikSt
 - Email: info@jannik-straube.de
 - Bio: Software Engineer
+- Recent Repos: Not provided
 
 REASONING: The GitHub username is incomplete, but we can extract their full name from the email. Their role is already concise and clear.
 QUERY: Jannik Straube Software Engineer
@@ -607,8 +626,11 @@ Clues:
 - Bio: ${user.bio || "Not provided"}
 - Company: ${user.company || "Not provided"}
 - X Bio: ${user.xBio || "Not provided"}
+- Recent Repos: ${recentRepos}
 
-What's your solution, detective? Remember to format as REASONING: and QUERY:`;
+What's your solution, detective? Format response exactly as:
+REASONING: [Your detective work here]
+QUERY: [Your 6-word-or-less search query]`;
 
   try {
     const response = await openai.chat.completions.create({

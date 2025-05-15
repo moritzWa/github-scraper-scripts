@@ -39,6 +39,10 @@ async function reRateUsers() {
     const processedUsers = await usersCol
       .find({
         status: "processed",
+        $or: [
+          { ratedAt: { $exists: false } },
+          { ratedAt: { $lt: new Date("2025-05-14") } },
+        ],
       })
       .toArray();
 

@@ -55,4 +55,9 @@ export interface UserData
     score: number;
     webResearchInfo: string;
   };
+  recentRepos?: Array<{
+    name: string;
+    description?: string;
+    url?: string;
+  }>;
 }
