@@ -54,7 +54,7 @@ const OLD_RATINGS: OldRatings = {
 };
 
 // List of edge-case GitHub usernames to re-evaluate
-const edgeCaseUsernames: string[] = ["min"];
+const edgeCaseUsernames: string[] = ["WillGarman", "steebchen", "fouad-openai"];
 
 async function fetchUserDataForRating(
   username: string,
@@ -140,6 +140,8 @@ async function rateAndLogEdgeCases() {
     for (const username of edgeCaseUsernames) {
       console.log(`\nProcessing: ${username}`);
       const userData = await fetchUserDataForRating(username, client);
+
+      console.log("Old score: ", userData?.rating);
 
       if (!userData) {
         console.log(
@@ -273,6 +275,7 @@ async function rateAndLogEdgeCases() {
 
         // log new score
         console.log("New score: ", ratingResult.score);
+        console.log("New score reasoning: ", ratingResult.reasoning);
 
         // Compare with old rating
         // if (OLD_RATINGS[username]) {

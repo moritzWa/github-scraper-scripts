@@ -34,7 +34,8 @@
     "linkedin-research": "node --loader ts-node/esm src/graph-scraper/linkedin-research.ts",
     "rate-edge-case-profiles": "node --loader ts-node/esm src/graph-scraper/rate-edge-case-profiles.ts",
     "re-rate-users": "node --loader ts-node/esm src/graph-scraper/re-rate-users.ts",
-    "debug-linkedin": "node --loader ts-node/esm src/graph-scraper/debug-linkedin-search.ts"
+    "debug-linkedin": "node --loader ts-node/esm src/graph-scraper/debug-linkedin-search.ts",
+    "to-txt-top-profiles": "node --loader ts-node/esm src/graph-scraper/to-txt-top-profiles.ts"
   },
   "keywords": [],
   "author": "",

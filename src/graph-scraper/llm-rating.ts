@@ -128,7 +128,7 @@ Reviewing GitHub profiles to assess fit:
 2. Repositories: Assess for interest in our company's topics (LLMs, decentralized systems, crypto, high-performance computing) or cultural fit.
 3. Engineer Archetype: Categorize into one or more: ${EngineerArchetypes.join(
   ", "
-)}. Use 'Other' or 'None' if unclear. Base archetypes like 'protocol/crypto' on substantial, recent (last 3-5 years) hands-on engineering work, not minor/old projects.
+)}. Use 'Other' or 'None' if unclear. Base archetypes like 'protocol/crypto', 'AI engineer', or 'backend/infra' on substantial, recent (last 3-5 years) hands-on engineering work (coding, system design, building applications/infrastructure), not solely on research, publications, or theoretical work. 'AI researcher/scientist' is more appropriate for individuals primarily focused on research or research engineering.
 
 Point Guidelines for Reasoning & Score:
 *   CRITICAL: Focus on recent (last 5-7 years) hands-on technical contributions (coding, system design, applied research). Use provided dates in LinkedIn Summary to verify recency.
@@ -139,9 +139,9 @@ Point Guidelines for Reasoning & Score:
 *   Use the Linkedin Summary (including dates) to clarify roles and their duration. If it shows extended non-technical focus or only very old technical roles, temper scores even if GitHub has technical projects.
 *   IMPORTANT: Final score MUST be between 0-100. If calculation exceeds 100, cap at 100.
 *   For archetype assignment:
-    - Only assign technical archetypes if there is substantial, recent (last 3-5 years) hands-on engineering work in that area
-    - Research roles without clear evidence of recent hands-on work should use 'AI researcher/scientist'
-    - Err on the side of caution - if unsure about hands-on work, do not assign technical archetypes
+    - Only assign technical archetypes (e.g., 'AI engineer', 'backend/infra', 'full-stack', 'protocol/crypto', 'low-level systems') if there is substantial, recent (last 3-5 years) hands-on engineering work in that area. This means demonstrable experience in building, designing, or developing systems, applications, or infrastructure.
+    - Research roles, even in AI or systems, without clear evidence of recent hands-on *engineering* work should primarily use 'AI researcher/scientist'. Avoid assigning 'AI engineer' or 'backend/infra' if the work is predominantly theoretical, academic, or research-paper focused without significant implementation or development contributions.
+    - Err on the side of caution - if unsure about hands-on work, do not assign technical archetypes like 'AI engineer' or 'backend/infra'.
 
 - Startup Experience:
     - Interest/minor startup project contributions (incl. some OS projects): +5

@@ -290,6 +290,12 @@ async function calculateUserRating(user: GraphUser, webResearchInfo: any) {
   const ratingData = await rateUserV3(user, webResearchInfo);
   const roleFitPoints = calculateRoleFitPoints(ratingData.engineerArchetype);
 
+  console.log(
+    `[${user.login}] ratingWithRoleFitPoints: ${
+      ratingData.score + roleFitPoints
+    }`
+  );
+
   // Add rating data to the user object
   user.rating = ratingData.score;
   user.ratingWithRoleFitPoints = ratingData.score + roleFitPoints;
