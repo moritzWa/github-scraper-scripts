@@ -90,6 +90,7 @@ const formatEngineerInQuestion = (
     `Name: ${getUserName(user)}`,
     user.company ? `Company: ${user.company}` : null,
     user.xBio ? `X Profile Bio: ${user.xBio}` : null,
+    user.websiteContent ? `Website Content:\n${user.websiteContent}` : null,
   ].filter(Boolean);
 
   // Group technical information together

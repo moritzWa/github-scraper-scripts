@@ -1,9 +1,12 @@
 import { Readability } from "@mozilla/readability";
 import { Octokit } from "@octokit/core";
 import { JSDOM, VirtualConsole } from "jsdom";
+import puppeteer from "puppeteer";
 import { GitHubUser } from "../graph-scraper/types.js";
 import { GitHubRepo } from "../types.js";
 import { withRateLimitRetry } from "./prime-scraper-api-utils.js";
+
+const MAX_CONTENT_LENGTH = 7500;
 
 export async function fetchWebsiteContent(url: string): Promise<string | null> {
   if (!url) return null;
@@ -33,63 +36,84 @@ export async function fetchWebsiteContent(url: string): Promise<string | null> {
       return null;
     }
 
-    const response = await fetch(cleanUrl, {
-      headers: {
-        "User-Agent": "Mozilla/5.0 (compatible; PrimeIntellectBot/1.0;)",
-      },
-      // Add timeout to avoid hanging
-      signal: AbortSignal.timeout(10000),
+    console.log(`[fetchWebsiteContent] Launching browser for ${cleanUrl}`);
+    // Use Puppeteer to render the page with JavaScript
+    const browser = await puppeteer.launch({
+      headless: true,
+      args: ["--no-sandbox", "--disable-setuid-sandbox"],
+    });
+    const page = await browser.newPage();
+
+    // Set viewport to ensure content is loaded
+    await page.setViewport({ width: 1280, height: 800 });
+
+    // Set user agent
+    await page.setUserAgent("Mozilla/5.0 (compatible; PrimeIntellectBot/1.0;)");
+
+    console.log(`[fetchWebsiteContent] Navigating to ${cleanUrl}`);
+    await page.goto(cleanUrl, {
+      waitUntil: "networkidle2",
+      timeout: 30000,
     });
 
-    if (!response.ok) {
-      console.error(`Error fetching website ${cleanUrl}: ${response.status}`);
-      return null;
-    }
+    // Wait for content to be visible
+    console.log(`[fetchWebsiteContent] Waiting for content to be visible`);
+    await page.waitForSelector("body", { visible: true });
 
-    const contentType = response.headers.get("content-type") || "";
-    if (!contentType.includes("text/html")) {
-      console.error(`Not an HTML page: ${cleanUrl} (${contentType})`);
-      return null;
-    }
+    // Additional wait to ensure dynamic content is loaded
+    await new Promise((resolve) => setTimeout(resolve, 2000));
 
-    const html = await response.text();
-    let doc;
-    try {
-      doc = new JSDOM(html, {
-        url: cleanUrl,
-        runScripts: "outside-only",
-        resources: "usable",
-        virtualConsole: new VirtualConsole().sendTo(console, {
-          omitJSDOMErrors: true,
-        }),
-        pretendToBeVisual: false,
-      });
-    } catch (error) {
-      // If JSDOM fails, try to create a minimal document
-      doc = new JSDOM(html, {
-        url: cleanUrl,
-        runScripts: "outside-only",
-        resources: "usable",
-        virtualConsole: new VirtualConsole().sendTo(console, {
-          omitJSDOMErrors: true,
-        }),
-        pretendToBeVisual: false,
-      });
-    }
+    console.log(`[fetchWebsiteContent] Getting page content`);
+    const html = await page.content();
+    console.log(
+      `[fetchWebsiteContent] Content length: ${html.length} characters`
+    );
+
+    await browser.close();
+    console.log(`[fetchWebsiteContent] Browser closed`);
+
+    const doc = new JSDOM(html, {
+      url: cleanUrl,
+      runScripts: "outside-only",
+      resources: "usable",
+      virtualConsole: new VirtualConsole().sendTo(console, {
+        omitJSDOMErrors: true,
+      }),
+      pretendToBeVisual: false,
+    });
+
+    console.log(`[fetchWebsiteContent] Parsing with Readability`);
     const reader = new Readability(doc.window.document);
     const article = reader.parse();
 
     if (!article) {
-      // console.error(`Could not parse content from ${cleanUrl}`);
-      return null;
+      console.log(
+        `[fetchWebsiteContent] Readability parsing failed, using fallback method`
+      );
+      // Fallback: extract all visible text from <body>
+      const body = doc.window.document.body;
+      body
+        .querySelectorAll("script, style, nav, footer, aside")
+        .forEach((el) => el.remove());
+      const fallbackContent = body.textContent || "";
+      const result = `${doc.window.document.title}\n\n${fallbackContent
+        .replace(/\s+/g, " ")
+        .trim()}`.slice(0, MAX_CONTENT_LENGTH);
+      console.log(
+        `[fetchWebsiteContent] Fallback content length: ${result.length} characters`
+      );
+      return result;
     }
 
     // Combine title and content, limit length
     const content = `${article.title}\n\n${article.textContent}`
       .replace(/\s+/g, " ")
       .trim()
-      .slice(0, 2000);
+      .slice(0, MAX_CONTENT_LENGTH);
 
+    console.log(
+      `[fetchWebsiteContent] Final content length: ${content.length} characters`
+    );
     return content;
   } catch (error) {
     // More specific error logging

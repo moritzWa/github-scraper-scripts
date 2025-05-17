@@ -35,7 +35,8 @@
     "rate-edge-case-profiles": "node --loader ts-node/esm src/graph-scraper/rate-edge-case-profiles.ts",
     "re-rate-users": "node --loader ts-node/esm src/graph-scraper/re-rate-users.ts",
     "debug-linkedin": "node --loader ts-node/esm src/graph-scraper/debug-linkedin-search.ts",
-    "to-txt-top-profiles": "node --loader ts-node/esm src/graph-scraper/to-txt-top-profiles.ts"
+    "to-txt-top-profiles": "node --loader ts-node/esm src/graph-scraper/to-txt-top-profiles.ts",
+    "debug-website-fetching": "node --loader ts-node/esm src/graph-scraper/debug-website-fetching.ts"
   },
   "keywords": [],
   "author": "",
@@ -49,6 +50,7 @@
     "mongodb": "^6.16.0",
     "openai": "^4.28.0",
     "play-sound": "^1.1.6",
+    "puppeteer": "^24.8.2",
     "vis-data": "^7.1.9",
     "vis-network": "^9.1.9",
     "zod": "^3.24.4"

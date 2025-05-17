@@ -2,8 +2,11 @@ import { Octokit } from "@octokit/core";
 import { config } from "dotenv";
 import { MongoClient } from "mongodb";
 import { UserData } from "../types.js";
-import { fetchUserEmailFromEvents } from "../utils/profile-data-fetchers.js";
-import { calculateRoleFitPoints } from "./helpers.js";
+import {
+  fetchUserEmailFromEvents,
+  fetchWebsiteContent,
+} from "../utils/profile-data-fetchers.js";
+import { calculateRoleFitPoints, scrapeUser } from "./helpers.js";
 import {
   fetchLinkedInExperienceViaRapidAPI,
   fetchLinkedInProfileUsingBrave,
@@ -26,6 +29,7 @@ const octokit = new Octokit({
 
 const mongoUri = process.env.MONGODB_URI || "mongodb://localhost:27017";
 const dbName = process.env.MONGODB_DB || "githubGraph";
+const edgeCaseUsernames: string[] = ["steebchen"];
 
 // Add type definitions
 type OldRating = {
@@ -53,9 +57,6 @@ const OLD_RATINGS: OldRatings = {
   // },
 };
 
-// List of edge-case GitHub usernames to re-evaluate
-const edgeCaseUsernames: string[] = ["WillGarman", "steebchen", "fouad-openai"];
-
 async function fetchUserDataForRating(
   username: string,
   client: MongoClient
@@ -68,10 +69,39 @@ async function fetchUserDataForRating(
 
     if (!userFromDb) {
       console.warn(
-        `[${username}] User not found in DB. Attempting to construct partial UserData.`
+        `[${username}] User not found in DB. Attempting to scrape user data.`
       );
-      return null;
+      // Use scrapeUser to fetch and process the user data
+      const { user: scrapedUser } = await scrapeUser(
+        octokit,
+        username,
+        0,
+        true
+      );
+
+      if (!scrapedUser) {
+        console.warn(`[${username}] Failed to scrape user data.`);
+        return null;
+      }
+
+      // Convert the scraped user data to UserData format
+      const userData: UserData = {
+        ...scrapedUser,
+        login: scrapedUser._id,
+        repoInteractionScraped: [],
+      };
+
+      // Store the scraped user in the database, excluding _id from the update
+      const { _id, ...userDataWithoutId } = scrapedUser as DbGraphUser;
+      await usersCol.updateOne(
+        { _id: username },
+        { $set: userDataWithoutId },
+        { upsert: true }
+      );
+
+      return userData;
     }
+
     const userData: UserData = {
       ...userFromDb,
       login: userFromDb._id,
@@ -128,13 +158,13 @@ async function rateAndLogEdgeCases() {
   console.log("Starting rating process for edge case profiles...");
 
   const client = new MongoClient(mongoUri);
-  await client.connect();
-  const db = client.db(dbName);
   const regenerateLinkedInExperience = true; // Flag to force regeneration
   const refetchLinkedInExperience = true; // Flag to force refetch
+  const refetchWebsiteContent = true; // Flag to force refetch website content
 
   try {
     await client.connect();
+    const db = client.db(dbName);
     console.log("Connected to MongoDB (for fetching user data).");
 
     for (const username of edgeCaseUsernames) {
@@ -158,6 +188,24 @@ async function rateAndLogEdgeCases() {
           if (email) {
             userData.email = email;
             console.log(`[${username}] Found email: ${email}`);
+          }
+        }
+
+        // Refetch website content if missing or if refetchWebsiteContent is true
+        if (
+          (!userData.websiteContent || refetchWebsiteContent) &&
+          userData.blog
+        ) {
+          console.log(
+            `[${username}] Refetching website content from ${userData.blog}...`
+          );
+          const websiteContent = await fetchWebsiteContent(userData.blog);
+
+          console.log("websiteContent (10k): ", websiteContent);
+
+          if (websiteContent) {
+            userData.websiteContent = websiteContent;
+            console.log(`[${username}] Refetched website content.`);
           }
         }
 
