@@ -13,7 +13,7 @@ const octokit = new Octokit({ auth: apiKey });
 const mongoUri = process.env.MONGODB_URI || "mongodb://localhost:27017";
 const dbName = process.env.MONGODB_DB || "githubGraph";
 const maxDepth = 1;
-const BATCH_SIZE = 5;
+const BATCH_SIZE = 3;
 const SCRAPE_FOLLOWERS = false; // Set to false to only scrape following connections
 
 // --- Reusable Connection Processing Function ---

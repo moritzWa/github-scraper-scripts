@@ -442,118 +442,205 @@ interface BraveSearchResponse {
   };
 }
 
-// Add this new utility function before fetchLinkedInProfileUsingBrave
-async function withBraveRateLimitRetry<T>(
-  fn: () => Promise<T>,
-  maxRetries: number = 5
-): Promise<T> {
+// Global promise chain to serialize Brave API calls
+let braveApiCallQueue = Promise.resolve();
+
+async function withBraveRateLimitRetry(
+  fetchFn: () => Promise<Response>, // The function that performs the fetch
+  maxRetries: number = 3 // Reduced maxRetries as serialization should help
+): Promise<Response> {
   let retryCount = 0;
   let lastError: Error | null = null;
 
-  while (retryCount < maxRetries) {
+  while (retryCount <= maxRetries) {
+    // <= to allow initial attempt + maxRetries
+    let response: Response;
     try {
-      return await fn();
+      response = await fetchFn();
+
+      if (response.ok) {
+        return response;
+      }
+
+      // Not OK, handle retryable errors
+      if (
+        response.status === 429 ||
+        (response.status >= 500 && response.status < 600)
+      ) {
+        lastError = new Error(
+          `Brave API request failed with status ${response.status}`
+        );
+        const isRateLimit = response.status === 429;
+        let waitTimeMs: number;
+
+        const resetTimestampHeader = response.headers.get("X-RateLimit-Reset");
+        if (isRateLimit && resetTimestampHeader) {
+          const resetTimeEpochSeconds = parseInt(resetTimestampHeader, 10);
+          if (!isNaN(resetTimeEpochSeconds)) {
+            const resetTimeMs = resetTimeEpochSeconds * 1000;
+            const currentTimeMs = Date.now();
+            waitTimeMs = Math.max(0, resetTimeMs - currentTimeMs) + 500; // Wait till reset + 500ms buffer
+            console.log(
+              `Brave API: Rate limit. Using X-RateLimit-Reset. Waiting ${
+                waitTimeMs / 1000
+              }s.`
+            );
+          } else {
+            // Fallback if header parsing fails
+            waitTimeMs = Math.pow(2, retryCount) * 1000 + 1000; // Exponential + base 1s
+            console.log(
+              `Brave API: Rate limit. X-RateLimit-Reset parse error. Fallback wait ${
+                waitTimeMs / 1000
+              }s.`
+            );
+          }
+        } else {
+          // Not a rate limit error with header, or a server error
+          waitTimeMs =
+            Math.pow(2, retryCount) * 1000 + (isRateLimit ? 1000 : 0); // Exponential + base for 429
+        }
+
+        waitTimeMs = Math.min(waitTimeMs, 30000); // Cap wait time to 30s
+
+        // Consume the response body to free up resources before waiting
+        // Catch error if text() fails, e.g. if body already consumed or network error during consumption
+        try {
+          await response.text();
+        } catch (bodyError) {
+          // console.warn("Brave API: Error consuming response body before retry:", bodyError);
+        }
+
+        console.log(
+          `Brave API: Status ${response.status}. Attempt ${retryCount + 1}/${
+            maxRetries + 1
+          }. Retrying in ${waitTimeMs / 1000}s...`
+        );
+        await new Promise((resolve) => setTimeout(resolve, waitTimeMs));
+        retryCount++;
+        continue;
+      } else {
+        // Non-retryable error status (e.g., 400, 401, 404)
+        console.warn(
+          `Brave API: Non-retryable status ${response.status}. Returning response to caller.`
+        );
+        return response; // Return the problematic response to the caller
+      }
     } catch (error: any) {
+      // Network error or other error during fetchFn()
       lastError = error;
-
-      // If we hit the rate limit (429)
-      if (error.status === 429) {
-        const retryAfter = Math.min(Math.pow(2, retryCount) * 1000, 30000); // Max 30 seconds
-        console.log(
-          `Brave API rate limit exceeded. Retrying in ${
-            retryAfter / 1000
-          } seconds... (Attempt ${retryCount + 1}/${maxRetries})`
-        );
-        await new Promise((resolve) => setTimeout(resolve, retryAfter));
-        retryCount++;
-        continue;
-      }
-
-      // Handle server errors (5xx) with exponential backoff
-      if (error.status >= 500 && error.status < 600) {
-        const retryAfter = Math.min(Math.pow(2, retryCount) * 1000, 30000);
-        console.log(
-          `Brave API server error (${error.status}). Retrying in ${
-            retryAfter / 1000
-          } seconds... (Attempt ${retryCount + 1}/${maxRetries})`
-        );
-        await new Promise((resolve) => setTimeout(resolve, retryAfter));
-        retryCount++;
-        continue;
-      }
-
-      // If it's not a rate limit or server error, throw it
-      throw error;
+      console.warn(
+        `Brave API: Network error or fetchFn issue: ${error.message}. Attempt ${
+          retryCount + 1
+        }/${maxRetries + 1}.`
+      );
+      const waitTimeMs = Math.min(Math.pow(2, retryCount) * 1000 + 1000, 30000); // Base 1s + exponential
+      await new Promise((resolve) => setTimeout(resolve, waitTimeMs));
+      retryCount++;
+      continue;
     }
   }
 
-  throw lastError || new Error(`Failed after ${maxRetries} retries`);
+  // All retries exhausted
+  const errorMessage = `Brave API: All ${
+    maxRetries + 1
+  } retries failed. Last error: ${
+    lastError ? lastError.message : "Unknown error after retries."
+  }`;
+  console.error(errorMessage);
+  if (lastError) throw lastError; // Throw the actual error object if available
+  throw new Error(errorMessage); // Fallback error
 }
 
 export async function fetchLinkedInProfileUsingBrave(
   user: UserData,
   optimizedQuery?: string
 ): Promise<string | null> {
-  const searchQuery = optimizedQuery
-    ? `site:linkedin.com/in/ ${optimizedQuery}`
-    : `site:linkedin.com/in/ ${user.name || user.login} ${
-        user.email ? `email:${user.email}` : ""
-      } ${user.xBio || user.bio || ""} (Software Engineer)`;
+  const performFetchTask = async () => {
+    const searchQuery = optimizedQuery
+      ? `site:linkedin.com/in/ ${optimizedQuery}`
+      : `site:linkedin.com/in/ ${user.name || user.login} ${
+          user.email ? `email:${user.email}` : ""
+        } ${user.xBio || user.bio || ""} (Software Engineer)`;
 
-  try {
-    if (!process.env.BRAVE_API_KEY) {
+    try {
+      if (!process.env.BRAVE_API_KEY) {
+        console.error(
+          "Error: BRAVE_API_KEY is not set. Please set this environment variable."
+        );
+        return null;
+      }
+
+      const headers: HeadersInit = {
+        Accept: "application/json",
+        "Accept-Encoding": "gzip",
+        "X-Subscription-Token": process.env.BRAVE_API_KEY,
+      };
+
+      const fetchLambda = () =>
+        fetch(
+          `https://api.search.brave.com/res/v1/web/search?q=${encodeURIComponent(
+            searchQuery
+          )}&count=5&safesearch=moderate`,
+          {
+            method: "GET",
+            headers,
+          }
+        );
+
+      // Use the retry wrapper
+      const response = await withBraveRateLimitRetry(fetchLambda);
+
+      if (!response.ok) {
+        // If withBraveRateLimitRetry returns a non-ok response, it means it's a non-retryable error
+        // or retries were exhausted for a non-retryable status that it decided to pass through.
+        let errorBody = "";
+        try {
+          errorBody = await response.text();
+        } catch (e) {
+          errorBody = "(Failed to read error body)";
+        }
+        console.error(
+          `Brave API Error (final status ${response.status} after retry logic) for ${user.login}:`,
+          errorBody
+        );
+        return null;
+      }
+
+      const data = (await response.json()) as BraveSearchResponse;
+
+      if (data.web?.results) {
+        for (const result of data.web.results) {
+          if (result.url.includes("linkedin.com/in/")) {
+            const linkedinUrl = result.url.split("?")[0];
+            return linkedinUrl;
+          }
+        }
+      }
+      // console.log(`No LinkedIn profile found in Brave search results for ${user.login}`);
+      return null;
+    } catch (error: any) {
+      // Catches if withBraveRateLimitRetry throws (max retries exceeded for retryable errors)
       console.error(
-        "Error: BRAVE_API_KEY is not set. Please set this environment variable."
+        `Failed to fetch LinkedIn profile with Brave for ${user.login} after all retries:`,
+        error.message
       );
       return null;
     }
+  };
 
-    const headers: HeadersInit = {
-      Accept: "application/json",
-      "Accept-Encoding": "gzip",
-      "X-Subscription-Token": process.env.BRAVE_API_KEY,
-    };
+  // Add this task to the queue
+  const resultPromise = braveApiCallQueue.then(performFetchTask);
 
-    const response = await withBraveRateLimitRetry(() =>
-      fetch(
-        `https://api.search.brave.com/res/v1/web/search?q=${encodeURIComponent(
-          searchQuery
-        )}&count=5&safesearch=moderate`,
-        {
-          method: "GET",
-          headers,
-        }
-      )
-    );
+  // Update the queue for the next call:
+  // It should wait for the current task to complete (settle) and then add a fixed delay.
+  braveApiCallQueue = resultPromise
+    .catch(() => {
+      // If performFetchTask throws, catch it here so the global queue chain itself doesn't break.
+      // The error is already propagated to the caller of fetchLinkedInProfileUsingBrave via resultPromise.
+    })
+    .then(() => new Promise((resolve) => setTimeout(resolve, 1100))); // 1.1s delay to respect ~1 QPS
 
-    if (!response.ok) {
-      const errorBody = await response.text();
-      console.error("Brave API Error:", response.status, errorBody);
-      return null;
-    }
-
-    const data = (await response.json()) as BraveSearchResponse;
-
-    // Look for LinkedIn profile URLs in the results
-    if (data.web?.results) {
-      for (const result of data.web.results) {
-        if (result.url.includes("linkedin.com/in/")) {
-          // Extract the LinkedIn profile URL
-          const linkedinUrl = result.url.split("?")[0]; // Remove any query parameters
-          return linkedinUrl;
-        }
-      }
-    }
-
-    console.log("No LinkedIn profile found in Brave search results");
-    return null;
-  } catch (error) {
-    console.error(
-      `Error fetching LinkedIn profile with Brave for ${user.login}:`,
-      error
-    );
-    return null;
-  }
+  return resultPromise;
 }
 
 export async function generateLinkedInExperienceSummary(
