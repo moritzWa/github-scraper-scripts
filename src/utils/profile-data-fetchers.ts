@@ -36,7 +36,6 @@ export async function fetchWebsiteContent(url: string): Promise<string | null> {
       return null;
     }
 
-    console.log(`[fetchWebsiteContent] Launching browser for ${cleanUrl}`);
     // Use Puppeteer to render the page with JavaScript
     const browser = await puppeteer.launch({
       headless: true,
@@ -50,27 +49,20 @@ export async function fetchWebsiteContent(url: string): Promise<string | null> {
     // Set user agent
     await page.setUserAgent("Mozilla/5.0 (compatible; PrimeIntellectBot/1.0;)");
 
-    console.log(`[fetchWebsiteContent] Navigating to ${cleanUrl}`);
     await page.goto(cleanUrl, {
       waitUntil: "networkidle2",
       timeout: 30000,
     });
 
     // Wait for content to be visible
-    console.log(`[fetchWebsiteContent] Waiting for content to be visible`);
     await page.waitForSelector("body", { visible: true });
 
     // Additional wait to ensure dynamic content is loaded
     await new Promise((resolve) => setTimeout(resolve, 2000));
 
-    console.log(`[fetchWebsiteContent] Getting page content`);
     const html = await page.content();
-    console.log(
-      `[fetchWebsiteContent] Content length: ${html.length} characters`
-    );
 
     await browser.close();
-    console.log(`[fetchWebsiteContent] Browser closed`);
 
     const doc = new JSDOM(html, {
       url: cleanUrl,
@@ -82,14 +74,10 @@ export async function fetchWebsiteContent(url: string): Promise<string | null> {
       pretendToBeVisual: false,
     });
 
-    console.log(`[fetchWebsiteContent] Parsing with Readability`);
     const reader = new Readability(doc.window.document);
     const article = reader.parse();
 
     if (!article) {
-      console.log(
-        `[fetchWebsiteContent] Readability parsing failed, using fallback method`
-      );
       // Fallback: extract all visible text from <body>
       const body = doc.window.document.body;
       body
@@ -99,9 +87,6 @@ export async function fetchWebsiteContent(url: string): Promise<string | null> {
       const result = `${doc.window.document.title}\n\n${fallbackContent
         .replace(/\s+/g, " ")
         .trim()}`.slice(0, MAX_CONTENT_LENGTH);
-      console.log(
-        `[fetchWebsiteContent] Fallback content length: ${result.length} characters`
-      );
       return result;
     }
 
@@ -110,10 +95,6 @@ export async function fetchWebsiteContent(url: string): Promise<string | null> {
       .replace(/\s+/g, " ")
       .trim()
       .slice(0, MAX_CONTENT_LENGTH);
-
-    console.log(
-      `[fetchWebsiteContent] Final content length: ${content.length} characters`
-    );
     return content;
   } catch (error) {
     // More specific error logging

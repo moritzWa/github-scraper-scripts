@@ -442,6 +442,54 @@ interface BraveSearchResponse {
   };
 }
 
+// Add this new utility function before fetchLinkedInProfileUsingBrave
+async function withBraveRateLimitRetry<T>(
+  fn: () => Promise<T>,
+  maxRetries: number = 5
+): Promise<T> {
+  let retryCount = 0;
+  let lastError: Error | null = null;
+
+  while (retryCount < maxRetries) {
+    try {
+      return await fn();
+    } catch (error: any) {
+      lastError = error;
+
+      // If we hit the rate limit (429)
+      if (error.status === 429) {
+        const retryAfter = Math.min(Math.pow(2, retryCount) * 1000, 30000); // Max 30 seconds
+        console.log(
+          `Brave API rate limit exceeded. Retrying in ${
+            retryAfter / 1000
+          } seconds... (Attempt ${retryCount + 1}/${maxRetries})`
+        );
+        await new Promise((resolve) => setTimeout(resolve, retryAfter));
+        retryCount++;
+        continue;
+      }
+
+      // Handle server errors (5xx) with exponential backoff
+      if (error.status >= 500 && error.status < 600) {
+        const retryAfter = Math.min(Math.pow(2, retryCount) * 1000, 30000);
+        console.log(
+          `Brave API server error (${error.status}). Retrying in ${
+            retryAfter / 1000
+          } seconds... (Attempt ${retryCount + 1}/${maxRetries})`
+        );
+        await new Promise((resolve) => setTimeout(resolve, retryAfter));
+        retryCount++;
+        continue;
+      }
+
+      // If it's not a rate limit or server error, throw it
+      throw error;
+    }
+  }
+
+  throw lastError || new Error(`Failed after ${maxRetries} retries`);
+}
+
 export async function fetchLinkedInProfileUsingBrave(
   user: UserData,
   optimizedQuery?: string
@@ -452,8 +500,6 @@ export async function fetchLinkedInProfileUsingBrave(
         user.email ? `email:${user.email}` : ""
       } ${user.xBio || user.bio || ""} (Software Engineer)`;
 
-  // console.log("fetchLinkedInProfileUsingBrave searchQuery", searchQuery);
-
   try {
     if (!process.env.BRAVE_API_KEY) {
       console.error(
@@ -462,21 +508,23 @@ export async function fetchLinkedInProfileUsingBrave(
       return null;
     }
 
-    const response = await fetch(
-      `https://api.search.brave.com/res/v1/web/search?q=${encodeURIComponent(
-        searchQuery
-      )}&count=5&safesearch=moderate`,
-      {
-        method: "GET",
-        headers: {
-          Accept: "application/json",
-          "Accept-Encoding": "gzip",
-          "X-Subscription-Token": process.env.BRAVE_API_KEY,
-        },
-      }
-    );
+    const headers: HeadersInit = {
+      Accept: "application/json",
+      "Accept-Encoding": "gzip",
+      "X-Subscription-Token": process.env.BRAVE_API_KEY,
+    };
 
-    // console.log("Brave Search Response:", response);
+    const response = await withBraveRateLimitRetry(() =>
+      fetch(
+        `https://api.search.brave.com/res/v1/web/search?q=${encodeURIComponent(
+          searchQuery
+        )}&count=5&safesearch=moderate`,
+        {
+          method: "GET",
+          headers,
+        }
+      )
+    );
 
     if (!response.ok) {
       const errorBody = await response.text();
@@ -485,7 +533,6 @@ export async function fetchLinkedInProfileUsingBrave(
     }
 
     const data = (await response.json()) as BraveSearchResponse;
-    // console.log("Brave Search Response:", JSON.stringify(data, null, 2));
 
     // Look for LinkedIn profile URLs in the results
     if (data.web?.results) {
@@ -493,7 +540,6 @@ export async function fetchLinkedInProfileUsingBrave(
         if (result.url.includes("linkedin.com/in/")) {
           // Extract the LinkedIn profile URL
           const linkedinUrl = result.url.split("?")[0]; // Remove any query parameters
-          // console.log("Found LinkedIn URL:", linkedinUrl);
           return linkedinUrl;
         }
       }
