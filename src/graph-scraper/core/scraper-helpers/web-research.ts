@@ -1,4 +1,5 @@
 import { UserData } from "../../../types.js";
+import { GraphUser } from "../../types.js";
 import openai from "../openai.js";
 
 interface GooglePart {
@@ -15,6 +16,58 @@ interface GoogleCandidate {
 
 interface GoogleResponse {
   candidates?: GoogleCandidate[];
+}
+
+export async function fetchWebResearchInfo(user: GraphUser) {
+  console.log(`[${user.login}] Checking web research status...`);
+  let webResearchInfo: {
+    openAI: { promptText: string; researchResult: string | null };
+    gemini: {
+      promptText: string;
+      researchResult: string | null;
+    } | null;
+  };
+
+  // Only fetch new data if we don't have any
+  if (!user.webResearchInfoOpenAI && !user.webResearchInfoGemini) {
+    console.log(
+      `[${user.login}] No web research found, performing OpenAI web research...`
+    );
+    const openAIResult = await getWebResearchInfoOpenAI(user, user.email);
+
+    // Only use Gemini if OpenAI returned null
+    let geminiResult = null;
+    if (!openAIResult.researchResult) {
+      console.log(`[${user.login}] OpenAI returned null, trying Gemini...`);
+      geminiResult = await getWebResearchInfoGemini(user, user.email);
+    }
+
+    webResearchInfo = {
+      openAI: openAIResult,
+      gemini: geminiResult,
+    };
+
+    // Update user with new results
+    user.webResearchInfoOpenAI = openAIResult.researchResult || undefined;
+    user.webResearchInfoGemini = geminiResult?.researchResult || undefined;
+    user.webResearchPromptText = openAIResult.promptText;
+  } else {
+    console.log(`[${user.login}] Using existing web research data`);
+    webResearchInfo = {
+      openAI: {
+        promptText: user.webResearchPromptText || "",
+        researchResult: user.webResearchInfoOpenAI || null,
+      },
+      gemini: user.webResearchInfoGemini
+        ? {
+            promptText: user.webResearchPromptText || "",
+            researchResult: user.webResearchInfoGemini,
+          }
+        : null,
+    };
+  }
+
+  return webResearchInfo;
 }
 
 export const webResearchInfoPrompt = (user: UserData, email?: string | null) =>

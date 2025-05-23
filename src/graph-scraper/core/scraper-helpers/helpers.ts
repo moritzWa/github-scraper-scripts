@@ -21,17 +21,9 @@ import {
   isActiveInEnoughMonths,
   isWeekdayCoder,
 } from "./contribution-patterns.js";
-import {
-  fetchLinkedInExperienceViaRapidAPI,
-  fetchLinkedInProfileUsingBrave,
-  findLinkedInUrlInProfileData,
-  generateLinkedInExperienceSummary,
-  generateOptimizedSearchQuery,
-} from "./linkedin-research.js";
-import {
-  getWebResearchInfoGemini,
-  getWebResearchInfoOpenAI,
-} from "./web-research.js";
+import { fetchLinkedInData } from "./linkedin-research.js";
+import { calculateRoleFitPoints } from "./role-fit.js";
+import { fetchWebResearchInfo } from "./web-research.js";
 
 function createIgnoredUser(
   basicUserData: Omit<GraphUser, "status" | "ignoredReason">,
@@ -216,107 +208,6 @@ async function fetchAdditionalUserData(
   };
 }
 
-async function fetchLinkedInData(user: GraphUser) {
-  console.log(`[${user.login}] Attempting to find LinkedIn URL...`);
-
-  // First try to find LinkedIn URL in profile data
-  const linkedinUrl = findLinkedInUrlInProfileData(user);
-  console.log(`[${user.login}] linkedinUrl from profile data:`, linkedinUrl);
-
-  // If not found in profile data, try Brave search with optimized query
-  if (!linkedinUrl) {
-    console.log(`[${user.login}] Generating optimized search query...`);
-    const optimizedQuery = await generateOptimizedSearchQuery(user);
-    console.log(`[${user.login}] Optimized query:`, optimizedQuery);
-
-    const braveLinkedinUrl = await fetchLinkedInProfileUsingBrave(
-      user,
-      optimizedQuery
-    );
-    if (braveLinkedinUrl) {
-      user.linkedinUrl = braveLinkedinUrl;
-      console.log(
-        `[${user.login}] Found LinkedIn URL via Brave: ${braveLinkedinUrl}`
-      );
-    } else {
-      console.log(`[${user.login}] Could not find LinkedIn URL.`);
-    }
-  } else {
-    user.linkedinUrl = linkedinUrl;
-    console.log(
-      `[${user.login}] Found LinkedIn URL in profile data: ${linkedinUrl}`
-    );
-  }
-
-  if (user.linkedinUrl && !user.linkedinExperience) {
-    console.log(`[${user.login}] Fetching LinkedIn experience...`);
-    const linkedinExperience = await fetchLinkedInExperienceViaRapidAPI(
-      user.linkedinUrl
-    );
-    user.linkedinExperience = linkedinExperience;
-  }
-
-  if (user.linkedinExperience && !user.linkedinExperienceSummary) {
-    console.log(`[${user.login}] Generating LinkedIn experience summary...`);
-    const linkedinExperienceSummary = await generateLinkedInExperienceSummary(
-      user.linkedinExperience
-    );
-    user.linkedinExperienceSummary = linkedinExperienceSummary;
-  }
-}
-
-async function fetchWebResearchInfo(user: GraphUser) {
-  console.log(`[${user.login}] Checking web research status...`);
-  let webResearchInfo: {
-    openAI: { promptText: string; researchResult: string | null };
-    gemini: {
-      promptText: string;
-      researchResult: string | null;
-    } | null;
-  };
-
-  // Only fetch new data if we don't have any
-  if (!user.webResearchInfoOpenAI && !user.webResearchInfoGemini) {
-    console.log(
-      `[${user.login}] No web research found, performing OpenAI web research...`
-    );
-    const openAIResult = await getWebResearchInfoOpenAI(user, user.email);
-
-    // Only use Gemini if OpenAI returned null
-    let geminiResult = null;
-    if (!openAIResult.researchResult) {
-      console.log(`[${user.login}] OpenAI returned null, trying Gemini...`);
-      geminiResult = await getWebResearchInfoGemini(user, user.email);
-    }
-
-    webResearchInfo = {
-      openAI: openAIResult,
-      gemini: geminiResult,
-    };
-
-    // Update user with new results
-    user.webResearchInfoOpenAI = openAIResult.researchResult || undefined;
-    user.webResearchInfoGemini = geminiResult?.researchResult || undefined;
-    user.webResearchPromptText = openAIResult.promptText;
-  } else {
-    console.log(`[${user.login}] Using existing web research data`);
-    webResearchInfo = {
-      openAI: {
-        promptText: user.webResearchPromptText || "",
-        researchResult: user.webResearchInfoOpenAI || null,
-      },
-      gemini: user.webResearchInfoGemini
-        ? {
-            promptText: user.webResearchPromptText || "",
-            researchResult: user.webResearchInfoGemini,
-          }
-        : null,
-    };
-  }
-
-  return webResearchInfo;
-}
-
 async function calculateUserRating(user: GraphUser, webResearchInfo: any) {
   console.log(`[${user.login}] Calling rateUserV3...`);
   const ratingData = await rateUserV3(user, webResearchInfo);
@@ -464,12 +355,4 @@ export async function scrapeUser(
       user: null,
     };
   }
-}
-
-// Helper function to calculate role fit points
-export function calculateRoleFitPoints(archetypes: string[]): number {
-  const targetRoles = ["protocol/crypto", "backend/infra", "full-stack"];
-  return archetypes.some((archetype) => targetRoles.includes(archetype))
-    ? 20
-    : 0;
 }

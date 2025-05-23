@@ -8,6 +8,7 @@ dotenv.config(); // Load environment variables at the very top
 
 import { UserData } from "../../../types.js";
 import { isLinkedInDomain } from "../../../utils/prime-scraper-api-utils.js";
+import { GraphUser } from "../../types.js";
 import openai from "../openai.js"; // Import the shared OpenAI client
 
 // If you are in an environment where fetch is not globally available (e.g., older Node.js versions),
@@ -111,6 +112,55 @@ export interface LinkedInProfile {
 }
 
 const RAPIDAPI_HOST = "linkedin-data-api.p.rapidapi.com";
+
+export async function fetchLinkedInData(user: GraphUser) {
+  console.log(`[${user.login}] Attempting to find LinkedIn URL...`);
+
+  // First try to find LinkedIn URL in profile data
+  const linkedinUrl = findLinkedInUrlInProfileData(user);
+  console.log(`[${user.login}] linkedinUrl from profile data:`, linkedinUrl);
+
+  // If not found in profile data, try Brave search with optimized query
+  if (!linkedinUrl) {
+    console.log(`[${user.login}] Generating optimized search query...`);
+    const optimizedQuery = await generateOptimizedSearchQuery(user);
+    console.log(`[${user.login}] Optimized query:`, optimizedQuery);
+
+    const braveLinkedinUrl = await fetchLinkedInProfileUsingBrave(
+      user,
+      optimizedQuery
+    );
+    if (braveLinkedinUrl) {
+      user.linkedinUrl = braveLinkedinUrl;
+      console.log(
+        `[${user.login}] Found LinkedIn URL via Brave: ${braveLinkedinUrl}`
+      );
+    } else {
+      console.log(`[${user.login}] Could not find LinkedIn URL.`);
+    }
+  } else {
+    user.linkedinUrl = linkedinUrl;
+    console.log(
+      `[${user.login}] Found LinkedIn URL in profile data: ${linkedinUrl}`
+    );
+  }
+
+  if (user.linkedinUrl && !user.linkedinExperience) {
+    console.log(`[${user.login}] Fetching LinkedIn experience...`);
+    const linkedinExperience = await fetchLinkedInExperienceViaRapidAPI(
+      user.linkedinUrl
+    );
+    user.linkedinExperience = linkedinExperience;
+  }
+
+  if (user.linkedinExperience && !user.linkedinExperienceSummary) {
+    console.log(`[${user.login}] Generating LinkedIn experience summary...`);
+    const linkedinExperienceSummary = await generateLinkedInExperienceSummary(
+      user.linkedinExperience
+    );
+    user.linkedinExperienceSummary = linkedinExperienceSummary;
+  }
+}
 
 // $175/month for up to 50k requests
 export async function fetchLinkedInExperienceViaRapidAPI(

@@ -13,13 +13,15 @@ const octokit = new Octokit({ auth: apiKey });
 const mongoUri = process.env.MONGODB_URI || "mongodb://localhost:27017";
 const dbName = process.env.MONGODB_DB;
 const maxDepth = 2;
+const RATING_THRESHOLD_FOR_D2ETC = 50;
 const BATCH_SIZE = 3;
 const SCRAPE_FOLLOWERS = false; // Set to false to only scrape following connections
 
 // --- Reusable Connection Processing Function ---
 async function processConnectionsPageByPage(
-  username: string,
-  depth: number,
+  parentUsername: string, // Renamed from username for clarity
+  depth: number, // This is the parent's depth
+  parentRating: number | undefined, // The parent's rating
   connectionType: "followers" | "following",
   fetchFunction: (
     username: string
@@ -28,19 +30,19 @@ async function processConnectionsPageByPage(
   edgesCol: any // Consider using Collection<any> type
 ) {
   try {
-    for await (const pageItems of fetchFunction(username)) {
+    for await (const pageItems of fetchFunction(parentUsername)) {
       if (pageItems.length > 0) {
         // Insert edges
         const edgeDocs =
           connectionType === "followers"
-            ? pageItems.map((item) => ({ from: item, to: username }))
-            : pageItems.map((item) => ({ from: username, to: item }));
+            ? pageItems.map((item) => ({ from: item, to: parentUsername }))
+            : pageItems.map((item) => ({ from: parentUsername, to: item }));
 
         await edgesCol
           .insertMany(edgeDocs, { ordered: false })
           .catch((err: any) => {
             console.error(
-              `Error inserting ${connectionType} edges for ${username}, page:`,
+              `Error inserting ${connectionType} edges for ${parentUsername}, page:`,
               err
             );
             // Decide if you want to throw or just log for edge insertion failures
@@ -49,23 +51,46 @@ async function processConnectionsPageByPage(
         // Upsert new users
         await usersCol
           .bulkWrite(
-            pageItems.map((newUsername: string) => ({
-              updateOne: {
-                filter: { _id: newUsername },
-                update: {
-                  $setOnInsert: {
-                    _id: newUsername,
-                    status: "pending",
-                    depth: depth + 1,
+            pageItems.map((newUsername: string) => {
+              const childDepth = depth + 1; // 'depth' here is the parent's depth
+              const updateOnInsertFields: Partial<DbGraphUser> & {
+                _id: string;
+              } = {
+                _id: newUsername,
+                status: "pending",
+                depth: childDepth,
+              };
+              const setFields: any = {};
+
+              if (parentRating !== undefined) {
+                // For a new document, initialize parentRatings with this parent's rating.
+                updateOnInsertFields.parentRatings = {
+                  [parentUsername]: parentRating,
+                };
+
+                // For an existing document, add/update this parent's rating in the map.
+                // Dot notation creates the parentRatings field if it doesn't exist,
+                // or adds/updates the key within an existing parentRatings object.
+                setFields[`parentRatings.${parentUsername}`] = parentRating;
+              }
+
+              return {
+                updateOne: {
+                  filter: { _id: newUsername },
+                  update: {
+                    $setOnInsert: updateOnInsertFields,
+                    ...(Object.keys(setFields).length > 0 && {
+                      $set: setFields,
+                    }),
                   },
+                  upsert: true,
                 },
-                upsert: true,
-              },
-            }))
+              };
+            })
           )
           .catch((err: any) => {
             console.error(
-              `Error upserting new users from ${connectionType} for ${username}, page:`,
+              `Error upserting new users from ${connectionType} for ${parentUsername}, page:`,
               err
             );
             // Decide if you want to throw or just log for user upsertion failures
@@ -74,7 +99,7 @@ async function processConnectionsPageByPage(
     }
   } catch (err) {
     console.error(
-      `Error in ${connectionType} processing stream for ${username}:`,
+      `Error in ${connectionType} processing stream for ${parentUsername}:`,
       err
     );
     throw err; // Re-throw to be caught by the calling Promise.all
@@ -147,7 +172,7 @@ async function main() {
               {
                 depth: 2,
                 rating: { $exists: false },
-                averageParentRating: { $gte: 50 }, // Only process depth 2 users with high-rated parents
+                averageParentRating: { $gte: RATING_THRESHOLD_FOR_D2ETC }, // Only process depth 2 users with high-rated parents
               },
             ],
           },
@@ -226,11 +251,9 @@ async function main() {
       pendingUsers.map(async (userDoc) => {
         const username = userDoc._id; // userDoc will not have followerEdges or qualifyingD1Followers due to $project
         const depth = typeof userDoc.depth === "number" ? userDoc.depth : 0;
-        // --- START: Logging inside map ---
         console.log(
           `[Batch Processing] Starting to process ${username} at depth ${depth}.`
         );
-        // --- END: Logging inside map ---
 
         try {
           const { user: userData } = await scrapeUser(
@@ -255,7 +278,7 @@ async function main() {
           // Upsert user data, respecting the status determined by scrapeUser
           const updateFields: any = {
             // Ideally Partial<DbGraphUser>
-            ...userData, // This includes login, profileUrl, ..., status, ignoredReason (if any), depth
+            ...userData, // This includes login, profileUrl, ..., status, ignoredReason (if any), depth, and crucially userData.rating
           };
 
           if (userData.status === "processed") {
@@ -274,6 +297,7 @@ async function main() {
 
           // Only attempt to scrape connections if the user was processed and is not at max depth
           if (userData.status === "processed" && depth < maxDepth) {
+            const parentRatingForChildren = userData.rating; // Use the parent's rating
             try {
               const connectionPromises = [];
 
@@ -282,6 +306,7 @@ async function main() {
                 processConnectionsPageByPage(
                   username,
                   depth,
+                  parentRatingForChildren, // Pass parent's rating
                   "following",
                   fetchFollowingPaged,
                   usersCol,
@@ -300,6 +325,7 @@ async function main() {
                   processConnectionsPageByPage(
                     username,
                     depth,
+                    parentRatingForChildren, // Pass parent's rating
                     "followers",
                     fetchFollowersPaged,
                     usersCol,
