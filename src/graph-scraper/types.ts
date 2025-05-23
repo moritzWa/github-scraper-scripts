@@ -63,7 +63,7 @@ export interface GraphUser {
   linkedinUrl?: string | null;
   linkedinExperience?: LinkedInProfile | null;
   linkedinExperienceSummary?: string | null | undefined;
-  parentRatings?: { [key: string]: number };
+  parentRatings?: Array<{ parent: string; rating: number }>;
   averageParentRating?: number;
 }
 

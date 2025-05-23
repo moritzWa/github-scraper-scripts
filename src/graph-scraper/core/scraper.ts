@@ -60,18 +60,20 @@ async function processConnectionsPageByPage(
                 status: "pending",
                 depth: childDepth,
               };
-              const setFields: any = {};
+              const updateOps: any = {};
 
               if (parentRating !== undefined) {
-                // For a new document, initialize parentRatings with this parent's rating.
-                updateOnInsertFields.parentRatings = {
-                  [parentUsername]: parentRating,
+                // For a new document, initialize parentRatings as an array
+                updateOnInsertFields.parentRatings = [
+                  { parent: parentUsername, rating: parentRating },
+                ];
+                // For an existing document, add the parent rating if not already present
+                updateOps.$addToSet = {
+                  parentRatings: {
+                    parent: parentUsername,
+                    rating: parentRating,
+                  },
                 };
-
-                // For an existing document, add/update this parent's rating in the map.
-                // Dot notation creates the parentRatings field if it doesn't exist,
-                // or adds/updates the key within an existing parentRatings object.
-                setFields[`parentRatings.${parentUsername}`] = parentRating;
               }
 
               return {
@@ -79,9 +81,9 @@ async function processConnectionsPageByPage(
                   filter: { _id: newUsername },
                   update: {
                     $setOnInsert: updateOnInsertFields,
-                    ...(Object.keys(setFields).length > 0 && {
-                      $set: setFields,
-                    }),
+                    ...(updateOps.$addToSet
+                      ? { $addToSet: updateOps.$addToSet }
+                      : {}),
                   },
                   upsert: true,
                 },
@@ -160,6 +162,11 @@ async function main() {
     // Fetch a batch of pending users using an aggregation pipeline
     const pendingUsers = await usersCol
       .aggregate([
+        {
+          $addFields: {
+            averageParentRating: { $avg: "$parentRatings.rating" },
+          },
+        },
         {
           $match: {
             status: "pending",

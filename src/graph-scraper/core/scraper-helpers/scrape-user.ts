@@ -165,6 +165,15 @@ export async function scrapeUser(
         console.error(`[${username}] Error calculating rating:`, error);
         // Continue without rating data if there's an error
       }
+    } else if (depth === 0) {
+      // If bypassing filters (typically for depth 0 seed users), assign a default high rating.
+      console.log(
+        `[${username}] Bypassing filters and assigning default rating as it is a seed user (depth 0).`
+      );
+      user.rating = 80;
+      user.ratingWithRoleFitPoints = 100; // Assuming no specific role fit points for seed users initially
+      user.ratedAt = new Date();
+      user.ratingReasoning = "Seed user (depth 0) - default rating";
     }
 
     return { user };
