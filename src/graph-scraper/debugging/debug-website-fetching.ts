@@ -8,7 +8,7 @@ import { DbGraphUser } from "../types.js";
 config();
 
 const mongoUri = process.env.MONGODB_URI || "mongodb://localhost:27017";
-const dbName = process.env.MONGODB_DB || "githubGraph";
+const dbName = process.env.MONGODB_DB;
 const userIds = ["cassanof", "steebchen"];
 const MAX_CONTENT_LENGTH = 7500;
 

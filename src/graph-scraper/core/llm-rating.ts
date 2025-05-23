@@ -3,10 +3,10 @@ import { config } from "dotenv";
 import fs from "fs";
 import { MongoClient } from "mongodb";
 import path from "path";
-import { UserData } from "../types.js";
-import { fetchRecentRepositories } from "../utils/profile-data-fetchers.js";
+import { UserData } from "../../types.js";
+import { fetchRecentRepositories } from "../../utils/profile-data-fetchers.js";
+import { DbGraphUser } from "../types.js";
 import openai from "./openai.js";
-import { DbGraphUser } from "./types.js";
 
 config();
 
@@ -352,8 +352,8 @@ SCORE: [between 0 and 100, sum of points from calculation]`;
   if (archetypeMatch && archetypeMatch[1]) {
     parsedArchetypes = archetypeMatch[1]
       .split(",")
-      .map((s) => s.trim())
-      .filter((s) => EngineerArchetypes.includes(s));
+      .map((s: string) => s.trim())
+      .filter((s: string) => EngineerArchetypes.includes(s));
     if (parsedArchetypes.length === 0) {
       parsedArchetypes = ["Other"];
     }
@@ -381,7 +381,7 @@ function calculateRoleFitPoints(archetypes: string[]): number {
 // TODO this is partly duplicated in re-rate-users.ts
 async function rateAllProcessedUsers() {
   const mongoUri = process.env.MONGODB_URI || "mongodb://localhost:27017";
-  const dbName = process.env.MONGODB_DB || "githubGraph";
+  const dbName = process.env.MONGODB_DB;
   const BATCH_SIZE = 10;
 
   const client = new MongoClient(mongoUri);

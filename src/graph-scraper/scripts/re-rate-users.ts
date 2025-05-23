@@ -3,12 +3,8 @@ import dotenv from "dotenv";
 import { MongoClient } from "mongodb";
 import { UserData } from "../../types.js";
 import { fetchUserEmailFromEvents } from "../../utils/profile-data-fetchers.js";
+import { rateUserV3 } from "../core/llm-rating.js";
 import { calculateRoleFitPoints } from "../core/scraper-helpers/helpers.js";
-import {
-  getWebResearchInfoGemini,
-  getWebResearchInfoOpenAI,
-} from "../core/scraper-helpers/web-research.js";
-import { DbGraphUser } from "../types.js";
 import {
   fetchLinkedInExperienceViaRapidAPI,
   fetchLinkedInProfileUsingBrave,
@@ -16,12 +12,16 @@ import {
   generateLinkedInExperienceSummary,
   generateOptimizedSearchQuery,
 } from "../core/scraper-helpers/linkedin-research.js";
-import { rateUserV3 } from "../core/llm-rating.js";
+import {
+  getWebResearchInfoGemini,
+  getWebResearchInfoOpenAI,
+} from "../core/scraper-helpers/web-research.js";
+import { DbGraphUser } from "../types.js";
 
 dotenv.config();
 
 const mongoUri = process.env.MONGODB_URI || "mongodb://localhost:27017";
-const dbName = process.env.MONGODB_DB || "githubGraph";
+const dbName = process.env.MONGODB_DB;
 
 const octokit = new Octokit({
   auth: process.env.GITHUB_ACCESS_TOKEN,

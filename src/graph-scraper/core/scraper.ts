@@ -11,7 +11,7 @@ dotenv.config();
 const apiKey = process.env.GITHUB_ACCESS_TOKEN;
 const octokit = new Octokit({ auth: apiKey });
 const mongoUri = process.env.MONGODB_URI || "mongodb://localhost:27017";
-const dbName = process.env.MONGODB_DB || "githubGraph";
+const dbName = process.env.MONGODB_DB;
 const maxDepth = 2;
 const BATCH_SIZE = 3;
 const SCRAPE_FOLLOWERS = false; // Set to false to only scrape following connections

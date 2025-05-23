@@ -1,4 +1,6 @@
-export const topProfiles = [
+export const topProfiles = ["https://github.com/JannikSt"];
+
+export const topProfilesFull = [
   "https://github.com/sestinj",
   "https://github.com/JannikSt",
   "https://github.com/alpayariyak",

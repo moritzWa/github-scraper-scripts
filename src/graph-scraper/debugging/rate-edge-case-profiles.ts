@@ -6,14 +6,11 @@ import {
   fetchUserEmailFromEvents,
   fetchWebsiteContent,
 } from "../../utils/profile-data-fetchers.js";
+import { rateUserV3 } from "../core/llm-rating.js";
 import {
   calculateRoleFitPoints,
   scrapeUser,
 } from "../core/scraper-helpers/helpers.js";
-import {
-  getWebResearchInfoGemini,
-  getWebResearchInfoOpenAI,
-} from "../core/scraper-helpers/web-research.js";
 import {
   fetchLinkedInExperienceViaRapidAPI,
   fetchLinkedInProfileUsingBrave,
@@ -21,7 +18,10 @@ import {
   generateLinkedInExperienceSummary,
   generateOptimizedSearchQuery,
 } from "../core/scraper-helpers/linkedin-research.js";
-import { rateUserV3 } from "../core/llm-rating.js";
+import {
+  getWebResearchInfoGemini,
+  getWebResearchInfoOpenAI,
+} from "../core/scraper-helpers/web-research.js";
 import { DbGraphUser } from "../types.js";
 
 config(); // Load .env variables
@@ -31,7 +31,7 @@ const octokit = new Octokit({
 });
 
 const mongoUri = process.env.MONGODB_URI || "mongodb://localhost:27017";
-const dbName = process.env.MONGODB_DB || "githubGraph";
+const dbName = process.env.MONGODB_DB;
 const edgeCaseUsernames: string[] = [
   "hediet_dev",
   "Dicklesworthstone",

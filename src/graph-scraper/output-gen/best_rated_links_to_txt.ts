@@ -14,7 +14,7 @@ interface RatedUser {
 
 async function exportBestRatedLinksToTxt() {
   const mongoUri = process.env.MONGODB_URI || "mongodb://localhost:27017";
-  const dbName = process.env.MONGODB_DB || "githubGraph";
+  const dbName = process.env.MONGODB_DB;
 
   const client = new MongoClient(mongoUri);
   try {
