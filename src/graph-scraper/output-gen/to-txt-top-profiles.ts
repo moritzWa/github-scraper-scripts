@@ -53,13 +53,18 @@ async function analyzeTopProfiles() {
     const outputContent = ratedUsers
       .map((user, index) => {
         const profileUrl = `https://github.com/${user._id}`;
+        const archetypes =
+          Array.isArray(user.engineerArchetype) &&
+          user.engineerArchetype.length > 0
+            ? user.engineerArchetype.join(", ")
+            : "N/A";
         return `#${index + 1} - ${user.name || user._id}${
           user.company ? ` (${user.company})` : ""
         }
 Profile: ${profileUrl}
 Rating: ${user.rating}
 Rating with Role Fit: ${user.ratingWithRoleFitPoints}
-Archetypes: ${user.engineerArchetype.join(", ")}
+Archetypes: ${archetypes}
 Reasoning: ${user.ratingReasoning || "No reasoning provided"}
 ----------------------------------------`;
       })
@@ -97,9 +102,11 @@ Reasoning: ${user.ratingReasoning || "No reasoning provided"}
 
     // Count archetypes
     const archetypeCounts = ratedUsers.reduce((acc, user) => {
-      user.engineerArchetype.forEach((archetype) => {
-        acc[archetype] = (acc[archetype] || 0) + 1;
-      });
+      if (Array.isArray(user.engineerArchetype)) {
+        user.engineerArchetype.forEach((archetype) => {
+          acc[archetype] = (acc[archetype] || 0) + 1;
+        });
+      }
       return acc;
     }, {} as Record<string, number>);
 

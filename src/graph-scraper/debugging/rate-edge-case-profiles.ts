@@ -14,10 +14,8 @@ import {
   generateLinkedInExperienceSummary,
   generateOptimizedSearchQuery,
 } from "../core/scraper-helpers/linkedin-research.js";
-import {
-  calculateRoleFitPoints,
-  scrapeUser,
-} from "../core/scraper-helpers/scrape-user.js";
+import { calculateRoleFitPoints } from "../core/scraper-helpers/role-fit.js";
+import { scrapeUser } from "../core/scraper-helpers/scrape-user.js";
 import {
   getWebResearchInfoGemini,
   getWebResearchInfoOpenAI,

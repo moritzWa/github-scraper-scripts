@@ -60,31 +60,26 @@ async function processConnectionsPageByPage(
                 status: "pending",
                 depth: childDepth,
               };
-              const updateOps: any = {};
+
+              const updateDefinition: any = {
+                $setOnInsert: updateOnInsertFields,
+              };
 
               if (parentRating !== undefined) {
-                // For a new document, initialize parentRatings as an array
-                updateOnInsertFields.parentRatings = [
-                  { parent: parentUsername, rating: parentRating },
-                ];
-                // For an existing document, add the parent rating if not already present
-                updateOps.$addToSet = {
+                updateDefinition.$addToSet = {
                   parentRatings: {
                     parent: parentUsername,
                     rating: parentRating,
                   },
                 };
+              } else {
+                updateOnInsertFields.parentRatings = [];
               }
 
               return {
                 updateOne: {
                   filter: { _id: newUsername },
-                  update: {
-                    $setOnInsert: updateOnInsertFields,
-                    ...(updateOps.$addToSet
-                      ? { $addToSet: updateOps.$addToSet }
-                      : {}),
-                  },
+                  update: updateDefinition,
                   upsert: true,
                 },
               };
