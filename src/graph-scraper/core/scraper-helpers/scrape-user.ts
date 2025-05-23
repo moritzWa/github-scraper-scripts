@@ -1,26 +1,13 @@
 import { Octokit } from "@octokit/core";
-import {
-  isLocationInBadCountries,
-  normalizeLocation,
-} from "../../../utils/location.js";
-import {
-  countProfileFields,
-  fetchContributions,
-  withRateLimitRetry,
-} from "../../../utils/prime-scraper-api-utils.js";
-import {
-  fetchProfileReadme,
-  fetchRecentRepositories,
-  fetchUserEmailFromEvents,
-  fetchWebsiteContent,
-  fetchXProfileMetadata,
-} from "../../../utils/profile-data-fetchers.js";
+import { fetchContributions } from "../../../utils/prime-scraper-api-utils.js";
+import { fetchUserEmailFromEvents } from "../../../utils/profile-data-fetchers.js";
 import { ContributionData, GraphUser, IgnoredReason } from "../../types.js";
 import { rateUserV3 } from "../llm-rating.js";
 import {
-  isActiveInEnoughMonths,
-  isWeekdayCoder,
-} from "./contribution-patterns.js";
+  fetchAdditionalUserData,
+  fetchBasicUserData,
+} from "./fetch-user-data.js";
+import { checkUserFilters } from "./filters.js";
 import { fetchLinkedInData } from "./linkedin-research.js";
 import { calculateRoleFitPoints } from "./role-fit.js";
 import { fetchWebResearchInfo } from "./web-research.js";
@@ -37,174 +24,6 @@ function createIgnoredUser(
       status: "ignored",
       ignoredReason: reason,
     },
-  };
-}
-
-async function fetchBasicUserData(
-  octokit: Octokit,
-  username: string,
-  depth: number
-) {
-  const userData = await withRateLimitRetry(() =>
-    octokit.request("GET /users/{username}", {
-      username,
-    })
-  );
-
-  return {
-    _id: userData.data.login,
-    login: userData.data.login,
-    profileUrl: userData.data.html_url || "",
-    createdAt: userData.data.created_at,
-    followers: userData.data.followers,
-    following: userData.data.following,
-    name: userData.data.name || null,
-    bio: userData.data.bio || null,
-    company: userData.data.company || null,
-    blog: userData.data.blog || null,
-    location: userData.data.location || null,
-    normalizedLocation: normalizeLocation(userData.data.location) || null,
-    email: userData.data.email || null,
-    twitter_username: userData.data.twitter_username || null,
-    xUrl: null,
-    xBio: null,
-    xName: null,
-    xLocation: null,
-    public_repos: userData.data.public_repos,
-    contributions: null,
-    profileReadme: null,
-    websiteContent: null,
-    recentRepositories: null,
-    depth,
-    repoInteractionScraped: [],
-  };
-}
-
-async function checkUserFilters(
-  userData: any,
-  contributions: ContributionData | null | undefined
-): Promise<{ shouldIgnore: boolean; reason?: IgnoredReason }> {
-  console.log(
-    `[Filter Check] Checking filters for ${userData.login} (depth: ${userData.depth})`
-  );
-
-  if (userData.location && isLocationInBadCountries(userData.location)) {
-    console.log(`[Filter Check] ${userData.login} rejected: BANNED_COUNTRY`);
-    return { shouldIgnore: true, reason: IgnoredReason.BANNED_COUNTRY };
-  }
-
-  const createdAt = new Date(userData.created_at);
-  if (createdAt > new Date("2019-01-01")) {
-    console.log(`[Filter Check] ${userData.login} rejected: ACCOUNT_TOO_NEW`);
-    return { shouldIgnore: true, reason: IgnoredReason.ACCOUNT_TOO_NEW };
-  }
-
-  if (countProfileFields(userData) < 1) {
-    console.log(
-      `[Filter Check] ${userData.login} rejected: INSUFFICIENT_PROFILE_FIELDS`
-    );
-    return {
-      shouldIgnore: true,
-      reason: IgnoredReason.INSUFFICIENT_PROFILE_FIELDS,
-    };
-  }
-
-  if (userData.followers > 3500) {
-    console.log(
-      `[Filter Check] ${userData.login} rejected: TOO_MANY_FOLLOWERS`
-    );
-    return { shouldIgnore: true, reason: IgnoredReason.TOO_MANY_FOLLOWERS };
-  }
-
-  if (userData.following > 415) {
-    console.log(
-      `[Filter Check] ${userData.login} rejected: TOO_MANY_FOLLOWING`
-    );
-    return { shouldIgnore: true, reason: IgnoredReason.TOO_MANY_FOLLOWING };
-  }
-
-  if (!contributions) {
-    console.log(
-      `[Filter Check] ${userData.login} rejected: COULD_NOT_FETCH_CONTRIBUTIONS`
-    );
-    return {
-      shouldIgnore: true,
-      reason: IgnoredReason.COULD_NOT_FETCH_CONTRIBUTIONS,
-    };
-  }
-
-  if (userData.followers <= 35 && contributions.totalSum < 3500) {
-    console.log(
-      `[Filter Check] ${userData.login} rejected: LOW_CONTRIBUTIONS_LOW_FOLLOWERS`
-    );
-    return {
-      shouldIgnore: true,
-      reason: IgnoredReason.LOW_CONTRIBUTIONS_LOW_FOLLOWERS,
-    };
-  } else if (
-    userData.followers > 35 &&
-    userData.followers <= 60 &&
-    contributions.totalSum < 3000
-  ) {
-    console.log(
-      `[Filter Check] ${userData.login} rejected: LOW_CONTRIBUTIONS_MEDIUM_FOLLOWERS`
-    );
-    return {
-      shouldIgnore: true,
-      reason: IgnoredReason.LOW_CONTRIBUTIONS_MEDIUM_FOLLOWERS,
-    };
-  } else if (userData.followers > 60 && contributions.totalSum < 2000) {
-    console.log(
-      `[Filter Check] ${userData.login} rejected: LOW_CONTRIBUTIONS_HIGH_FOLLOWERS`
-    );
-    return {
-      shouldIgnore: true,
-      reason: IgnoredReason.LOW_CONTRIBUTIONS_HIGH_FOLLOWERS,
-    };
-  }
-
-  if (contributions.calendar_weeks) {
-    if (!isActiveInEnoughMonths(contributions.calendar_weeks)) {
-      console.log(
-        `[Filter Check] ${userData.login} rejected: NOT_ACTIVE_ENOUGH_MONTHS`
-      );
-      return {
-        shouldIgnore: true,
-        reason: IgnoredReason.NOT_ACTIVE_ENOUGH_MONTHS,
-      };
-    }
-    if (isWeekdayCoder(contributions.calendar_weeks)) {
-      console.log(`[Filter Check] ${userData.login} rejected: WEEKDAY_CODER`);
-      return { shouldIgnore: true, reason: IgnoredReason.WEEKDAY_CODER };
-    }
-  }
-
-  console.log(`[Filter Check] ${userData.login} passed all filters`);
-  return { shouldIgnore: false };
-}
-
-async function fetchAdditionalUserData(
-  username: string,
-  userData: any,
-  octokit: Octokit
-) {
-  const [profileReadme, websiteContent, xProfile, recentRepositories] =
-    await Promise.all([
-      fetchProfileReadme(username),
-      userData.blog
-        ? fetchWebsiteContent(userData.blog)
-        : Promise.resolve(null),
-      userData.twitter_username
-        ? fetchXProfileMetadata(userData.twitter_username)
-        : Promise.resolve(null),
-      fetchRecentRepositories(username, octokit),
-    ]);
-
-  return {
-    profileReadme,
-    websiteContent,
-    xProfile,
-    recentRepositories,
   };
 }
 

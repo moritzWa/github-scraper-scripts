@@ -4,7 +4,6 @@ import { MongoClient } from "mongodb";
 import { UserData } from "../../types.js";
 import { fetchUserEmailFromEvents } from "../../utils/profile-data-fetchers.js";
 import { rateUserV3 } from "../core/llm-rating.js";
-import { calculateRoleFitPoints } from "../core/scraper-helpers/helpers.js";
 import {
   fetchLinkedInExperienceViaRapidAPI,
   fetchLinkedInProfileUsingBrave,
@@ -12,6 +11,7 @@ import {
   generateLinkedInExperienceSummary,
   generateOptimizedSearchQuery,
 } from "../core/scraper-helpers/linkedin-research.js";
+import { calculateRoleFitPoints } from "../core/scraper-helpers/scrape-user.js";
 import {
   getWebResearchInfoGemini,
   getWebResearchInfoOpenAI,

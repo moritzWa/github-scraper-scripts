@@ -4,7 +4,7 @@ import { MongoClient } from "mongodb";
 import { withRateLimitRetry } from "../../utils/prime-scraper-api-utils.js";
 import { DbGraphUser, IgnoredReason } from "../types.js";
 import { topProfiles } from "./profils.js";
-import { scrapeUser } from "./scraper-helpers/helpers.js";
+import { scrapeUser } from "./scraper-helpers/scrape-user.js";
 
 dotenv.config();
 
