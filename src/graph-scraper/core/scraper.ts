@@ -12,8 +12,8 @@ const apiKey = process.env.GITHUB_ACCESS_TOKEN;
 const octokit = new Octokit({ auth: apiKey });
 const mongoUri = process.env.MONGODB_URI || "mongodb://localhost:27017";
 const dbName = process.env.MONGODB_DB;
-const maxDepth = 2;
-const RATING_THRESHOLD_FOR_D2ETC = 50;
+const maxDepth = 3;
+const RATING_THRESHOLD_FOR_D2ETC = 40;
 const BATCH_SIZE = 3;
 const SCRAPE_FOLLOWERS = false; // Set to false to only scrape following connections
 
@@ -168,13 +168,9 @@ async function main() {
             $or: [
               { depth: 0 },
               {
-                depth: 1,
+                depth: { $gt: 0 },
                 rating: { $exists: false },
-              },
-              {
-                depth: 2,
-                rating: { $exists: false },
-                averageParentRating: { $gte: RATING_THRESHOLD_FOR_D2ETC }, // Only process depth 2 users with high-rated parents
+                averageParentRating: { $gte: RATING_THRESHOLD_FOR_D2ETC }, // Process all non-zero depth users with high-rated parents
               },
             ],
           },
