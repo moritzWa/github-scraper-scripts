@@ -3,7 +3,7 @@ import { config } from "dotenv";
 import { JSDOM, VirtualConsole } from "jsdom";
 import { MongoClient } from "mongodb";
 import puppeteer from "puppeteer";
-import { DbGraphUser } from "./types.js";
+import { DbGraphUser } from "../types.js";
 
 config();
 

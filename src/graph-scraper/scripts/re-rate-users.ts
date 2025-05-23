@@ -1,22 +1,22 @@
 import { Octokit } from "@octokit/core";
 import dotenv from "dotenv";
 import { MongoClient } from "mongodb";
-import { UserData } from "../types.js";
-import { fetchUserEmailFromEvents } from "../utils/profile-data-fetchers.js";
-import { calculateRoleFitPoints } from "./helpers.js";
+import { UserData } from "../../types.js";
+import { fetchUserEmailFromEvents } from "../../utils/profile-data-fetchers.js";
+import { calculateRoleFitPoints } from "../core/scraper-helpers/helpers.js";
+import {
+  getWebResearchInfoGemini,
+  getWebResearchInfoOpenAI,
+} from "../core/scraper-helpers/web-research.js";
+import { DbGraphUser } from "../types.js";
 import {
   fetchLinkedInExperienceViaRapidAPI,
   fetchLinkedInProfileUsingBrave,
   findLinkedInUrlInProfileData,
   generateLinkedInExperienceSummary,
   generateOptimizedSearchQuery,
-} from "./linkedin-research.js";
-import { rateUserV3 } from "./llm-rating.js";
-import { DbGraphUser } from "./types.js";
-import {
-  getWebResearchInfoGemini,
-  getWebResearchInfoOpenAI,
-} from "./web-research.js";
+} from "../core/scraper-helpers/linkedin-research.js";
+import { rateUserV3 } from "../core/llm-rating.js";
 
 dotenv.config();
 

@@ -1,12 +1,12 @@
 import { Octokit } from "@octokit/core";
 import { config } from "dotenv";
 import { MongoClient } from "mongodb";
-import { UserData } from "../types.js";
+import { UserData } from "../../types.js";
 import {
   fetchLinkedInProfileUsingBrave,
   generateOptimizedSearchQuery,
-} from "./linkedin-research.js";
-import { DbGraphUser } from "./types.js";
+} from "../core/scraper-helpers/linkedin-research.js";
+import { DbGraphUser } from "../types.js";
 
 config();
 

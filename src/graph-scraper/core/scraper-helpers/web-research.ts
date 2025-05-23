@@ -1,5 +1,5 @@
-import { UserData } from "../types.js";
-import openai from "./openai.js";
+import { UserData } from "../../../types.js";
+import openai from "../openai.js";
 
 interface GooglePart {
   text: string;

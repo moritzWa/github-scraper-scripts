@@ -2,7 +2,7 @@ import { config } from "dotenv";
 import fs from "fs";
 import { MongoClient } from "mongodb";
 import path from "path";
-import { topProfiles } from "./profils.js";
+import { topProfiles } from "../core/profils.js";
 
 config();
 

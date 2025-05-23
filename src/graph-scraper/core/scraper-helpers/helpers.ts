@@ -2,19 +2,21 @@ import { Octokit } from "@octokit/core";
 import {
   isLocationInBadCountries,
   normalizeLocation,
-} from "../utils/location.js";
+} from "../../../utils/location.js";
 import {
   countProfileFields,
   fetchContributions,
   withRateLimitRetry,
-} from "../utils/prime-scraper-api-utils.js";
+} from "../../../utils/prime-scraper-api-utils.js";
 import {
   fetchProfileReadme,
   fetchRecentRepositories,
   fetchUserEmailFromEvents,
   fetchWebsiteContent,
   fetchXProfileMetadata,
-} from "../utils/profile-data-fetchers.js";
+} from "../../../utils/profile-data-fetchers.js";
+import { ContributionData, GraphUser, IgnoredReason } from "../../types.js";
+import { rateUserV3 } from "../llm-rating.js";
 import {
   isActiveInEnoughMonths,
   isWeekdayCoder,
@@ -26,8 +28,6 @@ import {
   generateLinkedInExperienceSummary,
   generateOptimizedSearchQuery,
 } from "./linkedin-research.js";
-import { rateUserV3 } from "./llm-rating.js";
-import { ContributionData, GraphUser, IgnoredReason } from "./types.js";
 import {
   getWebResearchInfoGemini,
   getWebResearchInfoOpenAI,
@@ -92,16 +92,25 @@ async function checkUserFilters(
   userData: any,
   contributions: ContributionData | null | undefined
 ): Promise<{ shouldIgnore: boolean; reason?: IgnoredReason }> {
+  console.log(
+    `[Filter Check] Checking filters for ${userData.login} (depth: ${userData.depth})`
+  );
+
   if (userData.location && isLocationInBadCountries(userData.location)) {
+    console.log(`[Filter Check] ${userData.login} rejected: BANNED_COUNTRY`);
     return { shouldIgnore: true, reason: IgnoredReason.BANNED_COUNTRY };
   }
 
   const createdAt = new Date(userData.created_at);
   if (createdAt > new Date("2019-01-01")) {
+    console.log(`[Filter Check] ${userData.login} rejected: ACCOUNT_TOO_NEW`);
     return { shouldIgnore: true, reason: IgnoredReason.ACCOUNT_TOO_NEW };
   }
 
   if (countProfileFields(userData) < 1) {
+    console.log(
+      `[Filter Check] ${userData.login} rejected: INSUFFICIENT_PROFILE_FIELDS`
+    );
     return {
       shouldIgnore: true,
       reason: IgnoredReason.INSUFFICIENT_PROFILE_FIELDS,
@@ -109,14 +118,23 @@ async function checkUserFilters(
   }
 
   if (userData.followers > 3500) {
+    console.log(
+      `[Filter Check] ${userData.login} rejected: TOO_MANY_FOLLOWERS`
+    );
     return { shouldIgnore: true, reason: IgnoredReason.TOO_MANY_FOLLOWERS };
   }
 
   if (userData.following > 415) {
+    console.log(
+      `[Filter Check] ${userData.login} rejected: TOO_MANY_FOLLOWING`
+    );
     return { shouldIgnore: true, reason: IgnoredReason.TOO_MANY_FOLLOWING };
   }
 
   if (!contributions) {
+    console.log(
+      `[Filter Check] ${userData.login} rejected: COULD_NOT_FETCH_CONTRIBUTIONS`
+    );
     return {
       shouldIgnore: true,
       reason: IgnoredReason.COULD_NOT_FETCH_CONTRIBUTIONS,
@@ -124,6 +142,9 @@ async function checkUserFilters(
   }
 
   if (userData.followers <= 35 && contributions.totalSum < 3500) {
+    console.log(
+      `[Filter Check] ${userData.login} rejected: LOW_CONTRIBUTIONS_LOW_FOLLOWERS`
+    );
     return {
       shouldIgnore: true,
       reason: IgnoredReason.LOW_CONTRIBUTIONS_LOW_FOLLOWERS,
@@ -133,11 +154,17 @@ async function checkUserFilters(
     userData.followers <= 60 &&
     contributions.totalSum < 3000
   ) {
+    console.log(
+      `[Filter Check] ${userData.login} rejected: LOW_CONTRIBUTIONS_MEDIUM_FOLLOWERS`
+    );
     return {
       shouldIgnore: true,
       reason: IgnoredReason.LOW_CONTRIBUTIONS_MEDIUM_FOLLOWERS,
     };
   } else if (userData.followers > 60 && contributions.totalSum < 2000) {
+    console.log(
+      `[Filter Check] ${userData.login} rejected: LOW_CONTRIBUTIONS_HIGH_FOLLOWERS`
+    );
     return {
       shouldIgnore: true,
       reason: IgnoredReason.LOW_CONTRIBUTIONS_HIGH_FOLLOWERS,
@@ -146,16 +173,21 @@ async function checkUserFilters(
 
   if (contributions.calendar_weeks) {
     if (!isActiveInEnoughMonths(contributions.calendar_weeks)) {
+      console.log(
+        `[Filter Check] ${userData.login} rejected: NOT_ACTIVE_ENOUGH_MONTHS`
+      );
       return {
         shouldIgnore: true,
         reason: IgnoredReason.NOT_ACTIVE_ENOUGH_MONTHS,
       };
     }
     if (isWeekdayCoder(contributions.calendar_weeks)) {
+      console.log(`[Filter Check] ${userData.login} rejected: WEEKDAY_CODER`);
       return { shouldIgnore: true, reason: IgnoredReason.WEEKDAY_CODER };
     }
   }
 
+  console.log(`[Filter Check] ${userData.login} passed all filters`);
   return { shouldIgnore: false };
 }
 
@@ -316,18 +348,31 @@ export async function scrapeUser(
   bypassFilters: boolean = false
 ): Promise<{ user: GraphUser | null }> {
   try {
+    console.log(
+      `[ScrapeUser] Starting scrape for ${username} (depth: ${depth}, bypassFilters: ${bypassFilters})`
+    );
+
     // Fetch basic user data
     const basicUserData = await fetchBasicUserData(octokit, username, depth);
+    console.log(`[ScrapeUser] Fetched basic data for ${username}`);
 
     // Fetch contributions
     let contributions: ContributionData | null | undefined = undefined;
     try {
       contributions = await fetchContributions(username);
+      console.log(
+        `[ScrapeUser] Fetched contributions for ${username}: ${
+          contributions?.totalSum ?? "N/A"
+        }`
+      );
     } catch (error) {
       console.log(
-        `Could not fetch contributions for ${username}. Error: ${error}`
+        `[ScrapeUser] Could not fetch contributions for ${username}. Error: ${error}`
       );
       if (!bypassFilters) {
+        console.log(
+          `[ScrapeUser] ${username} rejected due to missing contributions (bypassFilters: ${bypassFilters})`
+        );
         return createIgnoredUser(
           basicUserData,
           IgnoredReason.COULD_NOT_FETCH_CONTRIBUTIONS
@@ -337,21 +382,29 @@ export async function scrapeUser(
 
     // Check filters if not bypassing
     if (!bypassFilters) {
+      console.log(`[ScrapeUser] Running filter check for ${username}`);
       const filterResult = await checkUserFilters(basicUserData, contributions);
       if (filterResult.shouldIgnore && filterResult.reason) {
+        console.log(
+          `[ScrapeUser] ${username} rejected by filters: ${filterResult.reason}`
+        );
         return createIgnoredUser(
           basicUserData,
           filterResult.reason,
           contributions
         );
       }
+    } else {
+      console.log(
+        `[ScrapeUser] Skipping filters for ${username} (bypassFilters: true)`
+      );
     }
 
     // If we get here, the user passed all filters or bypassFilters is true
     console.log(
-      `Scraping user https://github.com/${
-        basicUserData.login
-      } (contributions: ${contributions?.totalSum ?? "N/A"})`
+      `[ScrapeUser] Proceeding with full scrape for ${username} (contributions: ${
+        contributions?.totalSum ?? "N/A"
+      })`
     );
 
     // Only fetch additional data if user passed filters

@@ -1,10 +1,10 @@
 import { Octokit } from "@octokit/core";
 import dotenv from "dotenv";
 import { MongoClient } from "mongodb";
-import { withRateLimitRetry } from "../utils/prime-scraper-api-utils.js";
-import { scrapeUser } from "./helpers.js";
+import { withRateLimitRetry } from "../../utils/prime-scraper-api-utils.js";
+import { DbGraphUser, IgnoredReason } from "../types.js";
 import { topProfiles } from "./profils.js";
-import { DbGraphUser, IgnoredReason } from "./types.js";
+import { scrapeUser } from "./scraper-helpers/helpers.js";
 
 dotenv.config();
 
@@ -12,7 +12,7 @@ const apiKey = process.env.GITHUB_ACCESS_TOKEN;
 const octokit = new Octokit({ auth: apiKey });
 const mongoUri = process.env.MONGODB_URI || "mongodb://localhost:27017";
 const dbName = process.env.MONGODB_DB || "githubGraph";
-const maxDepth = 1;
+const maxDepth = 2;
 const BATCH_SIZE = 3;
 const SCRAPE_FOLLOWERS = false; // Set to false to only scrape following connections
 
@@ -110,7 +110,7 @@ async function main() {
 
   // Re-queue users that were processed at a depth shallower than the current maxDepth,
   // but only if they haven't had their following connections scraped yet
-  const requeueResult = await usersCol.updateMany(
+  const requeueForFollowingScraping = await usersCol.updateMany(
     {
       status: "processed",
       depth: { $lt: maxDepth },
@@ -119,38 +119,88 @@ async function main() {
     { $set: { status: "pending" } }
   );
 
-  if (requeueResult.modifiedCount > 0) {
+  if (requeueForFollowingScraping.modifiedCount > 0) {
     console.log(
-      `Re-queued ${requeueResult.modifiedCount} previously processed users whose following connections need to be scraped.`
+      `Re-queued ${requeueForFollowingScraping.modifiedCount} previously processed users whose following connections need to be scraped.`
     );
   }
 
   while (true) {
-    // Get total count of pending users
+    // Get total count of all pending users up to maxDepth (for logging, can be an overestimate of "currently processable")
     const totalPending = await usersCol.countDocuments({
       status: "pending",
       depth: { $lte: maxDepth },
     });
 
-    // Fetch a batch of pending users
+    // Fetch a batch of pending users using an aggregation pipeline
     const pendingUsers = await usersCol
-      .find({ status: "pending", depth: { $lte: maxDepth } })
-      .limit(BATCH_SIZE)
+      .aggregate([
+        {
+          $match: {
+            status: "pending",
+            $or: [
+              { depth: 0 },
+              {
+                depth: 1,
+                rating: { $exists: false },
+              },
+              {
+                depth: 2,
+                rating: { $exists: false },
+                averageParentRating: { $gte: 50 }, // Only process depth 2 users with high-rated parents
+              },
+            ],
+          },
+        },
+        {
+          $sort: {
+            depth: 1,
+            averageParentRating: -1, // Prioritize depth 2 users with higher parent ratings
+          },
+        },
+        {
+          $limit: BATCH_SIZE,
+        },
+      ])
       .toArray();
 
+    // --- START: Enhanced Logging ---
+    if (pendingUsers.length > 0) {
+      console.log(
+        `\n[Aggregation Result] Fetched ${pendingUsers.length} users for batch:`
+      );
+      pendingUsers.forEach((user) => {
+        let logMsg = `  - User: ${user._id}, Depth: ${user.depth}`;
+        if (user.depth === 2) {
+          // The 'isD2Qualified' field was added in the pipeline,
+          // but it's implicitly true if they made it through the $match stage for D2 users.
+          // We are projecting it away, but the fact they are in the list means they qualified.
+          logMsg += ` (Qualified D2 user)`;
+        }
+        console.log(logMsg);
+      });
+    } else {
+      console.log(
+        "\n[Aggregation Result] No users matched the criteria for the current batch."
+      );
+    }
+    // --- END: Enhanced Logging ---
+
     if (pendingUsers.length === 0) {
-      console.log("No more pending users within the current maxDepth.");
+      console.log(
+        "No more pending users meeting criteria within the current maxDepth."
+      );
       // Before breaking, check if there are any users at all (even > maxDepth or different statuses)
-      const anyRemainingPendingUsers = await usersCol.countDocuments({
+      const anyRemainingUsersOverall = await usersCol.countDocuments({
         status: "pending",
       });
-      if (anyRemainingPendingUsers === 0) {
+      if (anyRemainingUsersOverall === 0) {
         console.log(
           "All discovered users have been processed or ignored. Graph scraping complete for all reachable nodes."
         );
       } else {
         console.log(
-          `Scraping complete up to maxDepth: ${maxDepth}. There are ${anyRemainingPendingUsers} pending users at deeper levels not yet processed.`
+          `Scraping complete for users meeting current criteria up to maxDepth: ${maxDepth}. There are ${anyRemainingUsersOverall} pending users overall (some may be at deeper levels or not currently meeting depth 2 criteria).`
         );
       }
       break;
@@ -174,9 +224,13 @@ async function main() {
     // Process the batch in parallel
     await Promise.all(
       pendingUsers.map(async (userDoc) => {
-        const username = userDoc._id;
+        const username = userDoc._id; // userDoc will not have followerEdges or qualifyingD1Followers due to $project
         const depth = typeof userDoc.depth === "number" ? userDoc.depth : 0;
-        console.log(`Processing ${username} at depth ${depth}`);
+        // --- START: Logging inside map ---
+        console.log(
+          `[Batch Processing] Starting to process ${username} at depth ${depth}.`
+        );
+        // --- END: Logging inside map ---
 
         try {
           const { user: userData } = await scrapeUser(
@@ -328,7 +382,7 @@ async function* fetchFollowersPaged(
   }
 }
 
-async function* fetchFollowingPaged(
+export async function* fetchFollowingPaged(
   username: string
 ): AsyncGenerator<string[], void, undefined> {
   let page = 1;

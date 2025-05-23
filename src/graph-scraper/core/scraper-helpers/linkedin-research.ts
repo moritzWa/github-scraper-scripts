@@ -6,9 +6,9 @@ dotenv.config(); // Load environment variables at the very top
 // import *dotenv* from 'dotenv';
 // dotenv.config();
 
-import { UserData } from "../types.js";
-import { isLinkedInDomain } from "../utils/prime-scraper-api-utils.js";
-import openai from "./openai.js"; // Import the shared OpenAI client
+import { UserData } from "../../../types.js";
+import { isLinkedInDomain } from "../../../utils/prime-scraper-api-utils.js";
+import openai from "../openai.js"; // Import the shared OpenAI client
 
 // If you are in an environment where fetch is not globally available (e.g., older Node.js versions),
 // you might need to import it:

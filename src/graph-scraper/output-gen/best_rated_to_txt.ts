@@ -2,7 +2,7 @@ import { config } from "dotenv";
 import fs from "fs";
 import { MongoClient } from "mongodb";
 import path from "path";
-import { topProfiles, topProfilesAdditional } from "./profils.js";
+import { topProfiles } from "../core/profils.js";
 
 config();
 
@@ -28,9 +28,7 @@ async function exportBestRatedToTxt() {
 
     // Get all existing profile URLs to filter out
     const knownProfiles = new Set(
-      [...topProfiles, ...topProfilesAdditional].map((url) =>
-        url.replace("https://github.com/", "")
-      )
+      [...topProfiles].map((url) => url.replace("https://github.com/", ""))
     );
 
     // Query for rated users, excluding those in existing profiles

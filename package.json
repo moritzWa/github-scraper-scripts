@@ -36,7 +36,10 @@
     "re-rate-users": "node --loader ts-node/esm src/graph-scraper/re-rate-users.ts",
     "debug-linkedin": "node --loader ts-node/esm src/graph-scraper/debug-linkedin-search.ts",
     "to-txt-top-profiles": "node --loader ts-node/esm src/graph-scraper/to-txt-top-profiles.ts",
-    "debug-website-fetching": "node --loader ts-node/esm src/graph-scraper/debug-website-fetching.ts"
+    "debug-website-fetching": "node --loader ts-node/esm src/graph-scraper/debug-website-fetching.ts",
+    "calculate-parent-ratings": "node --loader ts-node/esm src/graph-scraper/calculate-parent-ratings.ts",
+    "investigate-graph-follower-data": "node --loader ts-node/esm src/graph-scraper/investigate-graph-follower-data.ts",
+    "scrape-missing-connections": "node --loader ts-node/esm src/graph-scraper/scrape-missing-connections.ts"
   },
   "keywords": [],
   "author": "",

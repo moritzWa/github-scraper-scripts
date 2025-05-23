@@ -1,5 +1,5 @@
 import { NormalizedLocation } from "../utils/location.js";
-import { LinkedInProfile } from "./linkedin-research.js";
+import { LinkedInProfile } from "./core/scraper-helpers/linkedin-research.js";
 
 export interface CalendarWeek {
   contributionDays: CalendarDay[];
@@ -63,6 +63,8 @@ export interface GraphUser {
   linkedinUrl?: string | null;
   linkedinExperience?: LinkedInProfile | null;
   linkedinExperienceSummary?: string | null | undefined;
+  parentRatings?: { [key: string]: number };
+  averageParentRating?: number;
 }
 
 export interface DbGraphUser extends Omit<GraphUser, "login"> {

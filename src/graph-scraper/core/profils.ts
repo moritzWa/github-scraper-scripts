@@ -1,4 +1,5 @@
 export const topProfiles = [
+  "https://github.com/sestinj",
   "https://github.com/JannikSt",
   "https://github.com/alpayariyak",
   "https://github.com/lukasmasuch",

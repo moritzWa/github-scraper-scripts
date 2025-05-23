@@ -1,25 +1,28 @@
 import { Octokit } from "@octokit/core";
 import { config } from "dotenv";
 import { MongoClient } from "mongodb";
-import { UserData } from "../types.js";
+import { UserData } from "../../types.js";
 import {
   fetchUserEmailFromEvents,
   fetchWebsiteContent,
-} from "../utils/profile-data-fetchers.js";
-import { calculateRoleFitPoints, scrapeUser } from "./helpers.js";
+} from "../../utils/profile-data-fetchers.js";
+import {
+  calculateRoleFitPoints,
+  scrapeUser,
+} from "../core/scraper-helpers/helpers.js";
+import {
+  getWebResearchInfoGemini,
+  getWebResearchInfoOpenAI,
+} from "../core/scraper-helpers/web-research.js";
 import {
   fetchLinkedInExperienceViaRapidAPI,
   fetchLinkedInProfileUsingBrave,
   findLinkedInUrlInProfileData,
   generateLinkedInExperienceSummary,
   generateOptimizedSearchQuery,
-} from "./linkedin-research.js";
-import { rateUserV3 } from "./llm-rating.js";
-import { DbGraphUser } from "./types.js";
-import {
-  getWebResearchInfoGemini,
-  getWebResearchInfoOpenAI,
-} from "./web-research.js";
+} from "../core/scraper-helpers/linkedin-research.js";
+import { rateUserV3 } from "../core/llm-rating.js";
+import { DbGraphUser } from "../types.js";
 
 config(); // Load .env variables
 
@@ -29,7 +32,12 @@ const octokit = new Octokit({
 
 const mongoUri = process.env.MONGODB_URI || "mongodb://localhost:27017";
 const dbName = process.env.MONGODB_DB || "githubGraph";
-const edgeCaseUsernames: string[] = ["steebchen"];
+const edgeCaseUsernames: string[] = [
+  "hediet_dev",
+  "Dicklesworthstone",
+  "langalex",
+  "GabrielBianconi",
+];
 
 // Add type definitions
 type OldRating = {

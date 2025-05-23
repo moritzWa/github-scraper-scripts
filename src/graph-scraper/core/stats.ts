@@ -1,6 +1,6 @@
 import dotenv from "dotenv";
 import { MongoClient } from "mongodb";
-import { DbGraphUser } from "./types.js";
+import { DbGraphUser } from "../types.js";
 
 dotenv.config();
 
