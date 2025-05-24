@@ -161,89 +161,16 @@ async function processUserFromBatch(
       );
     }
 
-    const statusForConnections = userToProcess.status;
-    const ratingForConnections = userToProcess.rating ?? userDoc.rating;
-
-    if (
-      (statusForConnections === "processed" ||
-        (userDoc.rating !== undefined && userDoc.status === "pending")) &&
-      depth < currentMaxDepth
-    ) {
-      if (ratingForConnections === undefined) {
-        console.error(
-          `[${username}] Cannot scrape connections: rating is undefined. Status: ${statusForConnections}`
-        );
-        return;
-      }
-      const parentRatingForChildren = ratingForConnections;
-      const connectionPromises = [];
-      const currentUserConnections = (await usersCol.findOne({ _id: username }))
-        ?.scrapedConnections ?? { following: false, followers: false };
-
-      if (!currentUserConnections.following) {
-        console.log(`[${username}] Scraping 'following' connections.`);
-        connectionPromises.push(
-          processConnectionsPageByPage(
-            username,
-            depth,
-            parentRatingForChildren,
-            "following",
-            fetchFollowingPaged,
-            usersCol,
-            edgesCol
-          ).then(() =>
-            usersCol.updateOne(
-              { _id: username },
-              { $set: { "scrapedConnections.following": true } }
-            )
-          )
-        );
-      }
-
-      if (connectionPromises.length > 0) {
-        await Promise.all(connectionPromises);
-        console.log(`[${username}] Connection scraping attempts finished.`);
-      }
-
-      if (!performedScrape && userDoc.rating !== undefined) {
-        const finalConnectionState = (await usersCol.findOne({ _id: username }))
-          ?.scrapedConnections;
-        const followingDone = finalConnectionState?.following === true;
-        if (followingDone) {
-          await usersCol.updateOne(
-            { _id: username },
-            { $set: { status: "processed" } }
-          );
-          console.log(
-            `[${username}] Skipped scrape, 'following' connections processed. Status set to 'processed'.`
-          );
-        }
-      }
-    } else if (depth >= currentMaxDepth) {
-      console.log(
-        `[${username}] Max depth ${currentMaxDepth} reached (depth ${depth}). Not fetching further connections.`
-      );
-      if (
-        !performedScrape &&
-        userDoc.rating !== undefined &&
-        userToProcess.status !== "processed"
-      ) {
-        await usersCol.updateOne(
-          { _id: username },
-          { $set: { status: "processed" } }
-        );
-        console.log(
-          `[${username}] Skipped scrape, at max depth. Status set to 'processed'.`
-        );
-      }
-    } else if (
-      statusForConnections !== "processed" &&
-      !(userDoc.rating !== undefined && userDoc.status === "pending")
-    ) {
-      console.log(
-        `[${username}] User status is '${statusForConnections}'. Not fetching connections.`
-      );
-    }
+    await manageConnectionsAndUpdateStatus(
+      username,
+      depth,
+      currentMaxDepth,
+      userToProcess,
+      userDoc,
+      performedScrape,
+      usersCol,
+      edgesCol
+    );
   } catch (err) {
     console.error(`Error processing ${username}:`, err);
     await usersCol.updateOne(
@@ -254,6 +181,108 @@ async function processUserFromBatch(
           ignoredReason: IgnoredReason.ERROR_SCRAPING,
         },
       }
+    );
+  }
+}
+
+async function manageConnectionsAndUpdateStatus(
+  username: string,
+  depth: number,
+  currentMaxDepth: number,
+  userToProcess: Partial<DbGraphUser>,
+  userDoc: DbGraphUser,
+  performedScrape: boolean,
+  usersCol: Collection<DbGraphUser>,
+  edgesCol: Collection<any>
+) {
+  const userWasJustScraped = userToProcess.status === "processed";
+  const userRequedForConnectionScraping =
+    userDoc.rating !== undefined && userDoc.status === "pending";
+  const userRating = userToProcess.rating ?? userDoc.rating;
+  if (
+    (userWasJustScraped || userRequedForConnectionScraping) &&
+    depth < currentMaxDepth
+  ) {
+    // RATING IS REQUIRED TO SCRAPE CONNECTIONS
+    if (userRating === undefined) {
+      console.error(
+        `[${username}] Cannot scrape connections: rating is undefined. Status: ${userToProcess.status}`
+      );
+      return;
+    }
+    const parentRatingForChildren = userRating;
+    const connectionPromises = [];
+
+    // SCRAPING FOLLOWING IF NOT DONE
+    const currentUserConnections = (await usersCol.findOne({ _id: username }))
+      ?.scrapedConnections ?? { following: false, followers: false };
+    if (!currentUserConnections.following) {
+      console.log(`[${username}] Scraping 'following' connections.`);
+      connectionPromises.push(
+        processConnectionsPageByPage(
+          username,
+          depth,
+          parentRatingForChildren,
+          "following",
+          fetchFollowingPaged,
+          usersCol,
+          edgesCol
+        ).then(() =>
+          usersCol.updateOne(
+            { _id: username },
+            { $set: { "scrapedConnections.following": true } }
+          )
+        )
+      );
+    }
+
+    if (connectionPromises.length > 0) {
+      await Promise.all(connectionPromises);
+      console.log(`[${username}] Connection scraping attempts finished.`);
+    }
+
+    // UPDATING STATUS TO PROCESSED IF FOLLOWING IS DONE
+    if (!performedScrape && userDoc.rating !== undefined) {
+      const finalConnectionState = (await usersCol.findOne({ _id: username }))
+        ?.scrapedConnections;
+      const followingDone = finalConnectionState?.following === true;
+      if (followingDone) {
+        await usersCol.updateOne(
+          { _id: username },
+          { $set: { status: "processed" } }
+        );
+        console.log(
+          `[${username}] Skipped scrape, 'following' connections processed. Status set to 'processed'.`
+        );
+      }
+    }
+
+    // ALREADY SCRAPED FOLLOWERS
+  } else if (depth >= currentMaxDepth) {
+    console.log(
+      `[${username}] Max depth ${currentMaxDepth} reached (depth ${depth}). Not fetching further connections.`
+    );
+    if (
+      !performedScrape &&
+      userDoc.rating !== undefined &&
+      userToProcess.status !== "processed"
+    ) {
+      await usersCol.updateOne(
+        { _id: username },
+        { $set: { status: "processed" } }
+      );
+      console.log(
+        `[${username}] Skipped scrape, at max depth. Status set to 'processed'.`
+      );
+    }
+
+    // NOT FETCHING BC DEPTH IS TOO HIGH
+  } else if (
+    userToProcess.status !== "processed" &&
+    !(userDoc.rating !== undefined && userDoc.status === "pending")
+  ) {
+    console.log(
+      `[${username}] User status is '${userToProcess.status}'. Not fetching connections.`
     );
   }
 }
