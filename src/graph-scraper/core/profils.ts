@@ -4,9 +4,20 @@ export const topProfiles = [
   "https://github.com/alpayariyak",
   "https://github.com/lukasmasuch",
   "https://github.com/Jackmin801",
-];
 
-export const topProfilesFull = [
+  "https://github.com/srevinsaju",
+  "https://github.com/just-in-chang",
+  "https://github.com/bveeramani",
+  "https://github.com/umgefahren",
+  "https://github.com/shadaj",
+  "https://github.com/Jon-Becker",
+  "https://github.com/liamzebedee/",
+  "https://github.com/tmc",
+  "https://github.com/ekzhang",
+  "https://github.com/thecodingwizard",
+  "https://github.com/shreyas44",
+  "https://github.com/cmlad",
+  "https://github.com/antiquicksort",
   "https://github.com/felix-red-panda",
   "https://github.com/erik-dunteman",
   "https://github.com/wuweiweiwu",
@@ -45,6 +56,9 @@ export const topProfilesFull = [
   "https://github.com/varunshenoy",
   "https://github.com/himat",
   "https://github.com/dzhng",
+];
+
+export const topProfilesFull = [
   "https://github.com/ishaan-jaff",
   "https://github.com/liamzebedee",
   "https://github.com/Averylamp",
@@ -99,17 +113,4 @@ export const topProfilesFull = [
   "https://github.com/steven4354",
   "https://github.com/PierreAndreis",
   "https://github.com/jon-chuang",
-  "https://github.com/srevinsaju",
-  "https://github.com/just-in-chang",
-  "https://github.com/bveeramani",
-  "https://github.com/umgefahren",
-  "https://github.com/shadaj",
-  "https://github.com/Jon-Becker",
-  "https://github.com/liamzebedee/",
-  "https://github.com/tmc",
-  "https://github.com/ekzhang",
-  "https://github.com/thecodingwizard",
-  "https://github.com/shreyas44",
-  "https://github.com/cmlad",
-  "https://github.com/antiquicksort",
 ];

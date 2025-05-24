@@ -85,10 +85,13 @@ async function calculateGraphStats() {
     }
 
     console.log("\nDepth Distribution:");
-    depthCounts.forEach(({ _id, count }) => {
-      const percentage = ((count / totalUsers) * 100).toFixed(1);
-      console.log(`Depth ${_id}: ${count} (${percentage}%)`);
-    });
+
+    depthCounts
+      .sort((a, b) => (a._id ?? 0) - (b._id ?? 0))
+      .forEach(({ _id, count }) => {
+        const percentage = ((count / totalUsers) * 100).toFixed(1);
+        console.log(`Depth ${_id}: ${count} (${percentage}%)`);
+      });
 
     // Get total ignored users count
     const totalIgnored = await usersCol.countDocuments({ status: "ignored" });
