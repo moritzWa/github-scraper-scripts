@@ -495,12 +495,30 @@ interface BraveSearchResponse {
 // Global promise chain to serialize Brave API calls
 let braveApiCallQueue = Promise.resolve();
 
+// Helper function to schedule tasks on the braveApiCallQueue with a delay
+async function scheduleBraveApiCall<T>(task: () => Promise<T>): Promise<T> {
+  // Wait for the current end of the queue, then execute the task
+  const taskPromise = braveApiCallQueue.then(task);
+
+  // The next operation on the queue must wait for this task to settle (succeed or fail),
+  // and then wait for the specified delay.
+  braveApiCallQueue = taskPromise
+    .catch(() => {
+      // Prevent an error in one task from breaking the entire queue chain.
+      // The error will still be propagated to the caller of scheduleBraveApiCall.
+    })
+    .then(() => new Promise((resolve) => setTimeout(resolve, 1100))); // Keep 1.1s delay for now
+
+  return taskPromise;
+}
+
 async function withBraveRateLimitRetry(
   fetchFn: () => Promise<Response>, // The function that performs the fetch
   maxRetries: number = 3 // Reduced maxRetries as serialization should help
 ): Promise<Response> {
   let retryCount = 0;
   let lastError: Error | null = null;
+  let firstRateLimitErrorBody: string | null = null; // Variable to store the first 429 error body
 
   while (retryCount <= maxRetries) {
     // <= to allow initial attempt + maxRetries
@@ -523,42 +541,73 @@ async function withBraveRateLimitRetry(
         const isRateLimit = response.status === 429;
         let waitTimeMs: number;
 
+        // Capture the body of the first 429 error
+        if (isRateLimit && !firstRateLimitErrorBody) {
+          try {
+            firstRateLimitErrorBody = await response.text(); // Store the body
+          } catch (bodyError) {
+            firstRateLimitErrorBody =
+              "(Failed to read error body for first 429)";
+          }
+        } else if (isRateLimit) {
+          // For subsequent 429s, still consume the body but don't overwrite the first captured body
+          try {
+            await response.text();
+          } catch (_) {
+            /* ignore */
+          }
+        } else {
+          // For non-429 errors that are retryable (e.g. 5xx), consume body if not already done for 429 check
+          try {
+            await response.text();
+          } catch (_) {
+            /* ignore */
+          }
+        }
+
         const resetTimestampHeader = response.headers.get("X-RateLimit-Reset");
         if (isRateLimit && resetTimestampHeader) {
           const resetTimeEpochSeconds = parseInt(resetTimestampHeader, 10);
           if (!isNaN(resetTimeEpochSeconds)) {
             const resetTimeMs = resetTimeEpochSeconds * 1000;
             const currentTimeMs = Date.now();
-            waitTimeMs = Math.max(0, resetTimeMs - currentTimeMs) + 500; // Wait till reset + 500ms buffer
+            const calculatedDiffWait = Math.max(
+              1000,
+              resetTimeMs - currentTimeMs
+            );
+            waitTimeMs = calculatedDiffWait + 500;
             console.log(
-              `Brave API: Rate limit. Using X-RateLimit-Reset. Waiting ${
-                waitTimeMs / 1000
-              }s.`
+              `Brave API: Rate limit. Using X-RateLimit-Reset. Calculated base diff wait: ${
+                Math.max(0, resetTimeMs - currentTimeMs) / 1000
+              }s. Enforced diff wait: ${
+                calculatedDiffWait / 1000
+              }s. Total wait: ${waitTimeMs / 1000}s.`
             );
           } else {
-            // Fallback if header parsing fails
-            waitTimeMs = Math.pow(2, retryCount) * 1000 + 1000; // Exponential + base 1s
+            waitTimeMs =
+              Math.pow(2, retryCount) * 1500 + (retryCount === 0 ? 2000 : 1000);
             console.log(
-              `Brave API: Rate limit. X-RateLimit-Reset parse error. Fallback wait ${
+              `Brave API: Rate limit. X-RateLimit-Reset parse error. Fallback wait ${(
                 waitTimeMs / 1000
-              }s.`
+              ).toFixed(1)}s.`
             );
           }
         } else {
-          // Not a rate limit error with header, or a server error
+          const baseFirstRetryWait = isRateLimit && retryCount === 0 ? 2000 : 0;
           waitTimeMs =
-            Math.pow(2, retryCount) * 1000 + (isRateLimit ? 1000 : 0); // Exponential + base for 429
+            Math.pow(2, retryCount) * 1500 +
+            (isRateLimit ? 1000 : 0) +
+            baseFirstRetryWait;
+          console.log(
+            `Brave API: Status ${
+              response.status
+            } (no X-RateLimit-Reset or server error). Fallback wait ${(
+              waitTimeMs / 1000
+            ).toFixed(1)}s.`
+          );
         }
 
-        waitTimeMs = Math.min(waitTimeMs, 30000); // Cap wait time to 30s
-
-        // Consume the response body to free up resources before waiting
-        // Catch error if text() fails, e.g. if body already consumed or network error during consumption
-        try {
-          await response.text();
-        } catch (bodyError) {
-          // console.warn("Brave API: Error consuming response body before retry:", bodyError);
-        }
+        waitTimeMs = Math.min(waitTimeMs, 30000);
 
         console.log(
           `Brave API: Status ${response.status}. Attempt ${retryCount + 1}/${
@@ -595,9 +644,17 @@ async function withBraveRateLimitRetry(
     maxRetries + 1
   } retries failed. Last error: ${
     lastError ? lastError.message : "Unknown error after retries."
+  }${
+    firstRateLimitErrorBody
+      ? ` First 429 error body: ${firstRateLimitErrorBody}`
+      : ""
   }`;
   console.error(errorMessage);
-  if (lastError) throw lastError; // Throw the actual error object if available
+  if (lastError) {
+    // Augment the original error with the detailed message if possible
+    lastError.message = errorMessage;
+    throw lastError;
+  }
   throw new Error(errorMessage); // Fallback error
 }
 
@@ -637,12 +694,9 @@ export async function fetchLinkedInProfileUsingBrave(
           }
         );
 
-      // Use the retry wrapper
       const response = await withBraveRateLimitRetry(fetchLambda);
 
       if (!response.ok) {
-        // If withBraveRateLimitRetry returns a non-ok response, it means it's a non-retryable error
-        // or retries were exhausted for a non-retryable status that it decided to pass through.
         let errorBody = "";
         try {
           errorBody = await response.text();
@@ -666,10 +720,8 @@ export async function fetchLinkedInProfileUsingBrave(
           }
         }
       }
-      // console.log(`No LinkedIn profile found in Brave search results for ${user.login}`);
       return null;
     } catch (error: any) {
-      // Catches if withBraveRateLimitRetry throws (max retries exceeded for retryable errors)
       console.error(
         `Failed to fetch LinkedIn profile with Brave for ${user.login} after all retries:`,
         error.message
@@ -678,19 +730,8 @@ export async function fetchLinkedInProfileUsingBrave(
     }
   };
 
-  // Add this task to the queue
-  const resultPromise = braveApiCallQueue.then(performFetchTask);
-
-  // Update the queue for the next call:
-  // It should wait for the current task to complete (settle) and then add a fixed delay.
-  braveApiCallQueue = resultPromise
-    .catch(() => {
-      // If performFetchTask throws, catch it here so the global queue chain itself doesn't break.
-      // The error is already propagated to the caller of fetchLinkedInProfileUsingBrave via resultPromise.
-    })
-    .then(() => new Promise((resolve) => setTimeout(resolve, 1100))); // 1.1s delay to respect ~1 QPS
-
-  return resultPromise;
+  // Use the new scheduleBraveApiCall helper
+  return scheduleBraveApiCall(performFetchTask);
 }
 
 export async function generateLinkedInExperienceSummary(
@@ -839,7 +880,6 @@ export function findLinkedInUrlInProfileData(user: UserData): string | null {
 
   // Check profile readme for LinkedIn URLs
   if (user.profileReadme) {
-    // Look for common LinkedIn URL patterns in the readme
     const linkedinPatterns = [
       /https?:\/\/(?:www\.)?linkedin\.com\/in\/[a-zA-Z0-9-]+/g,
       /https?:\/\/(?:www\.)?linkedin\.com\/profile\/[a-zA-Z0-9-]+/g,
@@ -849,7 +889,6 @@ export function findLinkedInUrlInProfileData(user: UserData): string | null {
     for (const pattern of linkedinPatterns) {
       const matches = user.profileReadme.match(pattern);
       if (matches && matches.length > 0) {
-        // Return the first match, removing any query parameters
         return matches[0].split("?")[0];
       }
     }
@@ -858,31 +897,4 @@ export function findLinkedInUrlInProfileData(user: UserData): string | null {
   return null;
 }
 
-// Script execution part
-if (import.meta.url === `file://${process.argv[1]}`) {
-  // Guard to run only when executed directly
-  (async () => {
-    // The username is derived from the URL: and https://www.linkedin.com/in/banisgh/
-    const targetUsername = "banisgh";
-
-    console.log(
-      `Fetching LinkedIn profile data for username (RapidAPI): ${targetUsername}...`
-    );
-    const profileDataRapidAPI = await fetchLinkedInExperienceViaRapidAPI(
-      targetUsername
-    );
-
-    if (profileDataRapidAPI) {
-      console.log("Successfully fetched LinkedIn Profile Data (RapidAPI):");
-      // Optionally, you might want to see the data when run directly:
-      // console.log(JSON.stringify(profileDataRapidAPI, null, 2));
-    } else {
-      console.log(
-        `Could not fetch LinkedIn profile data via RapidAPI for ${targetUsername}.`
-      );
-    }
-  })();
-}
-
-// To run this script, you might need ts-node:
-// ... existing code ...
+// Removed example script execution block that was here
