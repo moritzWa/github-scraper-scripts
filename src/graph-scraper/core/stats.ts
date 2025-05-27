@@ -29,6 +29,24 @@ async function calculateGraphStats() {
       .aggregate([{ $group: { _id: "$depth", count: { $sum: 1 } } }])
       .toArray();
 
+    // Get depth distribution for high-rated processed users
+    const highRatedProcessedByDepth = await usersCol
+      .aggregate([
+        {
+          $match: {
+            status: "processed",
+            rating: { $gt: 50 },
+          },
+        },
+        {
+          $group: {
+            _id: "$depth",
+            count: { $sum: 1 },
+          },
+        },
+      ])
+      .toArray();
+
     // Get ignored reasons distribution
     const ignoredReasons = await usersCol
       .aggregate([
@@ -90,7 +108,11 @@ async function calculateGraphStats() {
       .sort((a, b) => (a._id ?? 0) - (b._id ?? 0))
       .forEach(({ _id, count }) => {
         const percentage = ((count / totalUsers) * 100).toFixed(1);
-        console.log(`Depth ${_id}: ${count} (${percentage}%)`);
+        const highRatedCount =
+          highRatedProcessedByDepth.find((d) => d._id === _id)?.count || 0;
+        console.log(
+          `Depth ${_id}: ${count} (${percentage}%) - High Rated ( >50, processed): ${highRatedCount}`
+        );
       });
 
     // Get total ignored users count
@@ -145,6 +167,28 @@ async function calculateGraphStats() {
           });
         }
       }
+    }
+
+    // Add new section for Depth 6 Sample Profiles
+    const depth6HighRatedUsers = await usersCol
+      .find({
+        depth: 6,
+        status: "processed",
+        rating: { $gt: 50 },
+      })
+      .project({ html_url: 1, login: 1, rating: 1 }) // Assuming html_url and login exist
+      .sort({ rating: -1 }) // Optional: sort by rating descending
+      .limit(20)
+      .toArray();
+
+    if (depth6HighRatedUsers.length > 0) {
+      console.log("Depth 6 Sample Profiles (Rating > 50, Processed):");
+      console.log("----------------------------------------------------");
+      depth6HighRatedUsers.forEach((user) => {
+        console.log(
+          `- https://github.com/${user.login} (Rating: ${user.rating})`
+        );
+      });
     }
 
     // Add Rating Statistics

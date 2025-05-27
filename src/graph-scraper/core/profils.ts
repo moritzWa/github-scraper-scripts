@@ -56,9 +56,6 @@ export const topProfiles = [
   "https://github.com/varunshenoy",
   "https://github.com/himat",
   "https://github.com/dzhng",
-];
-
-export const topProfilesFull = [
   "https://github.com/ishaan-jaff",
   "https://github.com/liamzebedee",
   "https://github.com/Averylamp",
@@ -114,3 +111,5 @@ export const topProfilesFull = [
   "https://github.com/PierreAndreis",
   "https://github.com/jon-chuang",
 ];
+
+export const topProfilesFull = [];

@@ -12,9 +12,14 @@ const apiKey = process.env.GITHUB_ACCESS_TOKEN;
 const octokit = new Octokit({ auth: apiKey });
 const mongoUri = process.env.MONGODB_URI || "mongodb://localhost:27017";
 const dbName = process.env.MONGODB_DB;
-const maxDepth = 4;
-const RATING_THRESHOLD_FOR_D2ETC = 50;
+const maxDepth = 17;
+const RATING_THRESHOLD_FOR_D2ETC = 20;
 const BATCH_SIZE = 3;
+
+// Memory optimization: Cache the total count and update it less frequently
+let cachedTotalProcessable = 0;
+let lastCountUpdate = 0;
+const COUNT_UPDATE_INTERVAL = 10; // Update count every 10 batches
 
 // --- Reusable Connection Processing Function ---
 async function processConnectionsPageByPage(
@@ -46,48 +51,54 @@ async function processConnectionsPageByPage(
             );
           });
 
-        await usersCol
-          .bulkWrite(
-            pageItems.map((newUsername: string) => {
-              const childDepth = depth + 1;
-              const updateOnInsertFields: Partial<DbGraphUser> & {
-                _id: string;
-              } = {
-                _id: newUsername,
-                status: "pending",
-                depth: childDepth,
-              };
+        // Process in smaller chunks to reduce memory pressure
+        const CHUNK_SIZE = 100;
+        for (let i = 0; i < pageItems.length; i += CHUNK_SIZE) {
+          const chunk = pageItems.slice(i, i + CHUNK_SIZE);
 
-              const updateDefinition: any = {
-                $setOnInsert: updateOnInsertFields,
-              };
+          await usersCol
+            .bulkWrite(
+              chunk.map((newUsername: string) => {
+                const childDepth = depth + 1;
+                const updateOnInsertFields: Partial<DbGraphUser> & {
+                  _id: string;
+                } = {
+                  _id: newUsername,
+                  status: "pending",
+                  depth: childDepth,
+                };
 
-              if (parentRating !== undefined) {
-                updateDefinition.$addToSet = {
-                  parentRatings: {
-                    parent: parentUsername,
-                    rating: parentRating,
+                const updateDefinition: any = {
+                  $setOnInsert: updateOnInsertFields,
+                };
+
+                if (parentRating !== undefined) {
+                  updateDefinition.$addToSet = {
+                    parentRatings: {
+                      parent: parentUsername,
+                      rating: parentRating,
+                    },
+                  };
+                } else {
+                  updateOnInsertFields.parentRatings = [];
+                }
+
+                return {
+                  updateOne: {
+                    filter: { _id: newUsername },
+                    update: updateDefinition,
+                    upsert: true,
                   },
                 };
-              } else {
-                updateOnInsertFields.parentRatings = [];
-              }
-
-              return {
-                updateOne: {
-                  filter: { _id: newUsername },
-                  update: updateDefinition,
-                  upsert: true,
-                },
-              };
-            })
-          )
-          .catch((err: any) => {
-            console.error(
-              `Error upserting new users from ${connectionType} for ${parentUsername}, page:`,
-              err
-            );
-          });
+              })
+            )
+            .catch((err: any) => {
+              console.error(
+                `Error upserting new users from ${connectionType} for ${parentUsername}, chunk:`,
+                err
+              );
+            });
+        }
       }
     }
   } catch (err) {
@@ -288,11 +299,23 @@ async function manageConnectionsAndUpdateStatus(
 }
 
 async function main() {
-  const client = new MongoClient(mongoUri);
+  const client = new MongoClient(mongoUri, {
+    maxPoolSize: 10, // Limit connection pool size
+    serverSelectionTimeoutMS: 5000,
+    socketTimeoutMS: 45000,
+  });
   await client.connect();
   const db = client.db(dbName);
   const usersCol = db.collection<DbGraphUser>("users");
   const edgesCol = db.collection("edges");
+
+  // Create indexes for better query performance
+  console.log("Ensuring database indexes...");
+  await usersCol.createIndex({ status: 1, depth: 1 });
+  await usersCol.createIndex({ "parentRatings.rating": 1 });
+  await usersCol.createIndex({ rating: 1 });
+  await usersCol.createIndex({ "scrapedConnections.following": 1 });
+  console.log("Database indexes created/verified.");
 
   for (const profile of topProfiles) {
     const username = profile.replace("https://github.com/", "");
@@ -328,11 +351,48 @@ async function main() {
     );
   }
 
+  let batchCount = 0;
+
   while (true) {
-    const totalPending = await usersCol.countDocuments({
-      status: "pending",
-      depth: { $lte: maxDepth },
-    });
+    batchCount++;
+
+    // Only update the expensive count every N batches to reduce memory pressure
+    if (batchCount === 1 || batchCount % COUNT_UPDATE_INTERVAL === 0) {
+      console.log("Updating processable user count...");
+      const totalProcessableUsers = await usersCol
+        .aggregate([
+          {
+            $addFields: {
+              averageParentRating: { $avg: "$parentRatings.rating" },
+            },
+          },
+          {
+            $match: {
+              status: "pending",
+              $or: [
+                { depth: 0 },
+                {
+                  depth: { $gt: 0 },
+                  rating: { $exists: false },
+                  averageParentRating: { $gte: RATING_THRESHOLD_FOR_D2ETC },
+                },
+                {
+                  depth: { $gt: 0 },
+                  rating: { $exists: true },
+                  "scrapedConnections.following": { $ne: true },
+                },
+              ],
+            },
+          },
+          {
+            $count: "total",
+          },
+        ])
+        .toArray();
+
+      cachedTotalProcessable = totalProcessableUsers[0]?.total || 0;
+      lastCountUpdate = batchCount;
+    }
 
     const pendingUsers = await usersCol
       .aggregate<DbGraphUser>([
@@ -392,7 +452,7 @@ async function main() {
 
     console.log(`[Progress Update]`);
     console.log(
-      `- Total pending profiles (up to depth ${maxDepth}): ${totalPending}`
+      `- Total processable profiles (meeting criteria): ${cachedTotalProcessable} (last updated: batch ${lastCountUpdate})`
     );
     console.log(`- Current batch size: ${pendingUsers.length}`);
     console.log(`- Processing next batch...
@@ -409,6 +469,16 @@ async function main() {
         processUserFromBatch(userDoc, usersCol, edgesCol, octokit, maxDepth)
       )
     );
+
+    console.log("Memory usage:", process.memoryUsage());
+
+    // Memory cleanup: Suggest garbage collection after each batch
+    if (global.gc) {
+      global.gc();
+    }
+
+    // Add a small delay to prevent overwhelming the database
+    await new Promise((resolve) => setTimeout(resolve, 100));
   }
 
   await client.close();
