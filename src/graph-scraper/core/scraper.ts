@@ -13,8 +13,8 @@ const octokit = new Octokit({ auth: apiKey });
 const mongoUri = process.env.MONGODB_URI || "mongodb://localhost:27017";
 const dbName = process.env.MONGODB_DB;
 const maxDepth = 17;
-const RATING_THRESHOLD_FOR_D2ETC = 20;
-const BATCH_SIZE = 3;
+const RATING_THRESHOLD_FOR_D2ETC = 40;
+const BATCH_SIZE = 5;
 
 // Memory optimization: Cache the total count and update it less frequently
 let cachedTotalProcessable = 0;

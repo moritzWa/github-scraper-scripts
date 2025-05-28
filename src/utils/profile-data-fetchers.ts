@@ -1,6 +1,5 @@
-import { Readability } from "@mozilla/readability";
 import { Octokit } from "@octokit/core";
-import { JSDOM, VirtualConsole } from "jsdom";
+import { JSDOM } from "jsdom";
 import puppeteer from "puppeteer";
 import { GitHubUser } from "../graph-scraper/types.js";
 import { GitHubRepo } from "../types.js";
@@ -11,104 +10,116 @@ const MAX_CONTENT_LENGTH = 7500;
 export async function fetchWebsiteContent(url: string): Promise<string | null> {
   if (!url) return null;
 
-  try {
-    // Clean and validate the URL
-    let cleanUrl = url.trim();
+  let browser = null;
+  let retryCount = 0;
+  const maxRetries = 3;
 
-    // Skip invalid URLs or common non-website values
-    if (
-      cleanUrl === "/dev/null" ||
-      cleanUrl === "null" ||
-      cleanUrl === "undefined"
-    ) {
-      return null;
-    }
-
-    // Try to create a valid URL object (will throw if invalid)
+  while (retryCount < maxRetries) {
     try {
-      // Add protocol if missing
-      if (!cleanUrl.startsWith("http")) {
-        cleanUrl = "https://" + cleanUrl;
+      // Clean and validate the URL
+      let cleanUrl = url.trim();
+
+      // Skip invalid URLs or common non-website values
+      if (
+        cleanUrl === "/dev/null" ||
+        cleanUrl === "null" ||
+        cleanUrl === "undefined"
+      ) {
+        return null;
       }
-      new URL(cleanUrl);
-    } catch (e) {
-      console.error(`Invalid URL: ${url}`);
-      return null;
-    }
 
-    // Use Puppeteer to render the page with JavaScript
-    const browser = await puppeteer.launch({
-      headless: true,
-      args: ["--no-sandbox", "--disable-setuid-sandbox"],
-    });
-    const page = await browser.newPage();
+      // Try to create a valid URL object (will throw if invalid)
+      try {
+        // Add protocol if missing
+        if (!cleanUrl.startsWith("http")) {
+          cleanUrl = "https://" + cleanUrl;
+        }
+        new URL(cleanUrl);
+      } catch (e) {
+        console.error(`Invalid URL: ${url}`);
+        return null;
+      }
 
-    // Set viewport to ensure content is loaded
-    await page.setViewport({ width: 1280, height: 800 });
+      // Use Puppeteer to render the page with JavaScript
+      browser = await puppeteer.launch({
+        headless: true,
+        args: [
+          "--no-sandbox",
+          "--disable-setuid-sandbox",
+          "--disable-dev-shm-usage", // Overcome limited resource problems
+          "--disable-gpu", // Disable GPU hardware acceleration
+          "--disable-extensions", // Disable extensions
+          "--disable-component-extensions-with-background-pages", // Disable background pages
+          "--disable-default-apps", // Disable default apps
+          "--mute-audio", // Mute audio
+          "--no-first-run", // Skip first run tasks
+          "--no-zygote", // Disable zygote process
+          "--single-process", // Run in single process mode
+        ],
+        protocolTimeout: 20000, // Reduced to 20 seconds
+      });
 
-    // Set user agent
-    await page.setUserAgent("Mozilla/5.0 (compatible; PrimeIntellectBot/1.0;)");
+      const page = await browser.newPage();
 
-    await page.goto(cleanUrl, {
-      waitUntil: "networkidle2",
-      timeout: 30000,
-    });
+      // Set viewport to ensure content is loaded
+      await page.setViewport({ width: 1280, height: 800 });
 
-    // Wait for content to be visible
-    await page.waitForSelector("body", { visible: true });
-
-    // Additional wait to ensure dynamic content is loaded
-    await new Promise((resolve) => setTimeout(resolve, 2000));
-
-    const html = await page.content();
-
-    await browser.close();
-
-    const doc = new JSDOM(html, {
-      url: cleanUrl,
-      runScripts: "outside-only",
-      resources: "usable",
-      virtualConsole: new VirtualConsole().sendTo(console, {
-        omitJSDOMErrors: true,
-      }),
-      pretendToBeVisual: false,
-    });
-
-    const reader = new Readability(doc.window.document);
-    const article = reader.parse();
-
-    if (!article) {
-      // Fallback: extract all visible text from <body>
-      const body = doc.window.document.body;
-      body
-        .querySelectorAll("script, style, nav, footer, aside")
-        .forEach((el) => el.remove());
-      const fallbackContent = body.textContent || "";
-      const result = `${doc.window.document.title}\n\n${fallbackContent
-        .replace(/\s+/g, " ")
-        .trim()}`.slice(0, MAX_CONTENT_LENGTH);
-      return result;
-    }
-
-    // Combine title and content, limit length
-    const content = `${article.title}\n\n${article.textContent}`
-      .replace(/\s+/g, " ")
-      .trim()
-      .slice(0, MAX_CONTENT_LENGTH);
-    return content;
-  } catch (error) {
-    // More specific error logging
-    if (error instanceof TypeError && error.message.includes("fetch failed")) {
-      console.error(
-        `Network error fetching ${url}: ${
-          (error as any).cause || error.message
-        }`
+      // Set user agent
+      await page.setUserAgent(
+        "Mozilla/5.0 (compatible; PrimeIntellectBot/1.0;)"
       );
-    } else {
-      console.error(`Error processing website ${url}:`, error);
+
+      // Set page timeout
+      page.setDefaultNavigationTimeout(20000);
+      page.setDefaultTimeout(20000);
+
+      await page.goto(cleanUrl, {
+        waitUntil: "networkidle2",
+        timeout: 20000,
+      });
+
+      // Wait for content to be visible
+      await page.waitForSelector("body", { visible: true, timeout: 20000 });
+
+      // Additional wait to ensure dynamic content is loaded
+      await new Promise((resolve) => setTimeout(resolve, 2000));
+
+      const html = await page.content();
+      await browser.close();
+      browser = null;
+
+      return html;
+    } catch (error) {
+      console.error(
+        `Error fetching website content (attempt ${
+          retryCount + 1
+        }/${maxRetries}):`,
+        error
+      );
+
+      // Clean up browser if it exists
+      if (browser) {
+        try {
+          await browser.close();
+        } catch (closeError) {
+          console.error("Error closing browser:", closeError);
+        }
+        browser = null;
+      }
+
+      // If we've hit max retries, return null
+      if (retryCount === maxRetries - 1) {
+        return null;
+      }
+
+      // Wait before retrying (exponential backoff)
+      const waitTime = Math.min(1000 * Math.pow(2, retryCount), 10000);
+      await new Promise((resolve) => setTimeout(resolve, waitTime));
+      retryCount++;
     }
-    return null;
   }
+
+  return null;
 }
 
 export function countProfileFields(userData: GitHubUser): number {
