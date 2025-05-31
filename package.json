@@ -40,7 +40,8 @@
     "calculate-parent-ratings": "node --loader ts-node/esm src/graph-scraper/scripts/calculate-parent-ratings.ts",
     "investigate-graph-follower-data": "node --loader ts-node/esm src/graph-scraper/debugging/investigate-graph-follower-data.ts",
     "scrape-missing-connections": "node --loader ts-node/esm src/graph-scraper/scrape-missing-connections.ts",
-    "graph-scoring": "node --loader ts-node/esm src/graph-scraper/core/graph-scoring.ts"
+    "graph-scoring": "node --loader ts-node/esm src/graph-scraper/core/graph-scoring.ts",
+    "scrape-seeder": "node --loader ts-node/esm src/graph-scraper/core/scraper-seeder.ts"
   },
   "keywords": [],
   "author": "",

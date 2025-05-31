@@ -27,7 +27,7 @@ export function isActiveInEnoughMonths(
 
 export function isWeekdayCoder(
   calendarWeeks: CalendarWeek[],
-  weekdayThreshold: number = 0.9
+  weekdayThreshold: number = 0.85
 ): boolean {
   if (!calendarWeeks) return false;
 
@@ -55,5 +55,5 @@ export function isWeekdayCoder(
   }
 
   const weekdayRatio = weekdayContributions / totalContributions;
-  return weekdayRatio >= weekdayThreshold;
+  return weekdayRatio > weekdayThreshold;
 }

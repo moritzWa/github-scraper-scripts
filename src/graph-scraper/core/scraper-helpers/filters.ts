@@ -42,7 +42,7 @@ export async function checkUserFilters(
     return { shouldIgnore: true, reason: IgnoredReason.TOO_MANY_FOLLOWERS };
   }
 
-  if (userData.following > 415) {
+  if (userData.following > 450) {
     console.log(
       `[Filter Check] ${userData.login} rejected: TOO_MANY_FOLLOWING`
     );
@@ -59,7 +59,7 @@ export async function checkUserFilters(
     };
   }
 
-  if (userData.followers <= 35 && contributions.totalSum < 3500) {
+  if (userData.followers <= 30 && contributions.totalSum < 3200) {
     console.log(
       `[Filter Check] ${userData.login} rejected: LOW_CONTRIBUTIONS_LOW_FOLLOWERS`
     );
@@ -68,7 +68,7 @@ export async function checkUserFilters(
       reason: IgnoredReason.LOW_CONTRIBUTIONS_LOW_FOLLOWERS,
     };
   } else if (
-    userData.followers > 35 &&
+    userData.followers > 30 &&
     userData.followers <= 60 &&
     contributions.totalSum < 3000
   ) {

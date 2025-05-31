@@ -56,7 +56,7 @@ export async function fetchWebsiteContent(url: string): Promise<string | null> {
           "--no-zygote", // Disable zygote process
           "--single-process", // Run in single process mode
         ],
-        protocolTimeout: 20000, // Reduced to 20 seconds
+        protocolTimeout: 10000, // Reduced to 10 seconds
       });
 
       const page = await browser.newPage();
@@ -70,16 +70,16 @@ export async function fetchWebsiteContent(url: string): Promise<string | null> {
       );
 
       // Set page timeout
-      page.setDefaultNavigationTimeout(20000);
-      page.setDefaultTimeout(20000);
+      page.setDefaultNavigationTimeout(10000);
+      page.setDefaultTimeout(10000);
 
       await page.goto(cleanUrl, {
         waitUntil: "networkidle2",
-        timeout: 20000,
+        timeout: 10000,
       });
 
       // Wait for content to be visible
-      await page.waitForSelector("body", { visible: true, timeout: 20000 });
+      await page.waitForSelector("body", { visible: true, timeout: 10000 });
 
       // Additional wait to ensure dynamic content is loaded
       await new Promise((resolve) => setTimeout(resolve, 2000));
