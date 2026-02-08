@@ -8,7 +8,10 @@ import {
   fetchBasicUserData,
 } from "./fetch-user-data.js";
 import { checkUserFilters } from "./filters.js";
-import { fetchLinkedInData } from "./linkedin-research.js";
+import {
+  fetchLinkedInData,
+  RapidAPICreditsExhaustedError,
+} from "./linkedin-research.js";
 import { calculateRoleFitPoints } from "./role-fit.js";
 import { fetchWebResearchInfo } from "./web-research.js";
 
@@ -165,6 +168,7 @@ export async function scrapeUser(
         // Calculate rating
         await calculateUserRating(user, webResearchInfo);
       } catch (error) {
+        if (error instanceof RapidAPICreditsExhaustedError) throw error;
         console.error(`[${username}] Error calculating rating:`, error);
         // Continue without rating data if there's an error
       }
@@ -181,6 +185,7 @@ export async function scrapeUser(
 
     return { user };
   } catch (error) {
+    if (error instanceof RapidAPICreditsExhaustedError) throw error;
     console.error(`Error scraping user ${username}:`, error);
     return {
       user: null,

@@ -55,6 +55,13 @@ export interface LinkedInProfile {
 
 const RAPIDAPI_HOST = "fresh-linkedin-profile-data.p.rapidapi.com";
 
+export class RapidAPICreditsExhaustedError extends Error {
+  constructor(status: number, body: string) {
+    super(`RapidAPI credits exhausted (HTTP ${status}): ${body}`);
+    this.name = "RapidAPICreditsExhaustedError";
+  }
+}
+
 export async function fetchLinkedInData(user: GraphUser) {
   console.log(`[${user.login}] Attempting to find LinkedIn URL...`);
 
@@ -140,6 +147,11 @@ export async function fetchLinkedInExperienceViaRapidAPI(
         `Error fetching LinkedIn data for ${username}: ${response.status} ${response.statusText}`
       );
       console.error("Error response body:", errorBody);
+
+      // Throw on credit exhaustion so the scraper can exit gracefully
+      if (response.status === 402 || response.status === 429) {
+        throw new RapidAPICreditsExhaustedError(response.status, errorBody);
+      }
       return null;
     }
 
