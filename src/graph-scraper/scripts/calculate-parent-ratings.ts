@@ -1,10 +1,6 @@
 import { connectToDatabase } from "../core/db.js";
 import { GraphUser } from "../types.js";
 
-interface ParentRatings {
-  [key: string]: number;
-}
-
 async function calculateParentRatings() {
   const db = await connectToDatabase();
   const users = db.collection<GraphUser>("users");
@@ -24,34 +20,31 @@ async function calculateParentRatings() {
     if (followerEdges.length > 0) {
       const percentage = ((processedCount / totalRatedUsers) * 100).toFixed(1);
       console.log(
-        `[${percentage}%] Processing ${followerEdges.length} followers for ${user.login}`
+        `[${percentage}%] Processing ${followerEdges.length} followers for ${user._id}`
       );
 
-      // Get all follower usernames
       const followerUsernames = followerEdges.map((edge) => edge.from);
 
-      // Update each follower with the parent's rating
       for (const followerUsername of followerUsernames) {
-        const update = {
-          $set: {
-            parentRatings: {
-              ...(((await users.findOne({ _id: followerUsername }))
-                ?.parentRatings as ParentRatings) || {}),
-              [user._id]: user.rating!,
+        // Add this parent rating to the array, avoiding duplicates
+        await users.updateOne(
+          { _id: followerUsername },
+          {
+            $addToSet: {
+              parentRatings: {
+                parent: user._id,
+                rating: user.rating!,
+              },
             },
-          },
-        };
-
-        await users.updateOne({ _id: followerUsername }, update);
+          }
+        );
       }
 
-      // After getting followerEdges
       if (processedCount === 0) {
         console.log("\nDebug Info:");
         console.log("Sample edge:", JSON.stringify(followerEdges[0], null, 2));
         console.log("Total edges in collection:", await edges.countDocuments());
 
-        // Add this to check parent ratings distribution
         const ratingStats = await users
           .aggregate([
             { $match: { depth: { $in: [1, 2] } } },
@@ -85,21 +78,20 @@ async function calculateParentRatings() {
   );
 
   for (const user of allUsers) {
-    if (user.parentRatings) {
-      const ratings = Object.values(user.parentRatings as ParentRatings);
-      if (ratings.length > 0) {
-        const averageRating =
-          ratings.reduce((a, b) => a + b, 0) / ratings.length;
+    const parentRatings = user.parentRatings;
+    if (parentRatings && parentRatings.length > 0) {
+      const averageRating =
+        parentRatings.reduce((sum, pr) => sum + pr.rating, 0) /
+        parentRatings.length;
 
-        await users.updateOne(
-          { _id: user._id },
-          { $set: { averageParentRating: averageRating } }
-        );
-      }
+      await users.updateOne(
+        { _id: user._id },
+        { $set: { averageParentRating: averageRating } }
+      );
     }
   }
 
-  // Add after the main processing
+  // Verification
   const verification = await users
     .find({
       $or: [{ depth: 1 }, { depth: 2 }],
@@ -110,7 +102,8 @@ async function calculateParentRatings() {
   console.log(`Total depth 1 and 2 users: ${verification.length}`);
   console.log(
     `Users with parentRatings: ${
-      verification.filter((u) => u.parentRatings).length
+      verification.filter((u) => u.parentRatings && u.parentRatings.length > 0)
+        .length
     }`
   );
   console.log(
@@ -119,7 +112,6 @@ async function calculateParentRatings() {
     }`
   );
 
-  // Sample a few users to inspect
   const sampleUsers = await users
     .find({
       $or: [{ depth: 1 }, { depth: 2 }],

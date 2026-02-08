@@ -355,6 +355,8 @@ async function rateAndLogEdgeCases() {
               rating: ratingResult.score,
               ratingWithRoleFitPoints: ratingResult.score + roleFitPoints,
               ratingReasoning: ratingResult.reasoning,
+              criteriaScores: ratingResult.criteriaScores,
+              criteriaReasonings: ratingResult.criteriaReasonings,
               engineerArchetype: ratingResult.engineerArchetype,
               webResearchInfoOpenAI: userData.webResearchInfoOpenAI,
               webResearchInfoGemini: userData.webResearchInfoGemini,

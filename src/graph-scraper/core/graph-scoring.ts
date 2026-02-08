@@ -97,7 +97,7 @@ async function calculateGraphScores() {
     const candidates: UserWithWeightedInflowScore[] = [];
     for (const user of allUsersArray) {
       const userIdentifier = getUserIdentifier(user);
-      if (user.rating !== undefined && user.rating > 30) {
+      if (user.rating !== undefined && user.rating > 6) {
         const inflowData = inflowScores.get(userIdentifier);
         candidates.push({
           login: userIdentifier, // Store effective identifier

@@ -9,7 +9,7 @@ import {
   fetchWebsiteContent,
   fetchXProfileMetadata,
 } from "../utils/profile-data-fetchers.js";
-import { primeTeamMembers } from "../variables.js";
+import { teamMembers } from "../variables.js";
 import { normalizeLocation } from "../utils/location.js";
 
 // Load environment variables
@@ -63,6 +63,8 @@ async function scrapeProfile(url: string): Promise<UserData | null> {
       profileUrl: userData.data.html_url || "",
       createdAt: userData.data.created_at,
       followers: userData.data.followers,
+      following: userData.data.following ?? 0,
+      contributions: null,
       name: userData.data.name || null,
       bio: userData.data.bio || null,
       company: userData.data.company || null,
@@ -100,7 +102,7 @@ async function scrapeProfile(url: string): Promise<UserData | null> {
 async function scrapeAllProfiles() {
   const idealUsers: UserData[] = [];
 
-  for (const url of primeTeamMembers) {
+  for (const url of teamMembers) {
     const userProfile = await scrapeProfile(url);
     if (userProfile) {
       idealUsers.push(userProfile);

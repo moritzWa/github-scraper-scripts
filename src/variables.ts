@@ -982,27 +982,5 @@ export const johannesRecUserAverages = {
   issues: 16.23,
   prs: 73.15,
 };
-export const primeTeamMembers: string[] = [
-  "https://github.com/JohannesHa",
-  "https://github.com/JannikSt",
-  "https://github.com/Jackmin801",
-  "https://github.com/felix-red-panda",
-  "https://github.com/apaz-cli",
-  "https://github.com/manveerxyz",
-  "https://github.com/justusmattern27",
-  "https://github.com/mikex86",
-  "https://github.com/mattdf",
-  "https://github.com/MarioSieg",
-  "https://github.com/samsja",
-  "https://github.com/burnpiro",
-  "https://github.com/apaz-cli",
-];
-
-export const primeContributionAverages = {
-  total: 3134.31,
-  public: 1817.85,
-  restricted: 1316.46,
-  commits: 335.54,
-  issues: 12.31,
-  prs: 93.92,
-};
+import { companyConfig } from "./config/company.js";
+export const teamMembers: string[] = companyConfig.teamMembers;

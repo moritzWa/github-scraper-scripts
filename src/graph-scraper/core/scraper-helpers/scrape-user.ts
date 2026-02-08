@@ -42,13 +42,16 @@ async function calculateUserRating(user: GraphUser, webResearchInfo: any) {
   user.rating = ratingData.score;
   user.ratingWithRoleFitPoints = ratingData.score + roleFitPoints;
   user.ratingReasoning = ratingData.reasoning;
+  user.criteriaScores = ratingData.criteriaScores;
+  user.criteriaReasonings = ratingData.criteriaReasonings;
   user.webResearchInfoOpenAI = ratingData.webResearchInfoOpenAI;
   user.webResearchInfoGemini = ratingData.webResearchInfoGemini;
   user.webResearchPromptText = ratingData.webResearchPromptText;
   user.engineerArchetype = ratingData.engineerArchetype;
+  user.inferredLocation = ratingData.inferredLocation;
   user.ratedAt = new Date();
 
-  console.log(`[${user.login}] Rating calculated: ${ratingData.score}`);
+  console.log(`[${user.login}] Rating calculated: ${ratingData.score}${ratingData.inferredLocation ? ` (${ratingData.inferredLocation})` : ""}`);
 }
 
 export async function scrapeUser(
@@ -170,8 +173,8 @@ export async function scrapeUser(
       console.log(
         `[${username}] Bypassing filters and assigning default rating as it is a seed user (depth 0).`
       );
-      user.rating = 80;
-      user.ratingWithRoleFitPoints = 100; // Assuming no specific role fit points for seed users initially
+      user.rating = 15; // Default high tier sum for seed users (max 21)
+      user.ratingWithRoleFitPoints = 15;
       user.ratedAt = new Date();
       user.ratingReasoning = "Seed user (depth 0) - default rating";
     }

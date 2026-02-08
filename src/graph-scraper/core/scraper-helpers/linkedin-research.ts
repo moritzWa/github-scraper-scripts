@@ -15,103 +15,45 @@ import openai from "../openai.js"; // Import the shared OpenAI client
 // you might need to import it:
 // import fetch from 'node-fetch';
 
-interface Geo {
-  country: string;
-  city: string;
-  full: string;
-  countryCode: string;
-}
-
-interface Language {
-  name: string;
-  proficiency: string;
-}
-
-interface DateInfo {
-  year: number;
-  month: number;
-  day: number;
-}
-
-interface LogoInfo {
-  url: string;
-  width: number;
-  height: number;
-}
-
-interface Education {
-  start: DateInfo;
-  end: DateInfo;
-  fieldOfStudy: string;
+// Types for the Fresh LinkedIn Profile Data API (rapidapi.com/freshdata-freshdata-default/api/fresh-linkedin-profile-data)
+interface LinkedInEducation {
+  school: string;
   degree: string;
-  grade: string;
-  schoolName: string;
-  description: string;
-  activities: string;
-  url: string;
-  schoolId: string;
-  logo: LogoInfo[] | LogoInfo | null; // Can be an array or single object based on some APIs, or null
+  field_of_study: string;
+  date_range: string;
+  start_year: string;
+  end_year: string;
 }
 
-interface MultiLocaleText {
-  [locale: string]: string;
-}
-
-interface Position {
-  companyId: number | null; // Microsoft example has 1035, Waitlist has 76446298
-  companyName: string;
-  companyUsername: string;
-  companyURL: string;
-  companyLogo: string | null;
-  companyIndustry: string;
-  companyStaffCountRange: string;
+interface LinkedInExperience {
+  company: string;
   title: string;
-  multiLocaleTitle: MultiLocaleText;
-  multiLocaleCompanyName: MultiLocaleText;
   location: string;
   description: string;
-  employmentType: string;
-  start: DateInfo;
-  end: DateInfo | null; // Current positions might not have an end date
-}
-
-interface Skill {
-  name: string;
-  passedSkillAssessment: boolean;
-  endorsementsCount?: number; // Optional as per "Data Analysis"
-}
-
-interface Honor {
-  title: string;
-  description: string;
-  issuer: string;
-  issuerLogo: string;
-  issuedOn: DateInfo;
+  date_range: string;
+  duration: string;
+  start_month: number;
+  start_year: number;
+  end_month: number | string;
+  end_year: number | string;
+  is_current: boolean;
+  job_type: string;
 }
 
 export interface LinkedInProfile {
-  id: number;
-  urn: string;
-  username: string;
-  firstName: string;
-  lastName: string;
-  isPremium: boolean;
+  full_name: string;
   headline: string;
-  geo: Geo;
-  languages: Language[];
-  educations: Education[];
-  position: Position[];
-  fullPositions: Position[]; // Assuming same structure as Position for now
-  skills: Skill[];
-  honors: Honor[];
-  projects: Record<string, unknown>; // Or a more specific type if structure is known
-  supportedLocales: Array<{ country: string; language: string }>;
-  multiLocaleFirstName: MultiLocaleText;
-  multiLocaleLastName: MultiLocaleText;
-  multiLocaleHeadline: MultiLocaleText;
+  about: string | null;
+  city: string;
+  country: string;
+  location: string;
+  company: string;
+  company_industry: string;
+  experiences: LinkedInExperience[];
+  educations: LinkedInEducation[];
 }
 
-const RAPIDAPI_HOST = "linkedin-data-api.p.rapidapi.com";
+const RAPIDAPI_HOST = "fresh-linkedin-profile-data.p.rapidapi.com";
 
 export async function fetchLinkedInData(user: GraphUser) {
   console.log(`[${user.login}] Attempting to find LinkedIn URL...`);
@@ -162,7 +104,7 @@ export async function fetchLinkedInData(user: GraphUser) {
   }
 }
 
-// $175/month for up to 50k requests
+// Fresh LinkedIn Profile Data API
 export async function fetchLinkedInExperienceViaRapidAPI(
   url: string
 ): Promise<LinkedInProfile | null> {
@@ -178,8 +120,6 @@ export async function fetchLinkedInExperienceViaRapidAPI(
   const match = url.match(/linkedin\.com\/in\/([^/?#]+)/i);
   const username = match ? match[1] : url;
 
-  // console.log("fetchLinkedInExperienceViaRapidAPI username", username);
-
   const options = {
     method: "GET",
     headers: {
@@ -190,7 +130,7 @@ export async function fetchLinkedInExperienceViaRapidAPI(
 
   try {
     const response = await fetch(
-      `https://${RAPIDAPI_HOST}/?username=${username}`,
+      `https://${RAPIDAPI_HOST}/enrich-lead?linkedin_url=${encodeURIComponent(url)}&include_skills=false&include_certifications=false&include_publications=false&include_honors=false&include_volunteers=false&include_projects=false&include_patents=false&include_courses=false&include_organizations=false&include_profile_status=false&include_company_public_url=false`,
       options
     );
 
@@ -203,10 +143,48 @@ export async function fetchLinkedInExperienceViaRapidAPI(
       return null;
     }
 
-    const text = await response.text();
-    // console.log("Raw RapidAPI LinkedIn response:", text);
-    const data: LinkedInProfile = JSON.parse(text);
-    return data;
+    const json = await response.json();
+    if (!json.data) {
+      console.error(`No data in LinkedIn response for ${username}`);
+      return null;
+    }
+
+    // Extract only the fields we need
+    const d = json.data;
+    const profile: LinkedInProfile = {
+      full_name: d.full_name || "",
+      headline: d.headline || "",
+      about: d.about || null,
+      city: d.city || "",
+      country: d.country || "",
+      location: d.location || "",
+      company: d.company || "",
+      company_industry: d.company_industry || "",
+      experiences: (d.experiences || []).map((e: any) => ({
+        company: e.company || "",
+        title: e.title || "",
+        location: e.location || "",
+        description: e.description || "",
+        date_range: e.date_range || "",
+        duration: e.duration || "",
+        start_month: e.start_month || 0,
+        start_year: e.start_year || 0,
+        end_month: e.end_month || "",
+        end_year: e.end_year || "",
+        is_current: e.is_current || false,
+        job_type: e.job_type || "",
+      })),
+      educations: (d.educations || []).map((e: any) => ({
+        school: e.school || "",
+        degree: e.degree || "",
+        field_of_study: e.field_of_study || "",
+        date_range: e.date_range || "",
+        start_year: e.start_year || "",
+        end_year: e.end_year || "",
+      })),
+    };
+
+    return profile;
   } catch (error) {
     console.error(
       `Failed to fetch LinkedIn experience for ${username}:`,
@@ -735,52 +713,46 @@ export async function fetchLinkedInProfileUsingBrave(
 }
 
 export async function generateLinkedInExperienceSummary(
-  experience: LinkedInProfile
+  profile: LinkedInProfile
 ): Promise<string | null> {
-  if (
-    !experience ||
-    !experience.fullPositions ||
-    experience.fullPositions.length === 0
-  ) {
-    return null;
-  }
+  if (!profile) return null;
 
   let summary = "";
-  // Sort positions by end date (most recent first), handling null end dates (current positions)
-  const sortedPositions = [...experience.fullPositions].sort((a, b) => {
-    const endA = a.end?.year ?? Infinity;
-    const endB = b.end?.year ?? Infinity;
-    if (endA !== endB) return endB - endA; // Most recent year first
-    // If years are the same (or both are current), sort by start year (most recent first)
-    const startA = a.start?.year ?? -Infinity;
-    const startB = b.start?.year ?? -Infinity;
-    return startB - startA;
-  });
 
-  for (const position of sortedPositions) {
-    const startDate = position.start
-      ? `${position.start.month}/${position.start.year}`
-      : "N/A";
-    const endDate = position.end
-      ? `${position.end.month}/${position.end.year}`
-      : "Present";
-    const durationStr = `${startDate} - ${endDate}`;
-
-    summary += `Title: ${position.title} (${durationStr})\n`;
-    summary += `Company: ${position.companyName}\n`;
-    if (position.location) {
-      summary += `Location: ${position.location}\n`;
-    }
-    if (position.description) {
-      const cleanedDescription = position.description
-        .replace(/\n+/g, "\n")
-        .replace(/^/gm, "  ");
-      summary += `Description:\n${cleanedDescription}\n`;
-    }
-    summary += "---\n";
+  if (profile.headline) {
+    summary += `Headline: ${profile.headline}\n`;
+  }
+  if (profile.about) {
+    summary += `About: ${profile.about.slice(0, 500)}\n`;
   }
 
-  return summary.trim() ? summary.trim() : null;
+  // Education
+  if (profile.educations && profile.educations.length > 0) {
+    summary += "\nEducation:\n";
+    for (const edu of profile.educations) {
+      const parts = [edu.degree, edu.field_of_study].filter(Boolean);
+      summary += `- ${edu.school}${parts.length > 0 ? ` (${parts.join(", ")})` : ""}`;
+      if (edu.date_range) summary += ` ${edu.date_range}`;
+      summary += "\n";
+    }
+  }
+
+  // Experiences (most recent first, already sorted by API)
+  if (profile.experiences && profile.experiences.length > 0) {
+    summary += "\nExperience:\n";
+    for (const exp of profile.experiences) {
+      summary += `- ${exp.title} at ${exp.company}`;
+      if (exp.date_range) summary += ` (${exp.date_range})`;
+      if (exp.duration) summary += ` [${exp.duration}]`;
+      summary += "\n";
+      if (exp.location) summary += `  Location: ${exp.location}\n`;
+      if (exp.description) {
+        summary += `  ${exp.description.replace(/\n+/g, " ").slice(0, 300)}\n`;
+      }
+    }
+  }
+
+  return summary.trim() || null;
 }
 
 export async function generateOptimizedSearchQuery(

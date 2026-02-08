@@ -31,7 +31,7 @@ import {
   markTypeAsCompleted,
   saveScrapedRepo,
 } from "../utils/storage-utils.js";
-import { primeTeamMembers, reposToScrape } from "../variables.js";
+import { teamMembers, reposToScrape } from "../variables.js";
 import { ContributionData } from "../graph-scraper/types.js";
 
 // Load environment variables
@@ -116,12 +116,12 @@ async function getRepoInteractors(
     try {
       processedCount++;
 
-      // Skip prime engineers
-      const isPrimeEngineer = primeTeamMembers.some(
+      // Skip team members
+      const isTeamMember = teamMembers.some(
         (url) => url.replace("https://github.com/", "") === login
       );
-      if (isPrimeEngineer) {
-        console.log(`Skipping user ${login} - prime engineer`);
+      if (isTeamMember) {
+        console.log(`Skipping user ${login} - team member`);
         return;
       }
 
@@ -239,6 +239,7 @@ async function getRepoInteractors(
           profileUrl: userData.data.html_url || "",
           createdAt: userData.data.created_at,
           followers: userData.data.followers,
+          following: userData.data.following ?? 0,
           name: userData.data.name || null,
           bio: userData.data.bio || null,
           company: userData.data.company || null,
@@ -260,7 +261,7 @@ async function getRepoInteractors(
               interactionTypes: [type],
             },
           ],
-          contributions: contributions || undefined,
+          contributions: contributions || null,
           profileReadme: profileReadme || null,
           websiteContent: websiteContent || null,
           recentRepositories: recentRepositories?.map((repo: GitHubRepo) => ({
@@ -275,7 +276,7 @@ async function getRepoInteractors(
             stargazers_count: repo.stargazers_count,
             forks_count: repo.forks_count,
             topics: repo.topics,
-          })),
+          })) ?? null,
         };
 
         // Rate the user

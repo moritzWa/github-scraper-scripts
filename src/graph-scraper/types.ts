@@ -58,6 +58,9 @@ export interface GraphUser {
   webResearchInfoGemini?: string;
   webResearchPromptText?: string;
   engineerArchetype?: string[];
+  criteriaScores?: Record<string, number>;
+  criteriaReasonings?: Record<string, string>;
+  inferredLocation?: string;
   ratedAt?: Date;
   repoInteractionScraped: any[];
   linkedinUrl?: string | null;
@@ -65,6 +68,8 @@ export interface GraphUser {
   linkedinExperienceSummary?: string | null | undefined;
   parentRatings?: Array<{ parent: string; rating: number }>;
   averageParentRating?: number;
+  priority?: number;
+  discoveredVia?: "following" | "followers";
 }
 
 export interface DbGraphUser extends Omit<GraphUser, "login"> {

@@ -1,6 +1,6 @@
 import { DataSet } from "vis-data";
 import { Network } from "vis-network";
-import type { GraphUser } from "../types.js";
+import type { GraphUser } from "../graph-scraper/types.js";
 
 // Define the expected structure of the JSON data
 interface GithubGraphJson {

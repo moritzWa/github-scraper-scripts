@@ -10,7 +10,7 @@ const ACTUAL_DB_NAME = process.env.MONGODB_DB;
 
 // Constants from scraper.ts for criteria - ensure these match or are imported if possible
 const MIN_HIGH_RATING_PARENTS_FOR_FOLLOWER_SCRAPE = 5;
-const RATING_THRESHOLD_FOR_FOLLOWER_SCRAPE_PARENTS = 40;
+const RATING_THRESHOLD_FOR_FOLLOWER_SCRAPE_PARENTS = 8; // Raw tier sum (max 21)
 
 async function seedDatabase() {
   if (ACTUAL_DB_NAME !== TARGET_DB_NAME) {

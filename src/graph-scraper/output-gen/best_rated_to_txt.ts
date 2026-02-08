@@ -21,7 +21,10 @@ interface RatedUser {
   rating: number;
   ratingWithRoleFitPoints: number;
   ratingReasoning: string;
+  criteriaScores?: Record<string, number>;
+  criteriaReasonings?: Record<string, string>;
   engineerArchetype: string[];
+  inferredLocation?: string;
   name?: string;
   company?: string;
   linkedinUrl?: string;
@@ -66,16 +69,25 @@ async function exportBestRatedToTxt() {
     const outputContent = slicedRatedUsers
       .map((user, index) => {
         const profileUrl = `https://github.com/${user._id}`;
+        // Format per-criterion scores with reasoning
+        const criteriaLines = user.criteriaScores
+          ? Object.entries(user.criteriaScores)
+              .map(([key, score]) => {
+                const reasoning = user.criteriaReasonings?.[key];
+                return `  ${key}: ${score}${reasoning ? ` - ${reasoning}` : ""}`;
+              })
+              .join("\n")
+          : null;
+
         return `#${startIndex + index + 1} - ${user.name || user._id}${
           user.company ? ` (${user.company})` : ""
         }
 Profile: ${profileUrl}
 ${user.linkedinUrl ? `LinkedIn: ${user.linkedinUrl}\n` : ""}${
-          user.dept ? `Department: ${user.dept}\n` : ""
-        }Rating: ${user.rating}
-Rating with Role Fit: ${user.ratingWithRoleFitPoints}
+          user.inferredLocation ? `Location: ${user.inferredLocation}\n` : ""
+        }Score: ${user.rating}/21 (with role fit: ${user.ratingWithRoleFitPoints})
 Archetypes: ${user.engineerArchetype.join(", ")}
-Reasoning: ${user.ratingReasoning || "No reasoning provided"}
+${criteriaLines ? `Criteria:\n${criteriaLines}` : `Reasoning: ${user.ratingReasoning || "No reasoning provided"}`}
 ----------------------------------------`;
       })
       .join("\n\n");

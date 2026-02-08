@@ -11,7 +11,7 @@ import {
   generateLinkedInExperienceSummary,
   generateOptimizedSearchQuery,
 } from "../core/scraper-helpers/linkedin-research.js";
-import { calculateRoleFitPoints } from "../core/scraper-helpers/scrape-user.js";
+import { calculateRoleFitPoints } from "../core/scraper-helpers/role-fit.js";
 import {
   getWebResearchInfoGemini,
   getWebResearchInfoOpenAI,
@@ -237,7 +237,10 @@ async function reRateUsers() {
             rating: ratingResult.score,
             ratingWithRoleFitPoints: ratingResult.score + roleFitPoints,
             ratingReasoning: ratingResult.reasoning,
+            criteriaScores: ratingResult.criteriaScores,
+            criteriaReasonings: ratingResult.criteriaReasonings,
             engineerArchetype: ratingResult.engineerArchetype,
+            inferredLocation: ratingResult.inferredLocation,
             webResearchPromptText: userData.webResearchPromptText,
             ratedAt: new Date(),
           };
