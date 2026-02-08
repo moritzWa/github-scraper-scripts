@@ -19,7 +19,6 @@ const excludedArchetypes = [
 interface RatedUser {
   _id: string;
   rating: number;
-  ratingWithRoleFitPoints: number;
 }
 
 async function exportBestRatedLinksToTxt() {
@@ -41,11 +40,10 @@ async function exportBestRatedLinksToTxt() {
     const ratedUsers = await usersCol
       .find({
         rating: { $exists: true },
-        ratingWithRoleFitPoints: { $exists: true },
         _id: { $nin: Array.from(knownProfiles) },
         engineerArchetype: { $nin: excludedArchetypes },
       })
-      .sort({ ratingWithRoleFitPoints: -1 })
+      .sort({ rating: -1 })
       .toArray();
 
     const slicedRatedUsers = ratedUsers.slice(startIndex, endIndex);

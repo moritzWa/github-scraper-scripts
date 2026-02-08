@@ -108,6 +108,23 @@ const formatEngineerInQuestion = (
       : null,
   ].filter(Boolean);
 
+  // Company insights for founders/CEOs
+  const companyInsightsSections = user.currentCompanyInsights
+    ? [
+        `Current Company Insights (from LinkedIn data):`,
+        `  Company: ${user.currentCompanyInsights.companyName}`,
+        user.currentCompanyInsights.employeeCount != null
+          ? `  Employee Count: ${user.currentCompanyInsights.employeeCount}`
+          : null,
+        user.currentCompanyInsights.headcountGrowth1y != null
+          ? `  1Y Headcount Growth: ${user.currentCompanyInsights.headcountGrowth1y}%`
+          : null,
+        user.currentCompanyInsights.headcountGrowth6m != null
+          ? `  6M Headcount Growth: ${user.currentCompanyInsights.headcountGrowth6m}%`
+          : null,
+      ].filter(Boolean)
+    : [];
+
   // Group research information together
   const researchSections = [
     webResearchInfoOpenAI
@@ -122,6 +139,7 @@ const formatEngineerInQuestion = (
   const sections = [
     ...profileSections,
     ...technicalSections,
+    ...companyInsightsSections,
     ...researchSections,
   ].join("\n");
 
@@ -304,14 +322,6 @@ export async function rateUserV3(
   };
 }
 
-function calculateRoleFitPoints(archetypes: string[]): number {
-  return archetypes.some((archetype) =>
-    companyConfig.targetRoles.includes(archetype)
-  )
-    ? companyConfig.roleFitBonusPoints
-    : 0;
-}
-
 // SCRIPT
 // TODO this is partly duplicated in re-rate-users.ts
 async function rateAllProcessedUsers() {
@@ -390,17 +400,12 @@ async function rateAllProcessedUsers() {
               gemini: null,
             });
             console.log(`[${user._id}] Received data from rateUserV3.`);
-            const roleFitPoints = calculateRoleFitPoints(
-              ratingData.engineerArchetype
-            );
-
             console.log(`[${user._id}] Updating user rating in DB...`);
             await usersCol.updateOne(
               { _id: user._id },
               {
                 $set: {
                   rating: ratingData.score,
-                  ratingWithRoleFitPoints: ratingData.score + roleFitPoints,
                   ratingReasoning: ratingData.reasoning,
                   criteriaScores: ratingData.criteriaScores,
                   criteriaReasonings: ratingData.criteriaReasonings,

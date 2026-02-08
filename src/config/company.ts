@@ -6,6 +6,7 @@ export interface CriterionDefinition {
   key: string;
   label: string;
   tiers: { [tier: number]: string };
+  weight?: number; // Default 1. Higher weight = more impact on total score.
 }
 
 export const companyConfig: {
@@ -13,8 +14,6 @@ export const companyConfig: {
   description: string;
   githubOrg: string;
   engineerArchetypes: string[];
-  targetRoles: string[];
-  roleFitBonusPoints: number;
   criteria: CriterionDefinition[];
   // Maximum possible sum of tier scores (for normalization if needed)
   maxTierSum: number;
@@ -40,13 +39,9 @@ export const companyConfig: {
     'None',
   ],
 
-  // Archetypes that get the role fit bonus points
-  targetRoles: ['full-stack'],
-  roleFitBonusPoints: 20,
-
-  // Scoring criteria with tier definitions and weights.
-  // Each criterion is scored 0-3 (or -1 to 3 for location) by the LLM.
-  // The final score is computed as a weighted sum, normalized to 0-100.
+  // Scoring criteria with tier definitions.
+  // Each criterion is scored 0-3 by the LLM.
+  // The final score is the simple sum of all criterion scores.
   criteria: [
     {
       key: 'startup_experience',
@@ -126,14 +121,36 @@ export const companyConfig: {
       },
     },
     {
-      key: 'seniority_fit',
-      label: 'Seniority / Hireability',
+      key: 'company_pedigree',
+      label: 'Company Pedigree',
 
       tiers: {
-        0: 'CEO/CTO/VP at a well-known or large company, famous tech leader, or tenured professor - not a realistic hire for a Series B startup',
-        1: 'Director at a large company, or student/new grad with less than 2 years of real engineering experience and no top-tier university',
-        2: 'New grad from a top university with internship experience, or founder/exec at a small company who might consider a move',
-        3: 'IC engineer (mid-level through staff/principal), tech lead, or early-stage startup founder - the ideal hire for a Series B startup',
+        0: 'Most recent role is at a non-venture-backed company (agency, consultancy, government, unknown startup with no funding). Or no meaningful work experience.',
+        1: 'Most recent role is at a venture-backed startup or a known tech company, but not a standout name',
+        2: 'Most recent role is at a well-known tech company (e.g. FAANG, Stripe, Databricks) or a startup backed by strong investors',
+        3: 'Most recent role is at a company backed by tier-1 VCs (Sequoia, Thrive Capital, Founders Fund, Benchmark, Khosla Ventures, a16z, Accel) or at a top-tier tech company known for engineering excellence',
+      },
+    },
+    {
+      key: 'seniority_fit',
+      label: 'Seniority / Hireability',
+      weight: 2,
+      tiers: {
+        0: 'CEO/co-founder of a startup that is clearly growing (positive headcount growth, >10 employees, or raised significant funding). Also: VP/C-suite at a well-known or large company, famous tech leader, tenured professor. Use company insights data if available to verify growth.',
+        1: 'CTO/co-founder at a funded growing startup (use company insights to check), director at a large company, or student/new grad with < 2 years experience and no top-tier university',
+        2: 'Founder of a small/stagnating/early-stage company (<5 employees, no growth or negative growth in company insights), new grad from top university with internship experience',
+        3: 'IC engineer (mid through staff/principal), tech lead, or early-stage startup employee (not founder) - the ideal hire for a Series B startup',
+      },
+    },
+    {
+      key: 'role_fit',
+      label: 'Role Fit',
+      weight: 2,
+      tiers: {
+        0: 'Not a relevant engineering role (PM, designer, researcher only, or no engineering background)',
+        1: 'Adjacent engineering role (data engineer, DevOps, ML researcher, mobile-only)',
+        2: 'Partial overlap (backend-only or frontend-only engineer)',
+        3: 'Full-stack engineer or full-stack + AI engineer - the ideal archetype for the team',
       },
     },
   ],
@@ -189,8 +206,8 @@ export const companyConfig: {
     'https://github.com/moritzWa',
   ],
 
-  // Max possible tier sum across all criteria (8 criteria * 3 max = 24)
-  maxTierSum: 24,
+  // Computed below after object definition
+  maxTierSum: 0,
 
   // Seed profiles for graph traversal starting points
   seedProfiles: [
@@ -200,6 +217,7 @@ export const companyConfig: {
     'https://github.com/jan-wilhelm',
     'https://github.com/JGalbss',
     'https://github.com/JimmyGreaser',
+    'https://github.com/virattt',
   ],
 
   // The full LLM rating prompt (static part).
@@ -242,7 +260,9 @@ financial_services: "Works on financial data products at Rogo for IB/PE clients.
 education: "MS CS from TU Munich (top-tier engineering program)." -> 2
 location: "Based in NYC." -> 3
 builder_signal: "Ships real products, active contributor to multiple repos." -> 2
+company_pedigree: "Currently at Rogo (Series B, backed by strong investors), previously at a data analytics startup." -> 2
 seniority_fit: "Software engineer IC at a Series B startup." -> 3
+role_fit: "Full-stack and AI engineer, directly matches ideal archetype." -> 3
 ---
 Example 2:
 ---
@@ -263,7 +283,9 @@ financial_services: "No financial services exposure." -> 0
 education: "Stanford PhD (tier-1 university)." -> 3
 location: "Based in London (Western world, relocation plausible)." -> 1
 builder_signal: "No evidence of shipping products, repos are 5+ years old." -> 0
+company_pedigree: "AI Lab and Meta AI are top-tier companies known for engineering excellence." -> 3
 seniority_fit: "Chief Scientist at a large AI lab - famous tech leader, not a realistic hire." -> 0
+role_fit: "AI researcher/scientist, not an engineering role with hands-on coding." -> 0
 ---
 Example 3:
 ---
@@ -286,17 +308,25 @@ financial_services: "DocuAI serves legal/finance, minor exposure." -> 1
 education: "BSc from Waterloo (top-tier CS program)." -> 2
 location: "NYC-based." -> 3
 builder_signal: "Founded company, shipped multiple products, active builder." -> 3
+company_pedigree: "DocuAI ($2M seed), previously at Notion (tier-1 VC backed, top eng culture)." -> 3
 seniority_fit: "Founder of a small seed-stage startup, previously IC at Notion - realistic hire." -> 3
+role_fit: "Full-stack and AI engineer, builds across the stack." -> 3
 ---
 `,
 };
 
-// Compute total score as simple sum of tier values.
+// Max possible tier sum: each criterion scores 0-3, multiplied by its weight
+companyConfig.maxTierSum = companyConfig.criteria.reduce(
+  (sum, c) => sum + 3 * (c.weight ?? 1),
+  0
+);
+
+// Compute total score as weighted sum of tier values.
 // Used for ranking: higher sum = better fit.
 export function computeTotalScore(
   criteriaScores: Record<string, number>
 ): number {
   return companyConfig.criteria.reduce((sum, c) => {
-    return sum + (criteriaScores[c.key] ?? 0);
+    return sum + (criteriaScores[c.key] ?? 0) * (c.weight ?? 1);
   }, 0);
 }

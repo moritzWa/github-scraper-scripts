@@ -1,5 +1,8 @@
 import { NormalizedLocation } from "../utils/location.js";
-import { LinkedInProfile } from "./core/scraper-helpers/linkedin-research.js";
+import {
+  CompanyInsights,
+  LinkedInProfile,
+} from "./core/scraper-helpers/linkedin-research.js";
 
 export interface CalendarWeek {
   contributionDays: CalendarDay[];
@@ -52,7 +55,6 @@ export interface GraphUser {
     following: boolean;
   };
   rating?: number;
-  ratingWithRoleFitPoints?: number;
   ratingReasoning?: string;
   webResearchInfoOpenAI?: string;
   webResearchInfoGemini?: string;
@@ -66,6 +68,7 @@ export interface GraphUser {
   linkedinUrl?: string | null;
   linkedinExperience?: LinkedInProfile | null;
   linkedinExperienceSummary?: string | null | undefined;
+  currentCompanyInsights?: CompanyInsights | null;
   parentRatings?: Array<{ parent: string; rating: number }>;
   averageParentRating?: number;
   priority?: number;

@@ -14,7 +14,6 @@ import {
   generateLinkedInExperienceSummary,
   generateOptimizedSearchQuery,
 } from "../core/scraper-helpers/linkedin-research.js";
-import { calculateRoleFitPoints } from "../core/scraper-helpers/role-fit.js";
 import { scrapeUser } from "../core/scraper-helpers/scrape-user.js";
 import {
   getWebResearchInfoGemini,
@@ -336,14 +335,9 @@ async function rateAndLogEdgeCases() {
         //   compareRatings(username, OLD_RATINGS[username], ratingResult);
         // }
 
-        const roleFitPoints = calculateRoleFitPoints(
-          ratingResult.engineerArchetype
-        );
-
         // Update the user object in the database (including potentially updated LinkedIn data)
         console.log(`[${username}] Updating user data in DB...`);
         const usersCol = db.collection<DbGraphUser>("users");
-        // Make sure to update all potentially modified fields
         await usersCol.updateOne(
           { _id: username },
           {
@@ -353,7 +347,6 @@ async function rateAndLogEdgeCases() {
               linkedinExperience: userData.linkedinExperience,
               linkedinExperienceSummary: userData.linkedinExperienceSummary,
               rating: ratingResult.score,
-              ratingWithRoleFitPoints: ratingResult.score + roleFitPoints,
               ratingReasoning: ratingResult.reasoning,
               criteriaScores: ratingResult.criteriaScores,
               criteriaReasonings: ratingResult.criteriaReasonings,

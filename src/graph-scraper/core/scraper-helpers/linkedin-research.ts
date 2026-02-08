@@ -38,6 +38,15 @@ interface LinkedInExperience {
   end_year: number | string;
   is_current: boolean;
   job_type: string;
+  company_linkedin_url?: string;
+}
+
+export interface CompanyInsights {
+  companyName: string;
+  employeeCount: number | null;
+  headcountGrowth6m: number | null;
+  headcountGrowth1y: number | null;
+  linkedinUrl: string;
 }
 
 export interface LinkedInProfile {
@@ -109,6 +118,12 @@ export async function fetchLinkedInData(user: GraphUser) {
     );
     user.linkedinExperienceSummary = linkedinExperienceSummary;
   }
+
+  // Fetch company insights for founders/CEOs
+  if (user.linkedinExperience && !user.currentCompanyInsights) {
+    const companyInsights = await fetchCurrentEmployerInsights(user);
+    user.currentCompanyInsights = companyInsights;
+  }
 }
 
 // Fresh LinkedIn Profile Data API
@@ -137,7 +152,7 @@ export async function fetchLinkedInExperienceViaRapidAPI(
 
   try {
     const response = await fetch(
-      `https://${RAPIDAPI_HOST}/enrich-lead?linkedin_url=${encodeURIComponent(url)}&include_skills=false&include_certifications=false&include_publications=false&include_honors=false&include_volunteers=false&include_projects=false&include_patents=false&include_courses=false&include_organizations=false&include_profile_status=false&include_company_public_url=false`,
+      `https://${RAPIDAPI_HOST}/enrich-lead?linkedin_url=${encodeURIComponent(url)}&include_skills=false&include_certifications=false&include_publications=false&include_honors=false&include_volunteers=false&include_projects=false&include_patents=false&include_courses=false&include_organizations=false&include_profile_status=false&include_company_public_url=true`,
       options
     );
 
@@ -185,6 +200,7 @@ export async function fetchLinkedInExperienceViaRapidAPI(
         end_year: e.end_year || "",
         is_current: e.is_current || false,
         job_type: e.job_type || "",
+        company_linkedin_url: e.company_linkedin_url || undefined,
       })),
       educations: (d.educations || []).map((e: any) => ({
         school: e.school || "",
@@ -204,6 +220,182 @@ export async function fetchLinkedInExperienceViaRapidAPI(
     );
     return null;
   }
+}
+
+// --- Company Insights ---
+
+const FOUNDER_TITLE_KEYWORDS = [
+  "founder",
+  "co-founder",
+  "cofounder",
+  "ceo",
+  "cto",
+  "cpo",
+  "coo",
+  "owner",
+  "building something new",
+];
+
+async function fetchCompanyByLinkedInUrl(
+  companyLinkedinUrl: string
+): Promise<{ companyId: string; companyName: string } | null> {
+  const apiKey = process.env.RAPIDAPI_KEY;
+  if (!apiKey) return null;
+
+  try {
+    const response = await fetch(
+      `https://${RAPIDAPI_HOST}/get-company-by-linkedinurl?linkedin_url=${encodeURIComponent(companyLinkedinUrl)}`,
+      {
+        method: "GET",
+        headers: {
+          "x-rapidapi-key": apiKey,
+          "x-rapidapi-host": RAPIDAPI_HOST,
+        },
+      }
+    );
+
+    if (!response.ok) {
+      const body = await response.text();
+      if (response.status === 402 || response.status === 429) {
+        throw new RapidAPICreditsExhaustedError(response.status, body);
+      }
+      console.error(
+        `[CompanyInsights] get-company-by-linkedinurl failed: ${response.status}`,
+        body
+      );
+      return null;
+    }
+
+    const json = await response.json();
+    const data = json.data;
+    if (!data?.company_id) return null;
+
+    return {
+      companyId: data.company_id,
+      companyName: data.company_name || "",
+    };
+  } catch (error) {
+    if (error instanceof RapidAPICreditsExhaustedError) throw error;
+    console.error("[CompanyInsights] Error fetching company by URL:", error);
+    return null;
+  }
+}
+
+async function fetchCompanyInsightsById(
+  companyId: string
+): Promise<{ employeeCount: number | null; headcountGrowth6m: number | null; headcountGrowth1y: number | null } | null> {
+  const apiKey = process.env.RAPIDAPI_KEY;
+  if (!apiKey) return null;
+
+  try {
+    const response = await fetch(
+      `https://${RAPIDAPI_HOST}/get-company-insights?company_id=${encodeURIComponent(companyId)}`,
+      {
+        method: "GET",
+        headers: {
+          "x-rapidapi-key": apiKey,
+          "x-rapidapi-host": RAPIDAPI_HOST,
+        },
+      }
+    );
+
+    if (!response.ok) {
+      const body = await response.text();
+      if (response.status === 402 || response.status === 429) {
+        throw new RapidAPICreditsExhaustedError(response.status, body);
+      }
+      console.error(
+        `[CompanyInsights] get-company-insights failed: ${response.status}`,
+        body
+      );
+      return null;
+    }
+
+    const json = await response.json();
+    const data = json.data;
+    if (!data) return null;
+
+    // Parse percentage strings like "133%" to numbers
+    const parseGrowth = (val: string | undefined): number | null => {
+      if (!val) return null;
+      const num = parseInt(val.replace("%", ""), 10);
+      return isNaN(num) ? null : num;
+    };
+
+    return {
+      employeeCount: data.total_employees ?? null,
+      headcountGrowth6m: parseGrowth(data.headcount_growth?.["6m"]),
+      headcountGrowth1y: parseGrowth(data.headcount_growth?.["1y"]),
+    };
+  } catch (error) {
+    if (error instanceof RapidAPICreditsExhaustedError) throw error;
+    console.error("[CompanyInsights] Error fetching company insights:", error);
+    return null;
+  }
+}
+
+export async function fetchCurrentEmployerInsights(
+  user: Pick<GraphUser, "login" | "linkedinExperience">
+): Promise<CompanyInsights | null> {
+  if (!user.linkedinExperience?.experiences) return null;
+
+  // Find current role
+  const currentExp = user.linkedinExperience.experiences.find(
+    (e) => e.is_current
+  );
+  if (!currentExp) return null;
+
+  // Check if title contains founder/CEO/CTO keywords
+  const titleLower = currentExp.title.toLowerCase();
+  const isFounderOrExec = FOUNDER_TITLE_KEYWORDS.some((kw) =>
+    titleLower.includes(kw)
+  );
+  if (!isFounderOrExec) return null;
+
+  // Skip "Stealth" companies
+  const companyLower = currentExp.company.toLowerCase().trim();
+  if (companyLower === "stealth" || companyLower.startsWith("stealth ")) {
+    console.log(
+      `[${user.login}] Skipping company insights for stealth company`
+    );
+    return null;
+  }
+
+  // Need company LinkedIn URL to fetch insights
+  if (!currentExp.company_linkedin_url) {
+    console.log(
+      `[${user.login}] No company LinkedIn URL for ${currentExp.company}`
+    );
+    return null;
+  }
+
+  console.log(
+    `[${user.login}] Fetching company insights for ${currentExp.company} (${currentExp.title})...`
+  );
+
+  // Step 1: Get company ID
+  const companyInfo = await fetchCompanyByLinkedInUrl(
+    currentExp.company_linkedin_url
+  );
+  if (!companyInfo) return null;
+
+  // Step 2: Get company insights
+  const insights = await fetchCompanyInsightsById(companyInfo.companyId);
+  if (!insights) return null;
+
+  const result: CompanyInsights = {
+    companyName: companyInfo.companyName || currentExp.company,
+    employeeCount: insights.employeeCount,
+    headcountGrowth6m: insights.headcountGrowth6m,
+    headcountGrowth1y: insights.headcountGrowth1y,
+    linkedinUrl: currentExp.company_linkedin_url,
+  };
+
+  console.log(
+    `[${user.login}] Company insights for ${result.companyName}: ${result.employeeCount} employees, 6m growth: ${result.headcountGrowth6m}%, 1y growth: ${result.headcountGrowth1y}%`
+  );
+
+  return result;
 }
 
 export async function fetchLinkedInProfileUsingOpenai(

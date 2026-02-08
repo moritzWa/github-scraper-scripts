@@ -12,7 +12,6 @@ import {
   fetchLinkedInData,
   RapidAPICreditsExhaustedError,
 } from "./linkedin-research.js";
-import { calculateRoleFitPoints } from "./role-fit.js";
 import { fetchWebResearchInfo } from "./web-research.js";
 
 function createIgnoredUser(
@@ -33,17 +32,9 @@ function createIgnoredUser(
 async function calculateUserRating(user: GraphUser, webResearchInfo: any) {
   console.log(`[${user.login}] Calling rateUserV3...`);
   const ratingData = await rateUserV3(user, webResearchInfo);
-  const roleFitPoints = calculateRoleFitPoints(ratingData.engineerArchetype);
-
-  console.log(
-    `[${user.login}] ratingWithRoleFitPoints: ${
-      ratingData.score + roleFitPoints
-    }`
-  );
 
   // Add rating data to the user object
   user.rating = ratingData.score;
-  user.ratingWithRoleFitPoints = ratingData.score + roleFitPoints;
   user.ratingReasoning = ratingData.reasoning;
   user.criteriaScores = ratingData.criteriaScores;
   user.criteriaReasonings = ratingData.criteriaReasonings;
@@ -54,7 +45,7 @@ async function calculateUserRating(user: GraphUser, webResearchInfo: any) {
   user.inferredLocation = ratingData.inferredLocation;
   user.ratedAt = new Date();
 
-  console.log(`[${user.login}] Rating calculated: ${ratingData.score}${ratingData.inferredLocation ? ` (${ratingData.inferredLocation})` : ""}`);
+  console.log(`[${user.login}] Rating: ${ratingData.score}/${ratingData.criteriaScores ? Object.keys(ratingData.criteriaScores).length * 3 : "?"}${ratingData.inferredLocation ? ` (${ratingData.inferredLocation})` : ""}`);
 }
 
 export async function scrapeUser(
@@ -177,8 +168,7 @@ export async function scrapeUser(
       console.log(
         `[${username}] Bypassing filters and assigning default rating as it is a seed user (depth 0).`
       );
-      user.rating = 15; // Default high tier sum for seed users (max 21)
-      user.ratingWithRoleFitPoints = 15;
+      user.rating = 15; // Default high rating for seed users
       user.ratedAt = new Date();
       user.ratingReasoning = "Seed user (depth 0) - default rating";
     }

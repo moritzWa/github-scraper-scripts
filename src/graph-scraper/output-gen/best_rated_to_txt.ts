@@ -2,6 +2,7 @@ import { config } from "dotenv";
 import fs from "fs";
 import { MongoClient } from "mongodb";
 import path from "path";
+import { companyConfig } from "../../config/company.js";
 import { topProfiles } from "../core/profils.js";
 
 config();
@@ -19,7 +20,6 @@ const excludedArchetypes = [
 interface RatedUser {
   _id: string;
   rating: number;
-  ratingWithRoleFitPoints: number;
   ratingReasoning: string;
   criteriaScores?: Record<string, number>;
   criteriaReasonings?: Record<string, string>;
@@ -50,11 +50,10 @@ async function exportBestRatedToTxt() {
     const ratedUsers = await usersCol
       .find({
         rating: { $exists: true },
-        ratingWithRoleFitPoints: { $exists: true },
         _id: { $nin: Array.from(knownProfiles) },
         engineerArchetype: { $nin: excludedArchetypes },
       })
-      .sort({ ratingWithRoleFitPoints: -1 })
+      .sort({ rating: -1 })
       .toArray();
 
     const slicedRatedUsers = ratedUsers.slice(startIndex, endIndex);
@@ -85,7 +84,7 @@ async function exportBestRatedToTxt() {
 Profile: ${profileUrl}
 ${user.linkedinUrl ? `LinkedIn: ${user.linkedinUrl}\n` : ""}${
           user.inferredLocation ? `Location: ${user.inferredLocation}\n` : ""
-        }Score: ${user.rating}/21 (with role fit: ${user.ratingWithRoleFitPoints})
+        }Score: ${user.rating}/${companyConfig.maxTierSum}
 Archetypes: ${user.engineerArchetype.join(", ")}
 ${criteriaLines ? `Criteria:\n${criteriaLines}` : `Reasoning: ${user.ratingReasoning || "No reasoning provided"}`}
 ----------------------------------------`;

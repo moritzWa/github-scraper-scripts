@@ -5,13 +5,13 @@ import { UserData } from "../../types.js";
 import { fetchUserEmailFromEvents } from "../../utils/profile-data-fetchers.js";
 import { rateUserV3 } from "../core/llm-rating.js";
 import {
+  fetchCurrentEmployerInsights,
   fetchLinkedInExperienceViaRapidAPI,
   fetchLinkedInProfileUsingBrave,
   findLinkedInUrlInProfileData,
   generateLinkedInExperienceSummary,
   generateOptimizedSearchQuery,
 } from "../core/scraper-helpers/linkedin-research.js";
-import { calculateRoleFitPoints } from "../core/scraper-helpers/role-fit.js";
 import {
   getWebResearchInfoGemini,
   getWebResearchInfoOpenAI,
@@ -27,24 +27,47 @@ const octokit = new Octokit({
   auth: process.env.GITHUB_ACCESS_TOKEN,
 });
 
+// Parse CLI args
+function parseArgs() {
+  const args = process.argv.slice(2);
+  let topN: number | null = null;
+  let forceRefetchLinkedin = false;
+
+  for (let i = 0; i < args.length; i++) {
+    if (args[i] === "--top" && args[i + 1]) {
+      topN = parseInt(args[i + 1], 10);
+      i++;
+    }
+    if (args[i] === "--force-refetch-linkedin") {
+      forceRefetchLinkedin = true;
+    }
+  }
+
+  return { topN, forceRefetchLinkedin };
+}
+
 async function reRateUsers() {
+  const { topN, forceRefetchLinkedin } = parseArgs();
   const client = new MongoClient(mongoUri);
   try {
     await client.connect();
     const db = client.db(dbName);
     const usersCol = db.collection<DbGraphUser>("users");
-    const ALWAYS_RE_FETCH_LINKEDIN_URL = false;
 
-    // Find all processed users
-    const processedUsers = await usersCol
-      .find({
-        status: "processed",
-      })
-      .toArray();
+    // Find processed users, optionally limited to top N by rating
+    let query = usersCol.find({ status: "processed" });
+    if (topN) {
+      query = query.sort({ rating: -1 }).limit(topN);
+    }
+    const processedUsers = await query.toArray();
 
-    console.log(`Found ${processedUsers.length} processed users to re-rate`);
+    console.log(
+      `Found ${processedUsers.length} processed users to re-rate${topN ? ` (top ${topN})` : ""}`
+    );
+    if (forceRefetchLinkedin) {
+      console.log("Force refetching LinkedIn data enabled");
+    }
 
-    // Process users in batches of 1
     const BATCH_SIZE = 5;
     for (let i = 0; i < processedUsers.length; i += BATCH_SIZE) {
       const batch = processedUsers.slice(i, i + BATCH_SIZE);
@@ -56,7 +79,7 @@ async function reRateUsers() {
 
       for (const user of batch) {
         try {
-          const previousRating = user.rating; // Store previous rating
+          const previousRating = user.rating;
 
           console.log(`\nProcessing user: https://github.com/${user._id}`);
 
@@ -81,19 +104,17 @@ async function reRateUsers() {
           }
 
           // Then, ensure we have LinkedIn information
-          if (!userData.linkedinUrl || ALWAYS_RE_FETCH_LINKEDIN_URL) {
+          if (!userData.linkedinUrl || forceRefetchLinkedin) {
             console.log(
               `[${userData.login}] Attempting to find LinkedIn URL...`
             );
 
-            // First try to find LinkedIn URL in profile data
             const linkedinUrl = findLinkedInUrlInProfileData(userData);
             console.log(
               `[${userData.login}] linkedinUrl from profile data:`,
               linkedinUrl
             );
 
-            // If not found in profile data, try Brave search with optimized query
             if (!linkedinUrl) {
               console.log(
                 `[${userData.login}] Generating optimized search query...`
@@ -126,15 +147,26 @@ async function reRateUsers() {
             }
           }
 
-          if (userData.linkedinUrl && !userData.linkedinExperience) {
+          if (
+            userData.linkedinUrl &&
+            (!userData.linkedinExperience || forceRefetchLinkedin)
+          ) {
             console.log(`[${userData.login}] Fetching LinkedIn experience...`);
             const linkedinExperience = await fetchLinkedInExperienceViaRapidAPI(
               userData.linkedinUrl
             );
             userData.linkedinExperience = linkedinExperience;
-          }
 
-          if (
+            // Regenerate summary when we refetch experience
+            if (linkedinExperience) {
+              console.log(
+                `[${userData.login}] Generating LinkedIn experience summary...`
+              );
+              const linkedinExperienceSummary =
+                await generateLinkedInExperienceSummary(linkedinExperience);
+              userData.linkedinExperienceSummary = linkedinExperienceSummary;
+            }
+          } else if (
             userData.linkedinExperience &&
             !userData.linkedinExperienceSummary
           ) {
@@ -148,7 +180,17 @@ async function reRateUsers() {
             userData.linkedinExperienceSummary = linkedinExperienceSummary;
           }
 
-          // Get web research results first
+          // Fetch company insights for founders/CEOs
+          if (
+            userData.linkedinExperience &&
+            (!userData.currentCompanyInsights || forceRefetchLinkedin)
+          ) {
+            const companyInsights =
+              await fetchCurrentEmployerInsights(userData);
+            userData.currentCompanyInsights = companyInsights;
+          }
+
+          // Get web research results
           console.log(`[${userData.login}] Checking web research status...`);
 
           let webResearchInfo: {
@@ -159,7 +201,6 @@ async function reRateUsers() {
             } | null;
           };
 
-          // Only fetch new data if we don't have any
           if (
             !userData.webResearchInfoOpenAI &&
             !userData.webResearchInfoGemini
@@ -172,7 +213,6 @@ async function reRateUsers() {
               userData.email
             );
 
-            // Only use Gemini if OpenAI returned null
             let geminiResult = null;
             if (!openAIResult.researchResult) {
               console.log(
@@ -189,7 +229,6 @@ async function reRateUsers() {
               gemini: geminiResult,
             };
 
-            // Update userData with new results
             userData.webResearchInfoOpenAI =
               openAIResult.researchResult || undefined;
             userData.webResearchInfoGemini =
@@ -214,19 +253,8 @@ async function reRateUsers() {
           console.log(`[${userData.login}] Calling rateUserV3...`);
           const ratingResult = await rateUserV3(userData, webResearchInfo);
 
-          // Update the user in the database
-          console.log(`[${userData.login}] Updating user data in DB...`);
-
-          const roleFitPoints = calculateRoleFitPoints(
-            ratingResult.engineerArchetype
-          );
-
           console.log(
-            `[${userData.login}] Previous rating result:`,
-            "score: ",
-            previousRating,
-            "scoreWithRoleFitPoints: ",
-            ratingResult.score + roleFitPoints
+            `[${userData.login}] Previous rating: ${previousRating}, new: ${ratingResult.score}`
           );
 
           const updateData: any = {
@@ -234,8 +262,8 @@ async function reRateUsers() {
             linkedinUrl: userData.linkedinUrl,
             linkedinExperience: userData.linkedinExperience,
             linkedinExperienceSummary: userData.linkedinExperienceSummary,
+            currentCompanyInsights: userData.currentCompanyInsights ?? null,
             rating: ratingResult.score,
-            ratingWithRoleFitPoints: ratingResult.score + roleFitPoints,
             ratingReasoning: ratingResult.reasoning,
             criteriaScores: ratingResult.criteriaScores,
             criteriaReasonings: ratingResult.criteriaReasonings,
@@ -245,7 +273,6 @@ async function reRateUsers() {
             ratedAt: new Date(),
           };
 
-          // Only include web research results if they're not null
           if (userData.webResearchInfoOpenAI) {
             updateData.webResearchInfoOpenAI = userData.webResearchInfoOpenAI;
           }
@@ -253,13 +280,8 @@ async function reRateUsers() {
             updateData.webResearchInfoGemini = userData.webResearchInfoGemini;
           }
 
-          // log rating result
           console.log(
-            `[${userData.login}] Rating result:`,
-            "score: ",
-            ratingResult.score,
-            "scoreWithRoleFitPoints: ",
-            ratingResult.score + roleFitPoints
+            `[${userData.login}] Rating result: ${ratingResult.score}`
           );
 
           try {

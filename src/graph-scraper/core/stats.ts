@@ -194,83 +194,42 @@ async function calculateGraphStats() {
     // Add Rating Statistics
     const ratedUsers = await usersCol
       .find({
-        ratingWithRoleFitPoints: { $exists: true },
         rating: { $exists: true },
       })
       .toArray();
 
     if (ratedUsers.length > 0) {
-      console.log("\nRating Statistics (with Role Fit Points):");
+      console.log("\nRating Statistics:");
       console.log("----------------------------------------");
 
-      // Basic rating stats
-      const ratingsWithRoleFit = ratedUsers.map(
-        (u) => u.ratingWithRoleFitPoints ?? 0
-      );
-      const baseRatings = ratedUsers.map((u) => u.rating ?? 0);
-
-      const avgRatingWithRoleFit =
-        ratingsWithRoleFit.reduce((a, b) => a + b, 0) /
-        ratingsWithRoleFit.length;
-      const avgBaseRating =
-        baseRatings.reduce((a, b) => a + b, 0) / baseRatings.length;
-      const minRating = Math.min(...ratingsWithRoleFit);
-      const maxRating = Math.max(...ratingsWithRoleFit);
+      const ratings = ratedUsers.map((u) => u.rating ?? 0);
+      const avgRating =
+        ratings.reduce((a, b) => a + b, 0) / ratings.length;
+      const minRating = Math.min(...ratings);
+      const maxRating = Math.max(...ratings);
 
       console.log(`Total Rated Users: ${ratedUsers.length}`);
-      console.log(`Average Base Rating: ${avgBaseRating.toFixed(1)}`);
-      console.log(
-        `Average Rating with Role Fit: ${avgRatingWithRoleFit.toFixed(1)}`
-      );
-      console.log(
-        `Average Role Fit Bonus: ${(
-          avgRatingWithRoleFit - avgBaseRating
-        ).toFixed(1)}`
-      );
+      console.log(`Average Rating: ${avgRating.toFixed(1)}`);
       console.log(`Min Rating: ${minRating}`);
       console.log(`Max Rating: ${maxRating}`);
 
       // Rating distribution
       const ratingRanges = [
-        { min: 0, max: 20, label: "0-20" },
-        { min: 21, max: 40, label: "21-40" },
-        { min: 41, max: 60, label: "41-60" },
-        { min: 61, max: 80, label: "61-80" },
-        { min: 81, max: 100, label: "81-100" },
-        { min: 101, max: 120, label: "101-120" },
+        { min: 0, max: 5, label: "0-5" },
+        { min: 6, max: 10, label: "6-10" },
+        { min: 11, max: 15, label: "11-15" },
+        { min: 16, max: 20, label: "16-20" },
+        { min: 21, max: 30, label: "21-30" },
       ];
 
-      console.log("\nRating Distribution (with Role Fit):");
+      console.log("\nRating Distribution:");
       ratingRanges.forEach((range) => {
-        const count = ratingsWithRoleFit.filter(
+        const count = ratings.filter(
           (r) => r >= range.min && r <= range.max
         ).length;
-        const percentage = ((count / ratingsWithRoleFit.length) * 100).toFixed(
-          1
-        );
+        const percentage = ((count / ratings.length) * 100).toFixed(1);
         console.log(`${range.label}: ${count} (${percentage}%)`);
       });
-
-      // Role fit bonus distribution
-      const roleFitBonuses = ratedUsers.map(
-        (u) => (u.ratingWithRoleFitPoints ?? 0) - (u.rating ?? 0)
-      );
-      const usersWithRoleFitBonus = roleFitBonuses.filter(
-        (bonus) => bonus > 0
-      ).length;
-
-      console.log("\nRole Fit Bonus Statistics:");
-      console.log(
-        `Users with Role Fit Bonus: ${usersWithRoleFitBonus} (${(
-          (usersWithRoleFitBonus / ratedUsers.length) *
-          100
-        ).toFixed(1)}%)`
-      );
-      console.log(
-        `Average Role Fit Bonus: ${(
-          roleFitBonuses.reduce((a, b) => a + b, 0) / ratedUsers.length
-        ).toFixed(1)}`
-      );
 
       // Engineer archetype distribution
       const archetypeCounts: Record<string, number> = {};

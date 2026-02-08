@@ -9,7 +9,6 @@ config();
 interface RatedUser {
   _id: string;
   rating: number;
-  ratingWithRoleFitPoints: number;
   ratingReasoning: string;
   engineerArchetype: string[];
   name?: string;
@@ -38,9 +37,8 @@ async function analyzeTopProfiles() {
         _id: { $in: topProfileUsernames },
         depth: 0,
         rating: { $exists: true },
-        ratingWithRoleFitPoints: { $exists: true },
       })
-      .sort({ ratingWithRoleFitPoints: -1 })
+      .sort({ rating: -1 })
       .toArray();
 
     // Create output directory if it doesn't exist
@@ -63,7 +61,7 @@ async function analyzeTopProfiles() {
         }
 Profile: ${profileUrl}
 Rating: ${user.rating}
-Rating with Role Fit: ${user.ratingWithRoleFitPoints}
+Rating: ${user.rating}
 Archetypes: ${archetypes}
 Reasoning: ${user.ratingReasoning || "No reasoning provided"}
 ----------------------------------------`;
@@ -93,10 +91,8 @@ Reasoning: ${user.ratingReasoning || "No reasoning provided"}
     );
     console.log(
       `Average rating with role fit: ${(
-        ratedUsers.reduce(
-          (acc, user) => acc + user.ratingWithRoleFitPoints,
-          0
-        ) / ratedUsers.length
+        ratedUsers.reduce((acc, user) => acc + user.rating, 0) /
+          ratedUsers.length
       ).toFixed(2)}`
     );
 
