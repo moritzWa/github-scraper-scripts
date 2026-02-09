@@ -104,8 +104,8 @@ export const companyConfig: {
       weight: 2,
       tiers: {
         0: 'Asia, Africa, or other regions where relocation to NYC is unlikely. Also use for unknown location.',
-        1: 'Western world (Europe, Canada, Australia, Latin America) - regions where relocation to NYC is plausible',
-        2: 'In the US (not NYC)',
+        1: 'Western world (Europe, Canada, Australia, Latin America) - regions where relocation to NYC is plausible. Also use for US-based people who have been in the same non-NYC city for 5+ years (check LinkedIn experience locations) - long tenure in SF/Seattle/etc. makes relocation unlikely.',
+        2: 'In the US (not NYC), with some indication of mobility (moved cities in the last few years, or less than 5 years in current city)',
         3: 'New York City area (NYC, NJ, CT commutable)',
       },
     },
@@ -114,10 +114,10 @@ export const companyConfig: {
       label: 'Builder Signal',
 
       tiers: {
-        0: 'No signal of shipping or building products',
-        1: 'Some open source contributions or side projects',
-        2: 'Clearly ships real products, active builder with curiosity-driven projects',
-        3: 'Exceptional track record of shipping - multiple successful products, strong OSS portfolio, or clear hustler/builder mentality',
+        0: 'No signal of shipping or building products. Also use for pattern of many short-lived micro-SaaS or side projects (few months each) without meaningful traction or users - this signals lack of follow-through, not building ability.',
+        1: 'Some open source contributions or side projects, but nothing with significant adoption or impact',
+        2: 'Clearly ships real products, active builder with curiosity-driven projects that have real users or meaningful adoption',
+        3: 'Exceptional track record of shipping - successful products with significant traction, strong OSS portfolio with real adoption (1000+ stars), or clear hustler/builder mentality with demonstrated follow-through',
       },
     },
     {
@@ -149,8 +149,8 @@ export const companyConfig: {
       tiers: {
         0: 'CEO/CTO/co-founder/VP at a company that is clearly growing (positive headcount growth, >10 employees, or raised significant funding recently). Use company insights data if available. These people will not leave their company.',
         1: 'Co-founder/exec at a funded startup with moderate or unknown growth, or C-suite at an established company',
-        2: 'Founder of a small/stagnating/early-stage company (<5 employees, no/negative growth in company insights), recently exited founder, or someone whose company shut down',
-        3: 'Employee (not founder/exec), IC engineer, or someone clearly between roles and open to new opportunities',
+        2: 'Founder of a small/stagnating/early-stage company (<5 employees, no/negative growth in company insights), recently exited founder, someone whose company shut down, or IC engineer at a rocket-ship AI company (Anthropic, OpenAI, Thinking Machines, Cursor) where leaving would be irrational. Also use for someone stuck at a tiny company (1-3 employees, no growth) for 3+ years - this signals they may be comfortable/complacent rather than ambitious.',
+        3: 'Employee (not founder/exec), IC engineer, or someone clearly between roles and open to new opportunities. Not at a rocket-ship company. Not stuck at a stagnant company for years.',
       },
     },
     {
@@ -254,7 +254,9 @@ Guidelines:
 * Focus on recent (last 5-7 years) hands-on technical contributions. Use LinkedIn dates to verify recency.
 * Managerial roles: only count as technical if they still do hands-on coding. If unclear, err on the side of caution.
 * Non-technical roles (Investors, pure Eng Managers, PMs, Designers) get tier 0 across the board.
-* Use all available info (GitHub, LinkedIn, X, web research) to determine location.
+* Use all available info (GitHub, LinkedIn, X, web research) to determine location. Check LinkedIn experience locations to see how long someone has been in their current city - if they've been in the same non-NYC US city (e.g., SF, Seattle) for 5+ years across multiple jobs, relocation is unlikely.
+* For builder_signal: distinguish between genuine builders who ship products with real users/traction and people who churn through many micro-SaaS or short-lived projects without meaningful impact.
+* For hireability: if someone has been running a 1-3 person company with no growth for 3+ years, that's a negative signal (stuck/complacent), not a positive one.
 
 For each criterion, first reason about the evidence, then assign a tier score (0-3). Be honest and consistent - don't inflate.
 
