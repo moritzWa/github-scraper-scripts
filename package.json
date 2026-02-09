@@ -47,7 +47,8 @@
     "mark": "tsx src/graph-scraper/scripts/mark-reviewed.ts",
     "links": "tsx src/graph-scraper/scripts/print-links.ts",
     "review": "tsx src/graph-scraper/scripts/review-batch.ts",
-    "scrape-one": "tsx src/graph-scraper/scripts/scrape-one.ts"
+    "scrape-one": "tsx src/graph-scraper/scripts/scrape-one.ts",
+    "re-rate": "tsx src/graph-scraper/scripts/re-rate-users.ts"
   },
   "keywords": [],
   "author": "",

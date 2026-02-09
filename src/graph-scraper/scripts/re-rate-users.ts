@@ -3,6 +3,7 @@ import dotenv from "dotenv";
 import { MongoClient } from "mongodb";
 import { UserData } from "../../types.js";
 import { fetchUserEmailFromEvents } from "../../utils/profile-data-fetchers.js";
+import { withRateLimitRetry } from "../../utils/prime-scraper-api-utils.js";
 import { rateUserV3 } from "../core/llm-rating.js";
 import {
   fetchCurrentEmployerInsights,
@@ -32,6 +33,7 @@ function parseArgs() {
   const args = process.argv.slice(2);
   let topN: number | null = null;
   let forceRefetchLinkedin = false;
+  let scoresOnly = false;
 
   for (let i = 0; i < args.length; i++) {
     if (args[i] === "--top" && args[i + 1]) {
@@ -41,13 +43,34 @@ function parseArgs() {
     if (args[i] === "--force-refetch-linkedin") {
       forceRefetchLinkedin = true;
     }
+    if (args[i] === "--scores-only") {
+      scoresOnly = true;
+    }
   }
 
-  return { topN, forceRefetchLinkedin };
+  return { topN, forceRefetchLinkedin, scoresOnly };
+}
+
+/** Fetch LinkedIn URL from GitHub social accounts API (cheap, one call) */
+async function fetchLinkedInUrlFromGitHub(
+  username: string
+): Promise<string | null> {
+  try {
+    const socialAccounts = await withRateLimitRetry(() =>
+      octokit.request("GET /users/{username}/social_accounts", { username })
+    );
+    const linkedinSocial = socialAccounts.data.find(
+      (a: { provider: string; url: string }) =>
+        a.provider === "linkedin" || a.url?.includes("linkedin.com")
+    );
+    return linkedinSocial?.url || null;
+  } catch {
+    return null;
+  }
 }
 
 async function reRateUsers() {
-  const { topN, forceRefetchLinkedin } = parseArgs();
+  const { topN, forceRefetchLinkedin, scoresOnly } = parseArgs();
   const client = new MongoClient(mongoUri);
   try {
     await client.connect();
@@ -64,24 +87,29 @@ async function reRateUsers() {
     console.log(
       `Found ${processedUsers.length} processed users to re-rate${topN ? ` (top ${topN})` : ""}`
     );
+    if (scoresOnly) {
+      console.log(
+        "Scores-only mode: using stored data + GitHub social accounts for LinkedIn URLs"
+      );
+    }
     if (forceRefetchLinkedin) {
       console.log("Force refetching LinkedIn data enabled");
     }
 
-    const BATCH_SIZE = 5;
+    const BATCH_SIZE = 10;
     for (let i = 0; i < processedUsers.length; i += BATCH_SIZE) {
       const batch = processedUsers.slice(i, i + BATCH_SIZE);
       console.log(
-        `Processing batch ${Math.floor(i / BATCH_SIZE) + 1} of ${Math.ceil(
+        `\nProcessing batch ${Math.floor(i / BATCH_SIZE) + 1} of ${Math.ceil(
           processedUsers.length / BATCH_SIZE
-        )}`
+        )} (users ${i + 1}-${Math.min(i + BATCH_SIZE, processedUsers.length)})`
       );
 
-      for (const user of batch) {
+      await Promise.all(batch.map(async (user) => {
         try {
           const previousRating = user.rating;
 
-          console.log(`\nProcessing user: https://github.com/${user._id}`);
+          console.log(`\n[${user._id}] Processing... (prev rating: ${previousRating})`);
 
           const userData: UserData = {
             ...user,
@@ -90,109 +118,163 @@ async function reRateUsers() {
             recentRepositories: user.recentRepositories || null,
           };
 
-          // First, ensure we have the email
-          if (!userData.email) {
-            console.log(`[${userData.login}] Fetching email...`);
-            const userEmail = await fetchUserEmailFromEvents(
-              userData.login,
-              octokit
-            );
-            userData.email = userEmail;
-            console.log(
-              `[${userData.login}] Fetched email: ${userEmail || "not found"}`
-            );
-          }
+          if (scoresOnly) {
+            // --scores-only: re-verify LinkedIn URLs using improved search logic
+            // 1. GitHub social accounts API (most reliable, free)
+            // 2. Brave search with improved company-name queries
+            // If URL changes → re-fetch LinkedIn experience via RapidAPI
+            const oldLinkedinUrl = userData.linkedinUrl;
 
-          // Then, ensure we have LinkedIn information
-          if (!userData.linkedinUrl || forceRefetchLinkedin) {
-            console.log(
-              `[${userData.login}] Attempting to find LinkedIn URL...`
-            );
+            // Normalize LinkedIn URL for comparison (strip www, lowercase, trailing slash)
+            const normalizeLinkedinUrl = (url: string | null | undefined) =>
+              url?.toLowerCase().replace("www.", "").replace(/\/+$/, "") || null;
 
-            const linkedinUrl = findLinkedInUrlInProfileData(userData);
-            console.log(
-              `[${userData.login}] linkedinUrl from profile data:`,
-              linkedinUrl
-            );
+            // Try GitHub social accounts first
+            let newLinkedinUrl =
+              (await fetchLinkedInUrlFromGitHub(userData.login)) ||
+              findLinkedInUrlInProfileData(userData);
 
-            if (!linkedinUrl) {
+            // If no URL from social accounts/profile data, re-run Brave search with improved queries
+            if (!newLinkedinUrl) {
+              const optimizedQuery = await generateOptimizedSearchQuery(userData);
+              console.log(`[${userData.login}] Brave search query: ${optimizedQuery}`);
+              newLinkedinUrl = await fetchLinkedInProfileUsingBrave(userData, optimizedQuery);
+            }
+
+            const urlActuallyChanged =
+              normalizeLinkedinUrl(newLinkedinUrl) !== normalizeLinkedinUrl(oldLinkedinUrl);
+
+            if (!newLinkedinUrl) {
+              console.log(`[${userData.login}] No LinkedIn URL found`);
+            } else if (urlActuallyChanged) {
               console.log(
-                `[${userData.login}] Generating optimized search query...`
+                `[${userData.login}] LinkedIn URL updated: ${oldLinkedinUrl || "none"} -> ${newLinkedinUrl}`
               );
-              const optimizedQuery = await generateOptimizedSearchQuery(
-                userData
-              );
-              console.log(
-                `[${userData.login}] Optimized query:`,
-                optimizedQuery
-              );
+              userData.linkedinUrl = newLinkedinUrl;
 
-              const braveLinkedinUrl = await fetchLinkedInProfileUsingBrave(
-                userData,
-                optimizedQuery
-              );
-              if (braveLinkedinUrl) {
-                userData.linkedinUrl = braveLinkedinUrl;
-                console.log(
-                  `[${userData.login}] Found LinkedIn URL via Brave: ${braveLinkedinUrl}`
-                );
-              } else {
-                console.log(`[${userData.login}] Could not find LinkedIn URL.`);
+              // Re-fetch LinkedIn experience since URL changed
+              console.log(`[${userData.login}] Fetching LinkedIn experience for new URL...`);
+              const linkedinExperience = await fetchLinkedInExperienceViaRapidAPI(newLinkedinUrl);
+              userData.linkedinExperience = linkedinExperience;
+              if (linkedinExperience) {
+                const summary = await generateLinkedInExperienceSummary(linkedinExperience);
+                userData.linkedinExperienceSummary = summary;
               }
-            } else {
-              userData.linkedinUrl = linkedinUrl;
+
+              // Fetch company insights if applicable
+              if (linkedinExperience) {
+                const companyInsights = await fetchCurrentEmployerInsights(userData);
+                userData.currentCompanyInsights = companyInsights;
+              }
+            }
+          } else {
+            // Full mode: fetch email, LinkedIn, web research as needed
+
+            // First, ensure we have the email
+            if (!userData.email) {
+              console.log(`[${userData.login}] Fetching email...`);
+              const userEmail = await fetchUserEmailFromEvents(
+                userData.login,
+                octokit
+              );
+              userData.email = userEmail;
               console.log(
-                `[${userData.login}] Found LinkedIn URL in profile data: ${linkedinUrl}`
+                `[${userData.login}] Fetched email: ${userEmail || "not found"}`
               );
             }
-          }
 
-          if (
-            userData.linkedinUrl &&
-            (!userData.linkedinExperience || forceRefetchLinkedin)
-          ) {
-            console.log(`[${userData.login}] Fetching LinkedIn experience...`);
-            const linkedinExperience = await fetchLinkedInExperienceViaRapidAPI(
-              userData.linkedinUrl
-            );
-            userData.linkedinExperience = linkedinExperience;
+            // Then, ensure we have LinkedIn information
+            if (!userData.linkedinUrl || forceRefetchLinkedin) {
+              console.log(
+                `[${userData.login}] Attempting to find LinkedIn URL...`
+              );
 
-            // Regenerate summary when we refetch experience
-            if (linkedinExperience) {
+              const linkedinUrl = findLinkedInUrlInProfileData(userData);
+              console.log(
+                `[${userData.login}] linkedinUrl from profile data:`,
+                linkedinUrl
+              );
+
+              if (!linkedinUrl) {
+                console.log(
+                  `[${userData.login}] Generating optimized search query...`
+                );
+                const optimizedQuery = await generateOptimizedSearchQuery(
+                  userData
+                );
+                console.log(
+                  `[${userData.login}] Optimized query:`,
+                  optimizedQuery
+                );
+
+                const braveLinkedinUrl = await fetchLinkedInProfileUsingBrave(
+                  userData,
+                  optimizedQuery
+                );
+                if (braveLinkedinUrl) {
+                  userData.linkedinUrl = braveLinkedinUrl;
+                  console.log(
+                    `[${userData.login}] Found LinkedIn URL via Brave: ${braveLinkedinUrl}`
+                  );
+                } else {
+                  console.log(
+                    `[${userData.login}] Could not find LinkedIn URL.`
+                  );
+                }
+              } else {
+                userData.linkedinUrl = linkedinUrl;
+                console.log(
+                  `[${userData.login}] Found LinkedIn URL in profile data: ${linkedinUrl}`
+                );
+              }
+            }
+
+            if (
+              userData.linkedinUrl &&
+              (!userData.linkedinExperience || forceRefetchLinkedin)
+            ) {
+              console.log(
+                `[${userData.login}] Fetching LinkedIn experience...`
+              );
+              const linkedinExperience =
+                await fetchLinkedInExperienceViaRapidAPI(userData.linkedinUrl);
+              userData.linkedinExperience = linkedinExperience;
+
+              // Regenerate summary when we refetch experience
+              if (linkedinExperience) {
+                console.log(
+                  `[${userData.login}] Generating LinkedIn experience summary...`
+                );
+                const linkedinExperienceSummary =
+                  await generateLinkedInExperienceSummary(linkedinExperience);
+                userData.linkedinExperienceSummary = linkedinExperienceSummary;
+              }
+            } else if (
+              userData.linkedinExperience &&
+              !userData.linkedinExperienceSummary
+            ) {
               console.log(
                 `[${userData.login}] Generating LinkedIn experience summary...`
               );
               const linkedinExperienceSummary =
-                await generateLinkedInExperienceSummary(linkedinExperience);
+                await generateLinkedInExperienceSummary(
+                  userData.linkedinExperience
+                );
               userData.linkedinExperienceSummary = linkedinExperienceSummary;
             }
-          } else if (
-            userData.linkedinExperience &&
-            !userData.linkedinExperienceSummary
-          ) {
-            console.log(
-              `[${userData.login}] Generating LinkedIn experience summary...`
-            );
-            const linkedinExperienceSummary =
-              await generateLinkedInExperienceSummary(
-                userData.linkedinExperience
-              );
-            userData.linkedinExperienceSummary = linkedinExperienceSummary;
+
+            // Fetch company insights for founders/CEOs
+            if (
+              userData.linkedinExperience &&
+              (!userData.currentCompanyInsights || forceRefetchLinkedin)
+            ) {
+              const companyInsights =
+                await fetchCurrentEmployerInsights(userData);
+              userData.currentCompanyInsights = companyInsights;
+            }
           }
 
-          // Fetch company insights for founders/CEOs
-          if (
-            userData.linkedinExperience &&
-            (!userData.currentCompanyInsights || forceRefetchLinkedin)
-          ) {
-            const companyInsights =
-              await fetchCurrentEmployerInsights(userData);
-            userData.currentCompanyInsights = companyInsights;
-          }
-
-          // Get web research results
-          console.log(`[${userData.login}] Checking web research status...`);
-
+          // Build web research info from stored data (both modes)
           let webResearchInfo: {
             openAI: { promptText: string; researchResult: string | null };
             gemini: {
@@ -202,6 +284,7 @@ async function reRateUsers() {
           };
 
           if (
+            !scoresOnly &&
             !userData.webResearchInfoOpenAI &&
             !userData.webResearchInfoGemini
           ) {
@@ -235,7 +318,6 @@ async function reRateUsers() {
               geminiResult?.researchResult || undefined;
             userData.webResearchPromptText = openAIResult.promptText;
           } else {
-            console.log(`[${userData.login}] Using existing web research data`);
             webResearchInfo = {
               openAI: {
                 promptText: userData.webResearchPromptText || "",
@@ -250,15 +332,13 @@ async function reRateUsers() {
             };
           }
 
-          console.log(`[${userData.login}] Calling rateUserV3...`);
           const ratingResult = await rateUserV3(userData, webResearchInfo);
 
           console.log(
-            `[${userData.login}] Previous rating: ${previousRating}, new: ${ratingResult.score}`
+            `[${userData.login}] ${previousRating} -> ${ratingResult.score}`
           );
 
           const updateData: any = {
-            email: userData.email,
             linkedinUrl: userData.linkedinUrl,
             linkedinExperience: userData.linkedinExperience,
             linkedinExperienceSummary: userData.linkedinExperienceSummary,
@@ -273,16 +353,15 @@ async function reRateUsers() {
             ratedAt: new Date(),
           };
 
+          if (userData.email) {
+            updateData.email = userData.email;
+          }
           if (userData.webResearchInfoOpenAI) {
             updateData.webResearchInfoOpenAI = userData.webResearchInfoOpenAI;
           }
           if (userData.webResearchInfoGemini) {
             updateData.webResearchInfoGemini = userData.webResearchInfoGemini;
           }
-
-          console.log(
-            `[${userData.login}] Rating result: ${ratingResult.score}`
-          );
 
           try {
             await usersCol.updateOne(
@@ -295,10 +374,10 @@ async function reRateUsers() {
         } catch (error) {
           console.error(`[${user._id}] Error processing user:`, error);
         }
-      }
+      }));
 
       console.log(
-        `Finished processing batch ${Math.floor(i / BATCH_SIZE) + 1}`
+        `Finished batch ${Math.floor(i / BATCH_SIZE) + 1}`
       );
     }
 
