@@ -75,10 +75,17 @@ All company-specific settings live in [`src/config/company.ts`](src/config/compa
 
 ## Key Scripts
 
-- `npm run scrape` - Main graph scraper with priority-based connection discovery
-- `npm run best-rated-to-txt` - Export top-rated profiles to `output/`
+- `npm run scrape` - Main graph scraper (one-shot)
+- `npm run dev` - Main graph scraper with hot reload (tsx watch)
 - `npm run rate` - Re-rate existing users with updated criteria
 - `npm run graph-scoring` - Calculate network influence scores
+
+### Review workflow
+
+- `npm run queue` - Generate `output/review-queue.txt` with top unreviewed profiles
+- `npm run review 10` - Open top 10 unreviewed LinkedIn profiles in browser
+- `npm run links 10` - Print top 10 unreviewed LinkedIn URLs
+- `npm run mark <user1> [user2 ...] --status outreach|discarded [--note 'reason']` - Mark users as reviewed
 
 ### Re-rating users
 
@@ -113,8 +120,13 @@ src/graph-scraper/
       web-research.ts                  # OpenAI/Gemini web research
       fetch-connections.ts             # GitHub API pagination
       filters.ts                       # Contribution/profile filters
+  scripts/
+    re-rate-users.ts                   # Re-rate with updated criteria
+    mark-reviewed.ts                   # Mark users as outreach/discarded
+    review-batch.ts                    # Open LinkedIn profiles in browser
+    print-links.ts                     # Print LinkedIn URLs
   output-gen/
-    best_rated_to_txt.ts               # Export top profiles
+    best_rated_to_txt.ts               # Export top unreviewed profiles
 ```
 
 ## API Services
