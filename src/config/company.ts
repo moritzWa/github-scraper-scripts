@@ -67,19 +67,19 @@ export const companyConfig: {
     },
     {
       key: 'productivity_software',
-      label: 'Productivity Software / Dev Tools',
+      label: 'Productivity Software',
 
       tiers: {
-        0: 'No relevant experience in productivity software or dev tools',
-        1: 'Minor or dated experience - a single old project (3+ years ago) in productivity/dev tools, or general interest without shipped products',
-        2: 'Has built productivity-related software (text-to-SQL, document editing, note-taking, presentation tools, workflow automation, dev tools, browser extensions) at a company or as a shipped side project with real users',
-        3: 'Deep, recent experience building multiple productivity tools or sustained work on complex productivity features in the last 2-3 years. Examples: shipping several dev tools, building core features of a productivity app (like Notion, Avanty, Readwise), or maintaining popular OSS dev tools',
+        0: 'No relevant experience building productivity software. Simple/non-innovative tools (calculators, basic CRUD apps, static sites, portfolio pages) do not count.',
+        1: 'Minor or dated experience - a single old project (3+ years ago), or generic dev tools (CLIs, linters, frameworks, libraries) that are not knowledge-work productivity tools',
+        2: 'Has built productivity software that helps people get work done faster: document editing, note-taking, workflow automation, BI tools, text-to-SQL, AI-assisted coding tools, search engines, data analysis platforms, or domain-specific workflow tools (e.g. IB deal flow, legal research). Shipped at a company or as a side project with real users.',
+        3: 'Deep, recent experience (last 2-3 years) building innovative productivity tools. Examples: core features of Notion, Figma, Linear, Cursor/Claude Code, Superhuman, Airtable; or building text-to-SQL engines, AI research automation, or complex domain-specific workflow software.',
       },
     },
     {
       key: 'financial_services',
       label: 'Financial Services Domain',
-
+      weight: 2,
       tiers: {
         0: 'No exposure to financial services',
         1: 'Minor exposure or interest in finance, banking, or trading',
@@ -137,20 +137,31 @@ export const companyConfig: {
       weight: 2,
       tiers: {
         0: 'VP/C-suite at a well-known or large company, famous tech leader, tenured professor - way too senior for a Series B startup',
-        1: 'Director at a large company, engineering manager whose recent roles are primarily people management, or student/new grad with < 2 years of real engineering experience and no top-tier university. Staff/tech lead at a big company with managerial responsibilities also falls here - they may struggle to go back to pure IC work.',
-        2: 'New grad from a top university with internship experience, junior engineer with 1-3 years experience, or tech lead at a startup who still codes hands-on',
+        1: 'Director at a large company, engineering manager whose recent roles are primarily people management. Staff/tech lead at a big company with managerial responsibilities also falls here - they may struggle to go back to pure IC work.',
+        2: 'Junior engineer with 1-3 years experience, or tech lead at a startup who still codes hands-on',
         3: 'IC engineer (mid through staff/principal) who is clearly still hands-on coding, or early-stage startup engineer - the ideal seniority for a Series B startup',
+      },
+    },
+    {
+      key: 'experience_level',
+      label: 'Experience Level',
+      weight: 1,
+      tiers: {
+        0: 'Current student or no professional engineering experience at all. Only has personal/university projects.',
+        1: 'Current student or recent grad (<1 year out) BUT has founded startups, had high-status internships at venture-backed/tier-1 startups, or has significant open-source/side project output. Also: new grad with <2 years of professional experience.',
+        2: '2-4 years of professional engineering experience. Has held at least one full-time engineering role beyond internships.',
+        3: '4+ years of professional engineering experience across one or more full-time roles. Seasoned engineer with real production experience.',
       },
     },
     {
       key: 'hireability',
       label: 'Hireability',
-      weight: 2,
+      weight: 4,
       tiers: {
-        0: 'CEO/CTO/co-founder/VP at a company that is clearly growing (positive headcount growth, >10 employees, or raised significant funding recently). Use company insights data if available. These people will not leave their company.',
-        1: 'Co-founder/exec at a funded startup with moderate or unknown growth, or C-suite at an established company. Also: someone who just started a new role or company (<6 months ago) - they are in the honeymoon phase and very unlikely to leave.',
-        2: 'Founder of a small/stagnating/early-stage company (<5 employees, no/negative growth in company insights), recently exited founder, someone whose company shut down, or IC engineer at a rocket-ship AI company (Anthropic, OpenAI, Thinking Machines, Cursor) where leaving would be irrational. Also use for someone stuck at a tiny company (1-3 employees, no growth) for 3+ years - this signals they may be comfortable/complacent rather than ambitious. Serial indie hackers/bootstrappers who have been running their own small projects for 5+ years are also unlikely to join a venture-backed startup.',
-        3: 'Employee (not founder/exec), IC engineer, or someone clearly between roles and open to new opportunities. Not at a rocket-ship company. Not stuck at a stagnant company for years. Not a serial indie hacker.',
+        0: 'CEO/CTO/co-founder/VP at a company that is clearly growing (positive headcount growth, >10 employees, or raised significant funding recently). Use company insights data if available. Also: anyone in a senior position (Principal, Staff, Distinguished, Director+) at a rocket-ship AI company (Anthropic, OpenAI, Thinking Machines, Cursor, etc.) - these people are extremely well-compensated and will not leave. These people will not leave their company.',
+        1: 'Co-founder/exec at a funded startup with moderate or unknown growth, or C-suite at an established company. Also: junior/mid-level IC engineer at a rocket-ship AI company (Anthropic, OpenAI, Cursor, etc.) where leaving would be irrational. Also: someone who just started a new role or company (<6 months ago) - they are in the honeymoon phase and very unlikely to leave.',
+        2: 'Founder of a small/stagnating/early-stage company (<5 employees, no/negative growth in company insights), recently exited founder, someone whose company shut down. Also use for someone stuck at a tiny company (1-3 employees, no growth) for 3+ years - this signals they may be comfortable/complacent rather than ambitious. Serial indie hackers/bootstrappers who have been running their own small projects for 5+ years are also unlikely to join a venture-backed startup.',
+        3: 'Employee (not founder/exec), IC engineer at a normal company, or someone clearly between roles and open to new opportunities. Not at a rocket-ship company. Not stuck at a stagnant company for years. Not a serial indie hacker.',
       },
     },
     {
@@ -292,6 +303,7 @@ location: "Based in NYC." -> 3
 builder_signal: "Ships real products, active contributor to multiple repos." -> 2
 company_pedigree: "Currently at Rogo (Series B, backed by strong investors), previously at a data analytics startup." -> 2
 seniority_fit: "Software engineer IC at a Series B startup, ideal seniority." -> 3
+experience_level: "MS CS + multiple full-time roles, 4+ years of professional experience." -> 3
 hireability: "Employee at Rogo, not a founder/exec. Open to opportunities." -> 3
 role_fit: "Full-stack and AI engineer, directly matches ideal archetype." -> 3
 tech_stack_fit: "All repos in TypeScript, React/Next.js stack." -> 3
@@ -317,6 +329,7 @@ location: "Based in London (Western world, relocation plausible)." -> 1
 builder_signal: "No evidence of shipping products, repos are 5+ years old." -> 0
 company_pedigree: "AI Lab and Meta AI are top-tier companies known for engineering excellence." -> 3
 seniority_fit: "Chief Scientist - way too senior, famous tech leader." -> 0
+experience_level: "PhD + years as Research Engineer at Meta AI and Chief Scientist. 10+ years." -> 3
 hireability: "C-suite at established company, unlikely to leave for Series B." -> 1
 role_fit: "AI researcher/scientist, not an engineering role with hands-on coding." -> 0
 tech_stack_fit: "Python-only repos, no TypeScript/JavaScript evidence." -> 0
@@ -349,6 +362,7 @@ location: "NYC-based." -> 3
 builder_signal: "Founded company, shipped multiple products, active builder." -> 3
 company_pedigree: "DocuAI ($2M seed), previously at Notion (tier-1 VC backed, top eng culture)." -> 3
 seniority_fit: "Founder, previously IC at Notion. Would come in at senior/staff level." -> 3
+experience_level: "Founded company + SE at Notion, 4+ years of professional experience." -> 3
 hireability: "Founder of small stagnating company (3 employees, 0% growth). Likely open to a move." -> 2
 role_fit: "Full-stack and AI engineer, builds across the stack." -> 3
 tech_stack_fit: "TypeScript as primary language, React/Next.js, with some Python for ML." -> 3
