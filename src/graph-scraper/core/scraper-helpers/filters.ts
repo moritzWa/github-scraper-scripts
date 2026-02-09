@@ -19,12 +19,6 @@ export async function checkUserFilters(
     return { shouldIgnore: true, reason: IgnoredReason.BANNED_COUNTRY };
   }
 
-  const createdAt = new Date(userData.created_at);
-  if (createdAt > new Date("2019-01-01")) {
-    console.log(`[Filter Check] ${userData.login} rejected: ACCOUNT_TOO_NEW`);
-    return { shouldIgnore: true, reason: IgnoredReason.ACCOUNT_TOO_NEW };
-  }
-
   if (countProfileFields(userData) < 1) {
     console.log(
       `[Filter Check] ${userData.login} rejected: INSUFFICIENT_PROFILE_FIELDS`
@@ -33,20 +27,6 @@ export async function checkUserFilters(
       shouldIgnore: true,
       reason: IgnoredReason.INSUFFICIENT_PROFILE_FIELDS,
     };
-  }
-
-  if (userData.followers > 3500) {
-    console.log(
-      `[Filter Check] ${userData.login} rejected: TOO_MANY_FOLLOWERS`
-    );
-    return { shouldIgnore: true, reason: IgnoredReason.TOO_MANY_FOLLOWERS };
-  }
-
-  if (userData.following > 450) {
-    console.log(
-      `[Filter Check] ${userData.login} rejected: TOO_MANY_FOLLOWING`
-    );
-    return { shouldIgnore: true, reason: IgnoredReason.TOO_MANY_FOLLOWING };
   }
 
   if (!contributions) {
@@ -59,33 +39,13 @@ export async function checkUserFilters(
     };
   }
 
-  if (userData.followers <= 30 && contributions.totalSum < 3200) {
+  if (contributions.totalSum < 500) {
     console.log(
-      `[Filter Check] ${userData.login} rejected: LOW_CONTRIBUTIONS_LOW_FOLLOWERS`
+      `[Filter Check] ${userData.login} rejected: LOW_CONTRIBUTIONS (${contributions.totalSum})`
     );
     return {
       shouldIgnore: true,
       reason: IgnoredReason.LOW_CONTRIBUTIONS_LOW_FOLLOWERS,
-    };
-  } else if (
-    userData.followers > 30 &&
-    userData.followers <= 60 &&
-    contributions.totalSum < 3000
-  ) {
-    console.log(
-      `[Filter Check] ${userData.login} rejected: LOW_CONTRIBUTIONS_MEDIUM_FOLLOWERS`
-    );
-    return {
-      shouldIgnore: true,
-      reason: IgnoredReason.LOW_CONTRIBUTIONS_MEDIUM_FOLLOWERS,
-    };
-  } else if (userData.followers > 60 && contributions.totalSum < 2000) {
-    console.log(
-      `[Filter Check] ${userData.login} rejected: LOW_CONTRIBUTIONS_HIGH_FOLLOWERS`
-    );
-    return {
-      shouldIgnore: true,
-      reason: IgnoredReason.LOW_CONTRIBUTIONS_HIGH_FOLLOWERS,
     };
   }
 

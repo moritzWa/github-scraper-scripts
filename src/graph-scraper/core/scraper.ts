@@ -24,8 +24,8 @@ const SEED_PRIORITY = 100;
 
 const SCRAPER_CONFIG: ScraperConfig = {
   maxDepth: MAX_DEPTH,
-  minRatingToScrapeConnections: 5,
-  minRatingToScrapeFollowers: 12,
+  minRatingToScrapeConnections: 25,
+  minRatingToScrapeFollowers: 30,
 };
 
 // --- Stats ---
