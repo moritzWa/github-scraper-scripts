@@ -1,125 +1,157 @@
 import { Octokit } from "@octokit/core";
 import { JSDOM } from "jsdom";
-import puppeteer from "puppeteer";
+import puppeteer, { Browser } from "puppeteer";
+import treeKill from "tree-kill";
 import { GitHubUser } from "../graph-scraper/types.js";
 import { GitHubRepo } from "../types.js";
 import { withRateLimitRetry } from "./prime-scraper-api-utils.js";
 
 const MAX_CONTENT_LENGTH = 7500;
 
+// --- Singleton browser management ---
+let _browser: Browser | null = null;
+let _browserUseCount = 0;
+const BROWSER_RECYCLE_AFTER = 30; // recycle after N uses to prevent memory creep
+
+const CHROME_ARGS = [
+  "--no-sandbox",
+  "--disable-setuid-sandbox",
+  "--disable-dev-shm-usage",
+  "--disable-gpu",
+  "--disable-extensions",
+  "--disable-component-extensions-with-background-pages",
+  "--disable-default-apps",
+  "--mute-audio",
+  "--no-first-run",
+  "--no-zygote",
+  "--single-process",
+  "--disable-crashpad-for-testing",
+];
+
+async function killBrowser(browser: Browser): Promise<void> {
+  const pid = browser.process()?.pid;
+  // Try graceful close with 3s timeout, then force kill
+  try {
+    await Promise.race([
+      browser.close(),
+      new Promise((_, reject) =>
+        setTimeout(() => reject(new Error("close timeout")), 3000)
+      ),
+    ]);
+  } catch (_) {
+    if (pid) {
+      await new Promise<void>((resolve) =>
+        treeKill(pid, "SIGKILL", () => resolve())
+      );
+    }
+  }
+}
+
+async function getBrowser(): Promise<Browser> {
+  if (_browser && _browser.connected && _browserUseCount < BROWSER_RECYCLE_AFTER) {
+    _browserUseCount++;
+    return _browser;
+  }
+  // Recycle: kill old browser first
+  if (_browser) {
+    await killBrowser(_browser);
+    _browser = null;
+  }
+  _browserUseCount = 1;
+  _browser = await puppeteer.launch({
+    headless: true,
+    args: CHROME_ARGS,
+    protocolTimeout: 10_000,
+  });
+  return _browser;
+}
+
+// Clean up on process exit
+async function cleanupBrowser() {
+  if (_browser) {
+    await killBrowser(_browser);
+    _browser = null;
+  }
+}
+process.on("SIGINT", async () => { await cleanupBrowser(); process.exit(0); });
+process.on("SIGTERM", async () => { await cleanupBrowser(); process.exit(0); });
+
 export async function fetchWebsiteContent(url: string): Promise<string | null> {
   if (!url) return null;
 
-  let browser = null;
-  let retryCount = 0;
-  const maxRetries = 3;
-
-  while (retryCount < maxRetries) {
-    try {
-      // Clean and validate the URL
-      let cleanUrl = url.trim();
-
-      // Skip invalid URLs or common non-website values
-      if (
-        cleanUrl === "/dev/null" ||
-        cleanUrl === "null" ||
-        cleanUrl === "undefined"
-      ) {
-        return null;
-      }
-
-      // Try to create a valid URL object (will throw if invalid)
-      try {
-        // Add protocol if missing
-        if (!cleanUrl.startsWith("http")) {
-          cleanUrl = "https://" + cleanUrl;
-        }
-        new URL(cleanUrl);
-      } catch (e) {
-        console.error(`Invalid URL: ${url}`);
-        return null;
-      }
-
-      // Use Puppeteer to render the page with JavaScript
-      browser = await puppeteer.launch({
-        headless: true,
-        args: [
-          "--no-sandbox",
-          "--disable-setuid-sandbox",
-          "--disable-dev-shm-usage", // Overcome limited resource problems
-          "--disable-gpu", // Disable GPU hardware acceleration
-          "--disable-extensions", // Disable extensions
-          "--disable-component-extensions-with-background-pages", // Disable background pages
-          "--disable-default-apps", // Disable default apps
-          "--mute-audio", // Mute audio
-          "--no-first-run", // Skip first run tasks
-          "--no-zygote", // Disable zygote process
-          "--single-process", // Run in single process mode
-        ],
-        protocolTimeout: 10000, // Reduced to 10 seconds
-      });
-
-      const page = await browser.newPage();
-
-      // Set viewport to ensure content is loaded
-      await page.setViewport({ width: 1280, height: 800 });
-
-      // Set user agent
-      await page.setUserAgent(
-        "Mozilla/5.0 (compatible; PrimeIntellectBot/1.0;)"
-      );
-
-      // Set page timeout
-      page.setDefaultNavigationTimeout(10000);
-      page.setDefaultTimeout(10000);
-
-      await page.goto(cleanUrl, {
-        waitUntil: "networkidle2",
-        timeout: 10000,
-      });
-
-      // Wait for content to be visible
-      await page.waitForSelector("body", { visible: true, timeout: 10000 });
-
-      // Additional wait to ensure dynamic content is loaded
-      await new Promise((resolve) => setTimeout(resolve, 2000));
-
-      const html = await page.content();
-      await browser.close();
-      browser = null;
-
-      return html;
-    } catch (error) {
-      console.error(
-        `Error fetching website content (attempt ${
-          retryCount + 1
-        }/${maxRetries}):`,
-        error
-      );
-
-      // Clean up browser if it exists
-      if (browser) {
-        try {
-          await browser.close();
-        } catch (closeError) {
-          console.error("Error closing browser:", closeError);
-        }
-        browser = null;
-      }
-
-      // If we've hit max retries, return null
-      if (retryCount === maxRetries - 1) {
-        return null;
-      }
-
-      // Wait before retrying (exponential backoff)
-      const waitTime = Math.min(1000 * Math.pow(2, retryCount), 10000);
-      await new Promise((resolve) => setTimeout(resolve, waitTime));
-      retryCount++;
+  // Clean and validate the URL
+  let cleanUrl = url.trim();
+  if (
+    cleanUrl === "/dev/null" ||
+    cleanUrl === "null" ||
+    cleanUrl === "undefined"
+  ) {
+    return null;
+  }
+  try {
+    if (!cleanUrl.startsWith("http")) {
+      cleanUrl = "https://" + cleanUrl;
     }
+    new URL(cleanUrl);
+  } catch (e) {
+    console.error(`Invalid URL: ${url}`);
+    return null;
   }
 
-  return null;
+  // Hard timeout: 10s total for the entire operation
+  const HARD_TIMEOUT_MS = 10_000;
+  const PAGE_TIMEOUT_MS = 6_000;
+
+  return new Promise<string | null>((resolveOuter) => {
+    let settled = false;
+    const finish = (val: string | null) => {
+      if (!settled) {
+        settled = true;
+        resolveOuter(val);
+      }
+    };
+
+    const hardTimer = setTimeout(() => {
+      console.error(
+        `[fetchWebsiteContent] Hard timeout (${HARD_TIMEOUT_MS}ms) for ${cleanUrl}`
+      );
+      finish(null);
+    }, HARD_TIMEOUT_MS);
+
+    (async () => {
+      let page: any = null;
+      try {
+        const browser = await getBrowser();
+        page = await browser.newPage();
+        await page.setViewport({ width: 1280, height: 800 });
+        await page.setUserAgent(
+          "Mozilla/5.0 (compatible; PrimeIntellectBot/1.0;)"
+        );
+        page.setDefaultNavigationTimeout(PAGE_TIMEOUT_MS);
+        page.setDefaultTimeout(PAGE_TIMEOUT_MS);
+
+        await page.goto(cleanUrl, {
+          waitUntil: "domcontentloaded",
+          timeout: PAGE_TIMEOUT_MS,
+        });
+
+        const html = await page.content();
+        clearTimeout(hardTimer);
+        finish(html);
+      } catch (error: any) {
+        console.error(
+          `Error fetching website content: ${error?.message || error}`
+        );
+        clearTimeout(hardTimer);
+        finish(null);
+      } finally {
+        // Always close the page, never the browser
+        try {
+          if (page) await page.close();
+        } catch (_) {}
+      }
+    })();
+  });
 }
 
 export function countProfileFields(userData: GitHubUser): number {

@@ -101,7 +101,7 @@ export const companyConfig: {
     {
       key: 'location',
       label: 'Location',
-
+      weight: 2,
       tiers: {
         0: 'Asia, Africa, or other regions where relocation to NYC is unlikely. Also use for unknown location.',
         1: 'Western world (Europe, Canada, Australia, Latin America) - regions where relocation to NYC is plausible',
@@ -133,13 +133,24 @@ export const companyConfig: {
     },
     {
       key: 'seniority_fit',
-      label: 'Seniority / Hireability',
+      label: 'Seniority Fit',
       weight: 2,
       tiers: {
-        0: 'CEO/co-founder of a startup that is clearly growing (positive headcount growth, >10 employees, or raised significant funding). Also: VP/C-suite at a well-known or large company, famous tech leader, tenured professor. Use company insights data if available to verify growth.',
-        1: 'CTO/co-founder at a funded growing startup (use company insights to check), director at a large company, or student/new grad with < 2 years experience and no top-tier university',
-        2: 'Founder of a small/stagnating/early-stage company (<5 employees, no growth or negative growth in company insights), new grad from top university with internship experience',
-        3: 'IC engineer (mid through staff/principal), tech lead, or early-stage startup employee (not founder) - the ideal hire for a Series B startup',
+        0: 'VP/C-suite at a well-known or large company, famous tech leader, tenured professor - way too senior for a Series B startup',
+        1: 'Director at a large company, or student/new grad with < 2 years of real engineering experience and no top-tier university',
+        2: 'New grad from a top university with internship experience, or junior engineer with 1-3 years experience',
+        3: 'IC engineer (mid through staff/principal), tech lead, or early-stage startup employee - the ideal seniority for a Series B startup',
+      },
+    },
+    {
+      key: 'hireability',
+      label: 'Hireability',
+      weight: 2,
+      tiers: {
+        0: 'CEO/CTO/co-founder/VP at a company that is clearly growing (positive headcount growth, >10 employees, or raised significant funding recently). Use company insights data if available. These people will not leave their company.',
+        1: 'Co-founder/exec at a funded startup with moderate or unknown growth, or C-suite at an established company',
+        2: 'Founder of a small/stagnating/early-stage company (<5 employees, no/negative growth in company insights), recently exited founder, or someone whose company shut down',
+        3: 'Employee (not founder/exec), IC engineer, or someone clearly between roles and open to new opportunities',
       },
     },
     {
@@ -151,6 +162,16 @@ export const companyConfig: {
         1: 'Adjacent engineering role (data engineer, DevOps, ML researcher, mobile-only)',
         2: 'Partial overlap (backend-only or frontend-only engineer)',
         3: 'Full-stack engineer or full-stack + AI engineer - the ideal archetype for the team',
+      },
+    },
+    {
+      key: 'tech_stack_fit',
+      label: 'Tech Stack Fit',
+      tiers: {
+        0: 'No TypeScript/JavaScript experience evident. Primarily uses other languages (Python-only, Go-only, Rust-only, etc.)',
+        1: 'Some JavaScript/TypeScript usage but primarily works in other languages',
+        2: 'Regular TypeScript/JavaScript user with web development experience',
+        3: 'Heavy TypeScript usage, React/Next.js experience, full-stack web development as primary stack',
       },
     },
   ],
@@ -246,9 +267,9 @@ Name: Jan Wilhelm
 Company: @rogodata
 Location: New York, NY
 Recent Repos:
-- text-to-sql-engine
-- financial-data-parser
-- react-dashboard
+- text-to-sql-engine [TypeScript] (pushed 2 months ago)
+- financial-data-parser [TypeScript] (pushed 3 months ago)
+- react-dashboard [TypeScript] (pushed 5 months ago)
 Web Research: Software Engineer at Rogo in New York. Previously built text-to-SQL tools at a data analytics startup. MS CS from TU Munich.
 
 ENGINEER_ARCHETYPE: full-stack, AI engineer
@@ -261,8 +282,10 @@ education: "MS CS from TU Munich (top-tier engineering program)." -> 2
 location: "Based in NYC." -> 3
 builder_signal: "Ships real products, active contributor to multiple repos." -> 2
 company_pedigree: "Currently at Rogo (Series B, backed by strong investors), previously at a data analytics startup." -> 2
-seniority_fit: "Software engineer IC at a Series B startup." -> 3
+seniority_fit: "Software engineer IC at a Series B startup, ideal seniority." -> 3
+hireability: "Employee at Rogo, not a founder/exec. Open to opportunities." -> 3
 role_fit: "Full-stack and AI engineer, directly matches ideal archetype." -> 3
+tech_stack_fit: "All repos in TypeScript, React/Next.js stack." -> 3
 ---
 Example 2:
 ---
@@ -270,8 +293,8 @@ GitHub Profile:
 Name: Alex Kumar
 Company: Chief Scientist @ AI Lab
 Recent Repos:
-- ml-model-serving (5 years ago)
-- distributed-training (6 years ago)
+- ml-model-serving [Python] (pushed 5 years ago)
+- distributed-training [Python] (pushed 6 years ago)
 Web Research: Chief Scientist at AI Lab (2020-present) in London. Previously Research Engineer at Meta AI. PhD in CS from Stanford.
 
 ENGINEER_ARCHETYPE: AI researcher/scientist
@@ -284,8 +307,10 @@ education: "Stanford PhD (tier-1 university)." -> 3
 location: "Based in London (Western world, relocation plausible)." -> 1
 builder_signal: "No evidence of shipping products, repos are 5+ years old." -> 0
 company_pedigree: "AI Lab and Meta AI are top-tier companies known for engineering excellence." -> 3
-seniority_fit: "Chief Scientist at a large AI lab - famous tech leader, not a realistic hire." -> 0
+seniority_fit: "Chief Scientist - way too senior, famous tech leader." -> 0
+hireability: "C-suite at established company, unlikely to leave for Series B." -> 1
 role_fit: "AI researcher/scientist, not an engineering role with hands-on coding." -> 0
+tech_stack_fit: "Python-only repos, no TypeScript/JavaScript evidence." -> 0
 ---
 Example 3:
 ---
@@ -294,10 +319,15 @@ Name: Priya Gupta
 Company: Founder @ DocuAI
 Location: Brooklyn, NY
 Recent Repos:
-- docuai-platform
-- pdf-parser-ml
-- agent-workflow-engine
-Web Research: Founded DocuAI (AI document processing for legal/finance, $2M seed) in NYC. Previously SE at Notion working on editor infrastructure. BSc from Waterloo.
+- docuai-platform [TypeScript] (pushed 1 month ago)
+- pdf-parser-ml [Python] (pushed 2 months ago)
+- agent-workflow-engine [TypeScript] (pushed 3 months ago)
+Web Research: Founded DocuAI (AI document processing for legal/finance, $2M seed, 3 employees) in NYC. Previously SE at Notion working on editor infrastructure. BSc from Waterloo.
+Current Company Insights (from LinkedIn data):
+  Company: DocuAI
+  Employee Count: 3
+  1Y Headcount Growth: 0%
+  6M Headcount Growth: 0%
 
 ENGINEER_ARCHETYPE: full-stack, AI engineer
 LOCATION: New York, US
@@ -309,8 +339,10 @@ education: "BSc from Waterloo (top-tier CS program)." -> 2
 location: "NYC-based." -> 3
 builder_signal: "Founded company, shipped multiple products, active builder." -> 3
 company_pedigree: "DocuAI ($2M seed), previously at Notion (tier-1 VC backed, top eng culture)." -> 3
-seniority_fit: "Founder of a small seed-stage startup, previously IC at Notion - realistic hire." -> 3
+seniority_fit: "Founder, previously IC at Notion. Would come in at senior/staff level." -> 3
+hireability: "Founder of small stagnating company (3 employees, 0% growth). Likely open to a move." -> 2
 role_fit: "Full-stack and AI engineer, builds across the stack." -> 3
+tech_stack_fit: "TypeScript as primary language, React/Next.js, with some Python for ML." -> 3
 ---
 `,
 };

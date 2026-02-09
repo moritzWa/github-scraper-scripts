@@ -72,7 +72,8 @@ const formatEngineerInQuestion = (
       }`;
       const relativeTime = formatRelativeTime(repo.last_pushed_at);
       const timeInfo = relativeTime ? ` (pushed ${relativeTime})` : "";
-      return `- ${repoName}${timeInfo}`;
+      const langInfo = repo.language ? ` [${repo.language}]` : "";
+      return `- ${repoName}${langInfo}${timeInfo}`;
     })
     .join("\n");
 
