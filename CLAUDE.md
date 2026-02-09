@@ -15,6 +15,8 @@ After the scraper has processed users, review top-rated profiles:
 3. `npm run links 10` - print top 10 unreviewed LinkedIn URLs (no browser)
 4. `npm run mark <user1> [user2 ...] --status outreach|discarded [--note 'reason']` - mark users as reviewed
 
+**When the user asks to see the next batch of profiles, always open them directly in the browser (using `open` or `npm run review`). Never just copy URLs to clipboard.**
+
 Re-rate existing users with updated criteria:
 - `node dist/graph-scraper/scripts/re-rate-users.js --top 20` - re-rate top 20
 - `node dist/graph-scraper/scripts/re-rate-users.js --top 20 --force-refetch-linkedin` - also refetch LinkedIn data
@@ -44,4 +46,4 @@ Test one specific user: `npm run scrape-one <username>`
 
 - `src/config/company.ts` - scoring criteria, prompts, seed profiles, target archetypes
 - `src/graph-scraper/core/scraper.ts` - scraper constants (batch size, depth, priority thresholds)
-- Scoring: 12 criteria, weighted (location 3x, seniority/hireability/role_fit 2x, rest 1x), max score 51
+- Scoring: 13 criteria, weighted (hireability 4x, location/startup_experience/company_pedigree 3x, seniority_fit/role_fit 2x, rest 1x), max score 72. tech_stack_fit is weight 1 (lowest, intentionally less impactful)

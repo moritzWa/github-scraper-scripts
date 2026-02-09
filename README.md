@@ -2,6 +2,14 @@
 
 A graph-based developer network scraper that discovers and evaluates engineering talent by crawling GitHub connections. Fully configurable for any company's hiring criteria.
 
+## Key Features
+
+- **Best-first graph traversal** - Priority queue (not BFS/DFS) explores the most promising branches first. Priority = `parentRating * directionMultiplier / sqrt(depth)`, with "following" edges weighted 1.5x over "follower" edges.
+- **Company insights for hireability** - Fetches real LinkedIn company data (headcount, growth trends) for founders/execs. A founder at a company growing 100% YoY is unhireable; a founder of a stagnating 3-person company might be ready to move.
+- **LinkedIn profile matching** - LLM-generated query to find LinkedIn profiles by searching Brave with queries built from GitHub/X/email/website data. Skips unsearchable profiles (e.g., first-name-only). Verifies fetched profiles against GitHub data and discards mismatches.
+- **Contribution pattern filters** - Before expensive LinkedIn/LLM calls, filters out candidates based on GitHub activity: minimum contribution threshold, active in 8+ months of the year, and a weekday-coder detector (>85% weekday-only activity suggests they only code at work, not a passionate builder).
+- **Structured LLM scoring** - Configurable weighted criteria scored 0-3 with per-criterion reasoning via OpenAI structured output.
+
 ## How It Works
 
 The scraper uses a **priority-queue graph traversal** starting from seed GitHub profiles:
@@ -48,6 +56,7 @@ All company-specific settings live in [`src/config/company.ts`](src/config/compa
 ## Setup
 
 1. Copy `.env.example` to `.env` and configure:
+
    ```
    # Required
    GITHUB_ACCESS_TOKEN=your_github_token
@@ -64,6 +73,7 @@ All company-specific settings live in [`src/config/company.ts`](src/config/compa
    ```
 
 2. Install dependencies:
+
    ```bash
    npm install
    ```
