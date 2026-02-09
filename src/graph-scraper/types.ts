@@ -73,6 +73,9 @@ export interface GraphUser {
   averageParentRating?: number;
   priority?: number;
   discoveredVia?: "following" | "followers";
+  reviewStatus?: "outreach" | "discarded";
+  reviewNote?: string;
+  reviewedAt?: Date;
 }
 
 export interface DbGraphUser extends Omit<GraphUser, "login"> {

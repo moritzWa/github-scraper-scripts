@@ -24,11 +24,13 @@
     "test-contribution-scraper": "node --loader ts-node/esm src/testing/test-contribution-scraper.ts",
     "build-vis": "tsc --project tsconfig.json --outDir dist/vis",
     "serve-vis": "npx http-server .",
-    "scrape": "node --expose-gc --max-old-space-size=8192 --max-semi-space-size=512 --loader ts-node/esm src/graph-scraper/core/scraper.ts",
+    "dev": "tsx watch --max-old-space-size=2048 src/graph-scraper/core/scraper.ts",
+    "scrape": "tsx --max-old-space-size=2048 src/graph-scraper/core/scraper.ts",
     "stats": "node --loader ts-node/esm src/graph-scraper/core/stats.ts",
     "delete-db": "node --loader ts-node/esm src/graph-scraper/scripts/delete-db.ts",
     "rate": "node --loader ts-node/esm src/graph-scraper/core/llm-rating.ts",
     "list-rated": "node --loader ts-node/esm src/graph-scraper/output-gen/list-rated-users.ts",
+    "queue": "tsx src/graph-scraper/output-gen/best_rated_to_txt.ts",
     "best-rated-to-txt": "node --loader ts-node/esm src/graph-scraper/output-gen/best_rated_to_txt.ts",
     "best-rated-links-to-txt": "node --loader ts-node/esm src/graph-scraper/output-gen/best_rated_links_to_txt.ts",
     "linkedin-research": "node --loader ts-node/esm src/graph-scraper/core/scraper-helpers/linkedin-research.ts",
@@ -41,7 +43,10 @@
     "investigate-graph-follower-data": "node --loader ts-node/esm src/graph-scraper/debugging/investigate-graph-follower-data.ts",
     "scrape-missing-connections": "node --loader ts-node/esm src/graph-scraper/scrape-missing-connections.ts",
     "graph-scoring": "node --loader ts-node/esm src/graph-scraper/core/graph-scoring.ts",
-    "scrape-seeder": "node --loader ts-node/esm src/graph-scraper/core/scraper-seeder.ts"
+    "scrape-seeder": "node --loader ts-node/esm src/graph-scraper/core/scraper-seeder.ts",
+    "mark": "tsx src/graph-scraper/scripts/mark-reviewed.ts",
+    "links": "tsx src/graph-scraper/scripts/print-links.ts",
+    "review": "tsx src/graph-scraper/scripts/review-batch.ts"
   },
   "keywords": [],
   "author": "",
@@ -71,6 +76,7 @@
     "http-server": "^14.1.1",
     "openai": "^4.90.0",
     "ts-node": "^10.9.2",
+    "tsx": "^4.21.0",
     "typescript": "^5.3.3"
   }
 }

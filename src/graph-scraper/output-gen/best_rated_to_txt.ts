@@ -46,12 +46,18 @@ async function exportBestRatedToTxt() {
       [...topProfiles].map((url) => url.replace("https://github.com/", ""))
     );
 
-    // Query for rated users, excluding those in existing profiles and with excluded archetypes
+    // Query for rated users, excluding reviewed, team members, and excluded archetypes
+    const teamUsernames = companyConfig.teamMembers.map((url) =>
+      url.replace("https://github.com/", "")
+    );
+    const excludeIds = [...Array.from(knownProfiles), ...teamUsernames];
+
     const ratedUsers = await usersCol
       .find({
         rating: { $exists: true },
-        _id: { $nin: Array.from(knownProfiles) },
+        _id: { $nin: excludeIds },
         engineerArchetype: { $nin: excludedArchetypes },
+        reviewStatus: { $exists: false },
       })
       .sort({ rating: -1 })
       .toArray();
@@ -91,13 +97,11 @@ ${criteriaLines ? `Criteria:\n${criteriaLines}` : `Reasoning: ${user.ratingReaso
       })
       .join("\n\n");
 
-    // Write to file
-    const timestamp = new Date().toISOString().split("T")[0];
-    const outputPath = path.join(
-      outputDir,
-      `top-rated-profiles-${timestamp}-${startIndex}-${endIndex}.txt`
-    );
-    fs.writeFileSync(outputPath, outputContent);
+    // Write to file (fixed name, overwrites previous)
+    const timestamp = new Date().toISOString().replace("T", " ").split(".")[0];
+    const header = `Review Queue - Generated ${timestamp}\nShowing ${slicedRatedUsers.length} unreviewed profiles (sorted by score)\n${"=".repeat(60)}\n\n`;
+    const outputPath = path.join(outputDir, `review-queue.txt`);
+    fs.writeFileSync(outputPath, header + outputContent);
 
     console.log(
       `Successfully exported ${slicedRatedUsers.length} profiles to ${outputPath}`
