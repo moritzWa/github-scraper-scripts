@@ -139,6 +139,23 @@ export async function scrapeUser(
       status: "processed",
     };
 
+    // Skip users without a real name (first + last) from GitHub or X
+    if (!bypassFilters) {
+      const hasRealName = [user.name, user.xName].some(
+        (n) => n && n.trim().includes(" ")
+      );
+      if (!hasRealName) {
+        console.log(
+          `[${username}] No real name found (name: ${user.name || "null"}, xName: ${user.xName || "null"}). Skipping.`
+        );
+        return createIgnoredUser(
+          basicUserData,
+          IgnoredReason.NO_REAL_NAME,
+          contributions
+        );
+      }
+    }
+
     // Calculate rating for users that passed filters
     if (!bypassFilters) {
       try {

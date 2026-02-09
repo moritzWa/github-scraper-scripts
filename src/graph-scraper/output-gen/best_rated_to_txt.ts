@@ -54,6 +54,7 @@ async function exportBestRatedToTxt() {
 
     const ratedUsers = await usersCol
       .find({
+        status: "processed",
         rating: { $exists: true },
         _id: { $nin: excludeIds },
         engineerArchetype: { $nin: excludedArchetypes },

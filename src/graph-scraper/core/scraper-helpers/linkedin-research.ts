@@ -85,17 +85,23 @@ export async function fetchLinkedInData(user: GraphUser, usersCol?: Collection<D
     const optimizedQuery = await generateOptimizedSearchQuery(user);
     console.log(`[${user.login}] Optimized query:`, optimizedQuery);
 
-    const braveLinkedinUrl = await fetchLinkedInProfileUsingBrave(
-      user,
-      optimizedQuery
-    );
-    if (braveLinkedinUrl) {
-      user.linkedinUrl = braveLinkedinUrl;
+    if (!optimizedQuery || optimizedQuery.toUpperCase() === "SKIP") {
       console.log(
-        `[${user.login}] Found LinkedIn URL via Brave: ${braveLinkedinUrl}`
+        `[${user.login}] Not enough identifying info to search for LinkedIn. Skipping.`
       );
     } else {
-      console.log(`[${user.login}] Could not find LinkedIn URL.`);
+      const braveLinkedinUrl = await fetchLinkedInProfileUsingBrave(
+        user,
+        optimizedQuery
+      );
+      if (braveLinkedinUrl) {
+        user.linkedinUrl = braveLinkedinUrl;
+        console.log(
+          `[${user.login}] Found LinkedIn URL via Brave: ${braveLinkedinUrl}`
+        );
+      } else {
+        console.log(`[${user.login}] Could not find LinkedIn URL.`);
+      }
     }
   } else {
     user.linkedinUrl = linkedinUrl;
@@ -110,6 +116,15 @@ export async function fetchLinkedInData(user: GraphUser, usersCol?: Collection<D
       user.linkedinUrl
     );
     user.linkedinExperience = linkedinExperience;
+
+    // Verify the LinkedIn profile matches the GitHub user
+    if (linkedinExperience && !verifyLinkedInMatch(user, linkedinExperience)) {
+      console.log(
+        `[${user.login}] LinkedIn profile mismatch detected - discarding LinkedIn data.`
+      );
+      user.linkedinUrl = null;
+      user.linkedinExperience = null;
+    }
   }
 
   if (user.linkedinExperience && !user.linkedinExperienceSummary) {
@@ -985,88 +1000,112 @@ export async function generateOptimizedSearchQuery(
       .map((repo: { name: string }) => repo.name)
       .join(", ") || "Not provided";
 
-  const prompt = `You are a skilled detective specializing in finding people's LinkedIn profiles. Your task is to craft the perfect search query that will lead us to the correct LinkedIn profile.
+  // Extract a snippet of website content if available (just text, strip HTML)
+  const websiteSnippet = (user as any).websiteContent
+    ? (user as any).websiteContent
+        .replace(/<[^>]*>/g, " ")
+        .replace(/\s+/g, " ")
+        .trim()
+        .substring(0, 300)
+    : "Not available";
+
+  const prompt = `You are a skilled detective specializing in finding people's LinkedIn profiles. Your task is to either craft the perfect search query or decide to SKIP if there's not enough info.
 
 You have access to various clues about the person:
 - Their GitHub username and display name
 - Their email address (which might contain their full name)
 - Their bio and social media presence (including X/Twitter bio)
 - Their current company
+- Their personal website content (snippet)
 - Their recent repositories: ${recentRepos}
 
-IMPORTANT RULES:
+CRITICAL: WHEN TO SKIP
+If you cannot determine enough identifying information to reliably find the RIGHT person, output SKIP. Specifically:
+- If you only have a first name (e.g. "Dan", "ben", "killian") with NO company and NO last name from any source -> SKIP
+- If the GitHub display name is clearly just a username/handle (e.g. "ottomated", "kdrag0n") with no real name anywhere -> SKIP
+- A first name ALONE (without last name) is searchable ONLY if you also have a specific company name (e.g. "Jason" + "Cursor" + "Skiff" is unique enough)
+
+RULES FOR QUERIES:
 1. Keep the search query extremely concise - maximum 6 words
-2. ALWAYS prefer "Name + Company" over "Name + Software Engineer" - the company name is by far the strongest signal for finding the right person
-3. Extract company names from bio, X bio, or company field (e.g. "@anysphere" -> "Cursor", "@vercel" -> "Vercel")
-4. Only fall back to "Software Engineer" if there is truly no company info available anywhere
-5. Format your response exactly as:
+2. Prefer FULL NAME (first + last). Check ALL sources: GitHub name, X/Twitter display name, email (firstname.lastname@), bio, website content
+3. ALWAYS prefer "Full Name + Current Company" over "Name + Software Engineer"
+4. BEWARE: do NOT combine a first name with a company name if it looks like a person's name (e.g. "Jason" + company "Skiff" should NOT become "Jason Skiff")
+5. Extract company names from bio, X bio, or company field (e.g. "@anysphere" -> "Cursor", "@vercel" -> "Vercel")
+6. First name + specific company is OK if the combination is unique (e.g. "Jason Cursor Skiff CTO")
+7. Only fall back to "Software Engineer" if there is truly no company info available
+
+Format your response exactly as:
 REASONING: [Your detective work here]
-QUERY: [Your 6-word-or-less search query]
+QUERY: [Your 6-word-or-less search query, or SKIP]
 
 Examples:
 
-Case 1:
+Case 1 (full name + company):
 Clues:
 - Name: Aman Karmani
 - Bio: building Cursor @anysphere. full stack tinkerer and perf nerd. formerly vp of infra @github
 - Company: @anysphere
-
-REASONING: Bio and company both mention Cursor/Anysphere. Use the well-known product name plus their VP title for disambiguation.
+REASONING: Full name available. Bio and company both mention Cursor/Anysphere.
 QUERY: Aman Karmani Cursor VP
 
-Case 2:
+Case 2 (first name only + unique companies):
 Clues:
-- Name: Mrinal Mohit
-- Company: @GleanWork
-- X Bio: Building AI at Glean. Previously Meta AI.
-- Bio: Not provided
+- Name: Jason
+- X Bio: building @cursor_ai, @NotionMail, founder/CTO @skiffprivacy
+- Company: @anysphere
+REASONING: Only first name, but X bio mentions Cursor and Skiff which are very specific. "Jason Cursor Skiff CTO" is unique enough.
+QUERY: Jason Cursor Skiff CTO
 
-REASONING: Company field and X bio both mention Glean. "Mrinal Mohit Glean" is highly specific and will find the right profile.
-QUERY: Mrinal Mohit Glean AI
-
-Case 3:
+Case 3 (first name only, no company -> SKIP):
 Clues:
-- Name: Jeff Huber
-- Recent Repos: chroma-doom, jekyll-bootstrap-boilerplate
-- Bio: Not provided
+- Name: Dan
+- X Bio: building things
 - Company: Not provided
+REASONING: Only a first name "Dan" with no company or last name from any source. Too generic to search.
+QUERY: SKIP
 
-REASONING: No company info available. Chroma DB is a popular vector database and likely his company. Use that as the disambiguator.
-QUERY: Jeff Huber Chroma
+Case 4 (no real name -> SKIP):
+Clues:
+- Name: ottomated
+- X Bio: Not provided
+- Company: Not provided
+REASONING: "ottomated" is clearly a username, not a real name. No other identifying info available.
+QUERY: SKIP
 
-Case 4:
+Case 5 (name from email):
 Clues:
 - Name: JannikSt
 - Email: info@jannik-straube.de
 - Bio: Software Engineer
-- Company: Not provided
-
-REASONING: No company info. Extract full name from email. Fall back to "Software Engineer" since nothing else is available.
+REASONING: Extract full name from email domain/local part. "Jannik Straube" is a full name.
 QUERY: Jannik Straube Software Engineer
 
 Current Case:
 Clues:
-- Name: ${user.name || user.login}
+- GitHub Display Name: ${user.name || user.login}
+- X/Twitter Display Name: ${user.xName || "Not provided"}
 - Email: ${user.email || "Not provided"}
 - Bio: ${user.bio || "Not provided"}
 - Company: ${user.company || "Not provided"}
 - X Bio: ${user.xBio || "Not provided"}
+- Website Content: ${websiteSnippet}
 - Recent Repos: ${recentRepos}
 
 What's your solution, detective? Format response exactly as:
 REASONING: [Your detective work here]
-QUERY: [Your 6-word-or-less search query]`;
+QUERY: [Your 6-word-or-less search query, or SKIP]`;
 
   try {
     const response = await openai.chat.completions.create({
-      model: "gpt-4o",
+      model: "gpt-4o-mini",
       messages: [{ role: "user", content: prompt }],
     });
 
     const result = response.choices[0]?.message?.content?.trim() || "";
     // Extract just the query part, ignoring the reasoning
     const queryMatch = result.match(/QUERY:\s*(.+)/i);
-    return queryMatch ? queryMatch[1].trim() : "";
+    const query = queryMatch ? queryMatch[1].trim() : "";
+    return query.toUpperCase() === "SKIP" ? "" : query;
   } catch (error) {
     console.error("Error generating optimized search query:", error);
     return "";
@@ -1084,23 +1123,84 @@ export function findLinkedInUrlInProfileData(user: UserData): string | null {
     return user.blog;
   }
 
-  // Check profile readme for LinkedIn URLs
-  if (user.profileReadme) {
-    const linkedinPatterns = [
-      /https?:\/\/(?:www\.)?linkedin\.com\/in\/[a-zA-Z0-9-]+/g,
-      /https?:\/\/(?:www\.)?linkedin\.com\/profile\/[a-zA-Z0-9-]+/g,
-      /https?:\/\/lnkd\.in\/[a-zA-Z0-9-]+/g,
-    ];
+  const linkedinPatterns = [
+    /https?:\/\/(?:www\.)?linkedin\.com\/in\/[a-zA-Z0-9-]+/g,
+    /https?:\/\/(?:www\.)?linkedin\.com\/profile\/[a-zA-Z0-9-]+/g,
+    /https?:\/\/lnkd\.in\/[a-zA-Z0-9-]+/g,
+  ];
 
-    for (const pattern of linkedinPatterns) {
-      const matches = user.profileReadme.match(pattern);
-      if (matches && matches.length > 0) {
-        return matches[0].split("?")[0];
+  // Check profile readme for LinkedIn URLs
+  for (const source of [user.profileReadme, (user as any).websiteContent]) {
+    if (source) {
+      for (const pattern of linkedinPatterns) {
+        pattern.lastIndex = 0;
+        const matches = source.match(pattern);
+        if (matches && matches.length > 0) {
+          return matches[0].split("?")[0];
+        }
       }
     }
   }
 
   return null;
+}
+
+/**
+ * Verify that a fetched LinkedIn profile actually matches the GitHub user.
+ * Returns true if the profile seems correct, false if it's likely a different person.
+ */
+function verifyLinkedInMatch(
+  user: GraphUser,
+  linkedin: any
+): boolean {
+  const githubCompany = user.company
+    ?.replace(/^@/, "")
+    .replace(/[^a-zA-Z0-9\s]/g, "")
+    .toLowerCase()
+    .trim();
+  const githubName = user.name?.toLowerCase().trim();
+  const linkedinName = linkedin.full_name?.toLowerCase().trim();
+
+  // Check if first names match between GitHub and LinkedIn
+  const githubFirstName = githubName?.split(/\s+/)[0];
+  const linkedinFirstName = linkedinName?.split(/\s+/)[0];
+  const firstNameMatches =
+    githubFirstName &&
+    linkedinFirstName &&
+    githubFirstName.length > 2 &&
+    (githubFirstName === linkedinFirstName ||
+      githubFirstName.startsWith(linkedinFirstName) ||
+      linkedinFirstName.startsWith(githubFirstName));
+
+  // If both have full names and first names don't match, reject
+  if (githubName && linkedinName && githubName.includes(" ") && linkedinName.includes(" ")) {
+    if (!firstNameMatches) {
+      console.log(
+        `[${user.login}] LinkedIn verification FAILED: first name mismatch (GitHub: "${githubName}" vs LinkedIn: "${linkedinName}")`
+      );
+      return false;
+    }
+  }
+
+  // If GitHub has a company field, check if ANY LinkedIn experience mentions it
+  if (githubCompany && githubCompany.length > 2) {
+    const linkedinCompanies = (linkedin.experiences || [])
+      .map((e: any) => e.company?.toLowerCase().replace(/[^a-zA-Z0-9\s]/g, "").trim())
+      .filter(Boolean);
+
+    const companyMatch = linkedinCompanies.some(
+      (c: string) => c.includes(githubCompany) || githubCompany.includes(c)
+    );
+
+    if (!companyMatch && linkedinCompanies.length > 0) {
+      console.log(
+        `[${user.login}] LinkedIn verification FAILED: company mismatch (GitHub: "${githubCompany}" vs LinkedIn: [${linkedinCompanies.slice(0, 5).join(", ")}]) - likely different person`
+      );
+      return false;
+    }
+  }
+
+  return true;
 }
 
 // Removed example script execution block that was here

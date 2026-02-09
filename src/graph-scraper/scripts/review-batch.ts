@@ -20,12 +20,21 @@ async function main() {
     url.replace("https://github.com/", "")
   );
 
+  const excludedArchetypes = [
+    "AI researcher/scientist",
+    "frontend",
+    "data engineer",
+    "low-level systems",
+    "None",
+  ];
+
   const users = await usersCol
     .find({
       status: "processed",
       rating: { $exists: true },
       _id: { $nin: teamUsernames } as any,
       reviewStatus: { $exists: false },
+      engineerArchetype: { $nin: excludedArchetypes },
     })
     .sort({ rating: -1 })
     .limit(count)
