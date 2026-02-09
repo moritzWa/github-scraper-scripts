@@ -46,7 +46,8 @@
     "scrape-seeder": "node --loader ts-node/esm src/graph-scraper/core/scraper-seeder.ts",
     "mark": "tsx src/graph-scraper/scripts/mark-reviewed.ts",
     "links": "tsx src/graph-scraper/scripts/print-links.ts",
-    "review": "tsx src/graph-scraper/scripts/review-batch.ts"
+    "review": "tsx src/graph-scraper/scripts/review-batch.ts",
+    "scrape-one": "tsx src/graph-scraper/scripts/scrape-one.ts"
   },
   "keywords": [],
   "author": "",
