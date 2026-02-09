@@ -985,54 +985,63 @@ export async function generateOptimizedSearchQuery(
       .map((repo: { name: string }) => repo.name)
       .join(", ") || "Not provided";
 
-  const prompt = `You are a skilled detective specializing in finding people's LinkedIn profiles of Software Engineers. Your task is to craft the perfect search query that will lead us to the correct LinkedIn profile.
+  const prompt = `You are a skilled detective specializing in finding people's LinkedIn profiles. Your task is to craft the perfect search query that will lead us to the correct LinkedIn profile.
 
 You have access to various clues about the person:
 - Their GitHub username and display name
 - Their email address (which might contain their full name)
-- Their bio and social media presence
-- Their current and past roles
+- Their bio and social media presence (including X/Twitter bio)
+- Their current company
 - Their recent repositories: ${recentRepos}
-
-Your mission is to combine these clues into a precise search query that will help us find their LinkedIn profile. Think like a detective - what unique combinations of information would make this person stand out in a search?
 
 IMPORTANT RULES:
 1. Keep the search query extremely concise - maximum 6 words
-2. Focus ONLY on name and current/most notable role
-3. Ignore historical roles, minor contributions, or technical details
-4. Format your response exactly as:
+2. ALWAYS prefer "Name + Company" over "Name + Software Engineer" - the company name is by far the strongest signal for finding the right person
+3. Extract company names from bio, X bio, or company field (e.g. "@anysphere" -> "Cursor", "@vercel" -> "Vercel")
+4. Only fall back to "Software Engineer" if there is truly no company info available anywhere
+5. Format your response exactly as:
 REASONING: [Your detective work here]
 QUERY: [Your 6-word-or-less search query]
 
-Here are some examples of how you've solved similar cases:
+Examples:
 
 Case 1:
 Clues:
 - Name: Aman Karmani
-- Email: aman@tmm1.net
-- Bio: building Cursor @anysphere. full stack tinkerer and perf nerd. formerly vp of infra @github + ruby-core committer. founder @getchannels + ffmpeg committer.
-- Recent Repos: cursor, anysphere
+- Bio: building Cursor @anysphere. full stack tinkerer and perf nerd. formerly vp of infra @github
+- Company: @anysphere
 
-REASONING: The bio contains too much information that could confuse the search. We should focus only on their current role at Cursor and their most notable position at GitHub.
+REASONING: Bio and company both mention Cursor/Anysphere. Use the well-known product name plus their VP title for disambiguation.
 QUERY: Aman Karmani Cursor VP
 
-case 2:
+Case 2:
+Clues:
+- Name: Mrinal Mohit
+- Company: @GleanWork
+- X Bio: Building AI at Glean. Previously Meta AI.
+- Bio: Not provided
+
+REASONING: Company field and X bio both mention Glean. "Mrinal Mohit Glean" is highly specific and will find the right profile.
+QUERY: Mrinal Mohit Glean AI
+
+Case 3:
 Clues:
 - Name: Jeff Huber
 - Recent Repos: chroma-doom, jekyll-bootstrap-boilerplate
 - Bio: Not provided
+- Company: Not provided
 
-REASONING: Chroma DB is a popular vector database. This might be a hint. As always when we dont have much information we add "Software Engineer" to the query.
-QUERY: Jeff Huber Chroma Software Engineer
+REASONING: No company info available. Chroma DB is a popular vector database and likely his company. Use that as the disambiguator.
+QUERY: Jeff Huber Chroma
 
-Case 3:
+Case 4:
 Clues:
 - Name: JannikSt
 - Email: info@jannik-straube.de
 - Bio: Software Engineer
-- Recent Repos: Not provided
+- Company: Not provided
 
-REASONING: The GitHub username is incomplete, but we can extract their full name from the email. Their role is already concise and clear.
+REASONING: No company info. Extract full name from email. Fall back to "Software Engineer" since nothing else is available.
 QUERY: Jannik Straube Software Engineer
 
 Current Case:
@@ -1065,7 +1074,12 @@ QUERY: [Your 6-word-or-less search query]`;
 }
 
 export function findLinkedInUrlInProfileData(user: UserData): string | null {
-  // Check blog field first
+  // Check linkedinUrl from GitHub social accounts (most reliable source)
+  if ((user as any).linkedinUrl && isLinkedInDomain((user as any).linkedinUrl)) {
+    return (user as any).linkedinUrl;
+  }
+
+  // Check blog field
   if (user.blog && isLinkedInDomain(user.blog)) {
     return user.blog;
   }

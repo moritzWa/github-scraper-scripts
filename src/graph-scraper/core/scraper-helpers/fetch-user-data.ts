@@ -13,10 +13,19 @@ export async function fetchBasicUserData(
   username: string,
   depth: number
 ) {
-  const userData = await withRateLimitRetry(() =>
-    octokit.request("GET /users/{username}", {
-      username,
-    })
+  const [userData, socialAccounts] = await Promise.all([
+    withRateLimitRetry(() =>
+      octokit.request("GET /users/{username}", { username })
+    ),
+    withRateLimitRetry(() =>
+      octokit.request("GET /users/{username}/social_accounts", { username })
+    ).catch(() => ({ data: [] as Array<{ provider: string; url: string }> })),
+  ]);
+
+  // Extract LinkedIn URL from social accounts (check both "linkedin" provider and URLs containing linkedin.com)
+  const linkedinSocial = socialAccounts.data.find(
+    (a: { provider: string; url: string }) =>
+      a.provider === "linkedin" || a.url?.includes("linkedin.com")
   );
 
   return {
@@ -34,6 +43,7 @@ export async function fetchBasicUserData(
     normalizedLocation: normalizeLocation(userData.data.location) || null,
     email: userData.data.email || null,
     twitter_username: userData.data.twitter_username || null,
+    linkedinUrl: linkedinSocial?.url || null,
     xUrl: null,
     xBio: null,
     xName: null,
