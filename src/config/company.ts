@@ -46,12 +46,12 @@ export const companyConfig: {
     {
       key: 'startup_experience',
       label: 'Startup Experience',
-
+      weight: 3,
       tiers: {
         0: 'No startup experience or non-technical startup roles',
-        1: 'Worked at a startup in a hands-on engineering role',
-        2: 'Founding engineer or early engineer at a startup with some validation',
-        3: 'Founded or co-founded a productivity/AI/fintech startup with strong validation (funding, acquisition, significant traction)',
+        1: 'Worked at a startup in a hands-on engineering role, but not a well-known or fast-growing one. Indie hackers and solo SaaS builders without significant traction also fall here.',
+        2: 'Founding engineer or early engineer at a startup with some validation (known investors, meaningful revenue, or growing team)',
+        3: 'Founded or co-founded a productivity/AI/fintech startup with strong validation (tier-1 VC funding, acquisition, significant traction)',
       },
     },
     {
@@ -59,9 +59,9 @@ export const companyConfig: {
       label: 'AI / Agent Experience',
 
       tiers: {
-        0: 'No AI/ML experience',
-        1: 'General interest, courses, or minor AI/ML projects',
-        2: 'Built AI-powered tools or applied ML/LLMs in a real product',
+        0: 'No AI or agent experience',
+        1: 'General interest, courses, or minor AI or agent projects',
+        2: 'Built AI-powered tools or applied AI or agent in a real product',
         3: 'Shipped AI agents, RAG systems, text-to-SQL, document processing, or research automation in production',
       },
     },
@@ -70,10 +70,10 @@ export const companyConfig: {
       label: 'Productivity Software / Dev Tools',
 
       tiers: {
-        0: 'No relevant experience',
-        1: 'Minor projects or interest in productivity tools, dev tools, or automation',
-        2: 'Built developer tools, document processing, or data pipeline software',
-        3: 'Deep experience building productivity software, research tools, or workflow automation platforms',
+        0: 'No relevant experience in productivity software or dev tools',
+        1: 'Minor or dated experience - a single old project (3+ years ago) in productivity/dev tools, or general interest without shipped products',
+        2: 'Has built productivity-related software (text-to-SQL, document editing, note-taking, presentation tools, workflow automation, dev tools, browser extensions) at a company or as a shipped side project with real users',
+        3: 'Deep, recent experience building multiple productivity tools or sustained work on complex productivity features in the last 2-3 years. Examples: shipping several dev tools, building core features of a productivity app (like Notion, Avanty, Readwise), or maintaining popular OSS dev tools',
       },
     },
     {
@@ -92,8 +92,8 @@ export const companyConfig: {
       label: 'Education',
 
       tiers: {
-        0: 'No university degree or unknown',
-        1: 'Degree from a good university',
+        0: 'Degree from an unknown or low-reputation university with no notable CS/engineering program',
+        1: 'No degree / dropped out, OR degree from a decent but unremarkable university',
         2: 'Degree from a top-tier CS/engineering program (e.g., Waterloo, Georgia Tech, UIUC, ETH Zurich, TU Munich)',
         3: 'Degree from a tier-1 university (MIT, Stanford, Harvard, CMU, Berkeley, Princeton, Caltech, Oxbridge)',
       },
@@ -101,9 +101,9 @@ export const companyConfig: {
     {
       key: 'location',
       label: 'Location',
-      weight: 2,
+      weight: 3,
       tiers: {
-        0: 'Asia, Africa, or other regions where relocation to NYC is unlikely. Also use for unknown location.',
+        0: 'Asia, Africa, or other regions where relocation to NYC is unlikely.',
         1: 'Western world (Europe, Canada, Australia, Latin America) - regions where relocation to NYC is plausible. Also use for US-based people who have been in the same non-NYC city for 5+ years (check LinkedIn experience locations) - long tenure in SF/Seattle/etc. makes relocation unlikely.',
         2: 'In the US (not NYC), with some indication of mobility (moved cities in the last few years, or less than 5 years in current city)',
         3: 'New York City area (NYC, NJ, CT commutable)',
@@ -123,12 +123,12 @@ export const companyConfig: {
     {
       key: 'company_pedigree',
       label: 'Company Pedigree',
-
+      weight: 3,
       tiers: {
         0: 'Most recent role is at a non-venture-backed company (agency, consultancy, government, unknown startup with no funding). Or no meaningful work experience.',
-        1: 'Most recent role is at a venture-backed startup or a known tech company, but not a standout name',
-        2: 'Most recent role is at a well-known tech company (e.g. FAANG, Stripe, Databricks) or a startup backed by strong investors',
-        3: 'Most recent role is at a company backed by tier-1 VCs (Sequoia, Thrive Capital, Founders Fund, Benchmark, Khosla Ventures, a16z, Accel) or at a top-tier tech company known for engineering excellence',
+        1: 'Most recent role is at a venture-backed startup or a known tech company, but not a standout name. Large established tech companies that are not known for exceptional engineering (e.g., LinkedIn, Adobe, Etsy, Salesforce, Oracle) fall here.',
+        2: 'Most recent role is at a well-known tech company with strong engineering culture (e.g. Google, Meta, Stripe, Databricks, Vercel) or a startup backed by strong investors',
+        3: 'Most recent role is at a top-tier AI/tech startup backed by tier-1 VCs (Sequoia, Thrive Capital, Founders Fund, Benchmark, Khosla Ventures, a16z, Accel) or at a company known for exceptional engineering talent density (e.g., Anthropic, OpenAI, Jane Street)',
       },
     },
     {
@@ -137,9 +137,9 @@ export const companyConfig: {
       weight: 2,
       tiers: {
         0: 'VP/C-suite at a well-known or large company, famous tech leader, tenured professor - way too senior for a Series B startup',
-        1: 'Director at a large company, or student/new grad with < 2 years of real engineering experience and no top-tier university',
-        2: 'New grad from a top university with internship experience, or junior engineer with 1-3 years experience',
-        3: 'IC engineer (mid through staff/principal), tech lead, or early-stage startup employee - the ideal seniority for a Series B startup',
+        1: 'Director at a large company, engineering manager whose recent roles are primarily people management, or student/new grad with < 2 years of real engineering experience and no top-tier university. Staff/tech lead at a big company with managerial responsibilities also falls here - they may struggle to go back to pure IC work.',
+        2: 'New grad from a top university with internship experience, junior engineer with 1-3 years experience, or tech lead at a startup who still codes hands-on',
+        3: 'IC engineer (mid through staff/principal) who is clearly still hands-on coding, or early-stage startup engineer - the ideal seniority for a Series B startup',
       },
     },
     {
@@ -148,9 +148,9 @@ export const companyConfig: {
       weight: 2,
       tiers: {
         0: 'CEO/CTO/co-founder/VP at a company that is clearly growing (positive headcount growth, >10 employees, or raised significant funding recently). Use company insights data if available. These people will not leave their company.',
-        1: 'Co-founder/exec at a funded startup with moderate or unknown growth, or C-suite at an established company',
-        2: 'Founder of a small/stagnating/early-stage company (<5 employees, no/negative growth in company insights), recently exited founder, someone whose company shut down, or IC engineer at a rocket-ship AI company (Anthropic, OpenAI, Thinking Machines, Cursor) where leaving would be irrational. Also use for someone stuck at a tiny company (1-3 employees, no growth) for 3+ years - this signals they may be comfortable/complacent rather than ambitious.',
-        3: 'Employee (not founder/exec), IC engineer, or someone clearly between roles and open to new opportunities. Not at a rocket-ship company. Not stuck at a stagnant company for years.',
+        1: 'Co-founder/exec at a funded startup with moderate or unknown growth, or C-suite at an established company. Also: someone who just started a new role or company (<6 months ago) - they are in the honeymoon phase and very unlikely to leave.',
+        2: 'Founder of a small/stagnating/early-stage company (<5 employees, no/negative growth in company insights), recently exited founder, someone whose company shut down, or IC engineer at a rocket-ship AI company (Anthropic, OpenAI, Thinking Machines, Cursor) where leaving would be irrational. Also use for someone stuck at a tiny company (1-3 employees, no growth) for 3+ years - this signals they may be comfortable/complacent rather than ambitious. Serial indie hackers/bootstrappers who have been running their own small projects for 5+ years are also unlikely to join a venture-backed startup.',
+        3: 'Employee (not founder/exec), IC engineer, or someone clearly between roles and open to new opportunities. Not at a rocket-ship company. Not stuck at a stagnant company for years. Not a serial indie hacker.',
       },
     },
     {
@@ -158,10 +158,10 @@ export const companyConfig: {
       label: 'Role Fit',
       weight: 2,
       tiers: {
-        0: 'Not a relevant engineering role (PM, designer, researcher only, or no engineering background)',
-        1: 'Adjacent engineering role (data engineer, DevOps, ML researcher, mobile-only)',
+        0: 'Not a relevant engineering role (PM, designer, researcher only, or no engineering background). Also: robotics, embedded systems, hardware, computer vision, or other non-web engineering.',
+        1: 'Adjacent engineering role (data engineer, DevOps, ML researcher, mobile-only, or primarily ML/CV engineer who does some web work on the side)',
         2: 'Partial overlap (backend-only or frontend-only engineer)',
-        3: 'Full-stack engineer or full-stack + AI engineer - the ideal archetype for the team',
+        3: 'Full-stack web engineer or full-stack + AI engineer building web products - the ideal archetype for the team',
       },
     },
     {
@@ -239,6 +239,7 @@ export const companyConfig: {
     'https://github.com/JGalbss',
     'https://github.com/JimmyGreaser',
     'https://github.com/virattt',
+    'https://github.com/habanzu',
   ],
 
   // The full LLM rating prompt (static part).
@@ -256,7 +257,13 @@ Guidelines:
 * Non-technical roles (Investors, pure Eng Managers, PMs, Designers) get tier 0 across the board.
 * Use all available info (GitHub, LinkedIn, X, web research) to determine location. Check LinkedIn experience locations to see how long someone has been in their current city - if they've been in the same non-NYC US city (e.g., SF, Seattle) for 5+ years across multiple jobs, relocation is unlikely.
 * For builder_signal: distinguish between genuine builders who ship products with real users/traction and people who churn through many micro-SaaS or short-lived projects without meaningful impact.
-* For hireability: if someone has been running a 1-3 person company with no growth for 3+ years, that's a negative signal (stuck/complacent), not a positive one.
+* For hireability: if someone has been running a 1-3 person company with no growth for 3+ years, that's a negative signal (stuck/complacent), not a positive one. If someone just started a new role or company (<6 months ago), they are in the honeymoon phase and very unlikely to leave - score tier 1. Check LinkedIn start dates carefully.
+* For role_fit: we need full-stack WEB engineers who build web applications, not robotics engineers, computer vision researchers, embedded systems engineers, or hardware people. Someone whose career is primarily in robotics/CV/hardware with some minor web projects on the side is NOT a full-stack engineer - score them 0-1.
+* For company_pedigree: distinguish between large established tech companies (LinkedIn, Adobe, Etsy, Salesforce) and companies known for exceptional engineering talent density (Anthropic, Stripe, Jane Street). A career spent entirely at big established tech is a tier 1-2, not tier 3. If you haven't heard of the company, it's tier 0-1.
+* For seniority_fit: if someone's recent titles are "Staff Engineer", "Tech Lead", or "Engineering Manager" at a big company, they likely have significant managerial responsibilities and may not be a good fit for a hands-on IC role at a Series B. Look at their GitHub activity to verify they still code.
+* For builder_signal and ai_agent_experience: only score high if there is concrete evidence from GitHub repos, stars, or verifiable product launches. Do NOT trust vague web research claims like "10,000 interactions" or "widely used" without corroborating evidence in their repos. A repo with <100 stars is not "significant traction".
+* Be skeptical of web research results - they may contain hallucinated or exaggerated claims. Cross-reference with actual GitHub repos and LinkedIn experience. If the LinkedIn data seems inconsistent with the GitHub profile (wrong person, different career focus), trust GitHub over LinkedIn.
+* Serial indie hackers/bootstrappers who have been running their own small SaaS projects for many years (without ever joining or founding a venture-backed company) are a poor fit. They are unlikely to join a startup as an employee, and their experience building solo projects doesn't translate to the team/scale dynamics of a Series B. Score them low on startup_experience (tier 0-1) and hireability (tier 1-2).
 
 For each criterion, first reason about the evidence, then assign a tier score (0-3). Be honest and consistent - don't inflate.
 

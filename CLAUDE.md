@@ -28,8 +28,20 @@ If the scraper is interrupted (Ctrl+C, crash, quota error), some users may get s
 node -e 'require("dotenv").config(); const { MongoClient } = require("mongodb"); (async () => { const c = new MongoClient(process.env.MONGODB_URI); await c.connect(); const r = await c.db(process.env.MONGODB_DB).collection("users").updateMany({ status: "processing" }, { $set: { status: "pending" } }); console.log(`Reset ${r.modifiedCount} users`); await c.close(); })()'
 ```
 
+## Prompt/Criteria Changes
+
+When the user gives feedback about a profile being ranked too high or too low, update the scoring criteria/prompt in `src/config/company.ts`. After making changes, **always verify by re-rating the profile that triggered the feedback**:
+
+1. Edit criteria/prompt in `src/config/company.ts`
+2. Run `npx tsc --noEmit` to verify it compiles
+3. Run `npm run scrape-one <username>` to re-rate the specific user
+4. Compare old vs new score and check that the problematic criteria changed as expected
+5. If the score didn't change enough, iterate on the prompt
+
+Test one specific user: `npm run scrape-one <username>`
+
 ## Key Config
 
 - `src/config/company.ts` - scoring criteria, prompts, seed profiles, target archetypes
 - `src/graph-scraper/core/scraper.ts` - scraper constants (batch size, depth, priority thresholds)
-- Scoring: 12 criteria, some weighted 2x, max score 48
+- Scoring: 12 criteria, weighted (location 3x, seniority/hireability/role_fit 2x, rest 1x), max score 51
