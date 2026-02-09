@@ -6,9 +6,10 @@ dotenv.config(); // Load environment variables at the very top
 // import *dotenv* from 'dotenv';
 // dotenv.config();
 
+import { Collection } from "mongodb";
 import { UserData } from "../../../types.js";
 import { isLinkedInDomain } from "../../../utils/prime-scraper-api-utils.js";
-import { GraphUser } from "../../types.js";
+import { DbGraphUser, GraphUser } from "../../types.js";
 import openai from "../openai.js"; // Import the shared OpenAI client
 
 // If you are in an environment where fetch is not globally available (e.g., older Node.js versions),
@@ -71,7 +72,7 @@ export class RapidAPICreditsExhaustedError extends Error {
   }
 }
 
-export async function fetchLinkedInData(user: GraphUser) {
+export async function fetchLinkedInData(user: GraphUser, usersCol?: Collection<DbGraphUser>) {
   console.log(`[${user.login}] Attempting to find LinkedIn URL...`);
 
   // First try to find LinkedIn URL in profile data
@@ -121,7 +122,7 @@ export async function fetchLinkedInData(user: GraphUser) {
 
   // Fetch company insights for founders/CEOs
   if (user.linkedinExperience && !user.currentCompanyInsights) {
-    const companyInsights = await fetchCurrentEmployerInsights(user);
+    const companyInsights = await fetchCurrentEmployerInsights(user, usersCol);
     user.currentCompanyInsights = companyInsights;
   }
 }
@@ -335,7 +336,8 @@ async function fetchCompanyInsightsById(
 }
 
 export async function fetchCurrentEmployerInsights(
-  user: Pick<GraphUser, "login" | "linkedinExperience">
+  user: Pick<GraphUser, "login" | "linkedinExperience">,
+  usersCol?: Collection<DbGraphUser>
 ): Promise<CompanyInsights | null> {
   if (!user.linkedinExperience?.experiences) return null;
 
@@ -367,6 +369,20 @@ export async function fetchCurrentEmployerInsights(
       `[${user.login}] No company LinkedIn URL for ${currentExp.company}`
     );
     return null;
+  }
+
+  // Check if another user already has insights for this company
+  if (usersCol) {
+    const existing = await usersCol.findOne(
+      { "currentCompanyInsights.linkedinUrl": currentExp.company_linkedin_url } as any,
+      { projection: { currentCompanyInsights: 1 } }
+    );
+    if (existing?.currentCompanyInsights) {
+      console.log(
+        `[${user.login}] Reusing cached company insights for ${existing.currentCompanyInsights.companyName} from DB`
+      );
+      return existing.currentCompanyInsights;
+    }
   }
 
   console.log(

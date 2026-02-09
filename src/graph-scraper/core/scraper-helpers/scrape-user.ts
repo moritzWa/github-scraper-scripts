@@ -1,7 +1,8 @@
 import { Octokit } from "@octokit/core";
+import { Collection } from "mongodb";
 import { fetchContributions } from "../../../utils/prime-scraper-api-utils.js";
 import { fetchUserEmailFromEvents } from "../../../utils/profile-data-fetchers.js";
-import { ContributionData, GraphUser, IgnoredReason } from "../../types.js";
+import { ContributionData, DbGraphUser, GraphUser, IgnoredReason } from "../../types.js";
 import { rateUserV3 } from "../llm-rating.js";
 import {
   fetchAdditionalUserData,
@@ -52,7 +53,8 @@ export async function scrapeUser(
   octokit: Octokit,
   username: string,
   depth: number,
-  bypassFilters: boolean = false
+  bypassFilters: boolean = false,
+  usersCol?: Collection<DbGraphUser>
 ): Promise<{ user: GraphUser | null }> {
   try {
     console.log(
@@ -151,7 +153,7 @@ export async function scrapeUser(
         }
 
         // Fetch LinkedIn data
-        await fetchLinkedInData(user);
+        await fetchLinkedInData(user, usersCol);
 
         // Get web research info
         const webResearchInfo = await fetchWebResearchInfo(user);

@@ -89,7 +89,7 @@ async function scrapeAndRateUser(
   console.log(
     `[${username}] Scraping profile (depth ${depth}, priority ${userDoc.priority ?? "?"})...`
   );
-  const { user } = await scrapeUser(octokit, username, depth, depth === 0);
+  const { user } = await scrapeUser(octokit, username, depth, depth === 0, usersCol);
 
   if (!user) {
     await usersCol.updateOne(
