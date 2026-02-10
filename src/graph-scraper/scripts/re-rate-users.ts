@@ -1,6 +1,7 @@
 import { Octokit } from "@octokit/core";
 import dotenv from "dotenv";
 import { MongoClient } from "mongodb";
+import { computeTotalScore } from "../../config/company.js";
 import { UserData } from "../../types.js";
 import { fetchUserEmailFromEvents } from "../../utils/profile-data-fetchers.js";
 import { withRateLimitRetry } from "../../utils/prime-scraper-api-utils.js";
@@ -48,7 +49,14 @@ function parseArgs() {
     }
   }
 
-  return { topN, forceRefetchLinkedin, scoresOnly };
+  let recomputeWeights = false;
+  for (let i = 0; i < args.length; i++) {
+    if (args[i] === "--recompute-weights") {
+      recomputeWeights = true;
+    }
+  }
+
+  return { topN, forceRefetchLinkedin, scoresOnly, recomputeWeights };
 }
 
 /** Fetch LinkedIn URL from GitHub social accounts API (cheap, one call) */
@@ -69,8 +77,48 @@ async function fetchLinkedInUrlFromGitHub(
   }
 }
 
+/**
+ * Fast recompute: recalculate rating from stored criteriaScores using current weights.
+ * No LLM calls, no API calls. Instant.
+ */
+async function recomputeWeightsOnly() {
+  const client = new MongoClient(mongoUri);
+  try {
+    await client.connect();
+    const db = client.db(dbName);
+    const usersCol = db.collection<DbGraphUser>("users");
+
+    const users = await usersCol
+      .find({ criteriaScores: { $exists: true } })
+      .toArray();
+
+    console.log(`Recomputing weighted scores for ${users.length} users...`);
+    let updated = 0;
+
+    for (const user of users) {
+      const newRating = computeTotalScore(user.criteriaScores as Record<string, number>);
+      if (newRating !== user.rating) {
+        await usersCol.updateOne(
+          { _id: user._id },
+          { $set: { rating: newRating } }
+        );
+        console.log(`  ${user._id}: ${user.rating} -> ${newRating}`);
+        updated++;
+      }
+    }
+
+    console.log(`\nDone. Updated ${updated}/${users.length} users.`);
+  } finally {
+    await client.close();
+  }
+}
+
 async function reRateUsers() {
-  const { topN, forceRefetchLinkedin, scoresOnly } = parseArgs();
+  const { topN, forceRefetchLinkedin, scoresOnly, recomputeWeights } = parseArgs();
+
+  if (recomputeWeights) {
+    return recomputeWeightsOnly();
+  }
   const client = new MongoClient(mongoUri);
   try {
     await client.connect();

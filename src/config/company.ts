@@ -122,10 +122,10 @@ export const companyConfig: {
     },
     {
       key: 'company_pedigree',
-      label: 'Company Pedigree',
-      weight: 3,
+      label: 'Reputable Company',
+      weight: 4,
       tiers: {
-        0: 'Most recent role is at a non-venture-backed company (agency, consultancy, government, unknown startup with no funding). Or no meaningful work experience.',
+        0: 'Most recent role is at a non-tech/traditional company (media, publishing, banking, insurance, government, consulting, agency - e.g. NYT, Bank of America, McKinsey, Deloitte), a non-venture-backed company, an unknown startup with no funding, or no meaningful work experience.',
         1: 'Most recent role is at a venture-backed startup or a known tech company, but not a standout name. Large established tech companies that are not known for exceptional engineering (e.g., LinkedIn, Adobe, Etsy, Salesforce, Oracle) fall here.',
         2: 'Most recent role is at a well-known tech company with strong engineering culture (e.g. Google, Meta, Stripe, Databricks, Vercel) or a startup backed by strong investors',
         3: 'Most recent role is at a top-tier AI/tech startup backed by tier-1 VCs (Sequoia, Thrive Capital, Founders Fund, Benchmark, Khosla Ventures, a16z, Accel) or at a company known for exceptional engineering talent density (e.g., Anthropic, OpenAI, Jane Street)',
@@ -134,7 +134,7 @@ export const companyConfig: {
     {
       key: 'seniority_fit',
       label: 'Seniority Fit',
-      weight: 2,
+      weight: 1,
       tiers: {
         0: 'VP/C-suite at a well-known or large company, famous tech leader, tenured professor - way too senior for a Series B startup',
         1: 'Director at a large company, engineering manager whose recent roles are primarily people management. Staff/tech lead at a big company with managerial responsibilities also falls here - they may struggle to go back to pure IC work.',
@@ -167,7 +167,7 @@ export const companyConfig: {
     {
       key: 'role_fit',
       label: 'Role Fit',
-      weight: 2,
+      weight: 1,
       tiers: {
         0: 'Not a relevant engineering role (PM, designer, researcher only, or no engineering background). Also: robotics, embedded systems, hardware, computer vision, or other non-web engineering.',
         1: 'Adjacent engineering role (data engineer, DevOps, ML researcher, mobile-only, or primarily ML/CV engineer who does some web work on the side)',
@@ -243,6 +243,7 @@ export const companyConfig: {
 
   // Seed profiles for graph traversal starting points
   seedProfiles: [
+    // Team / original seeds
     'https://github.com/moritzWa',
     'https://github.com/wuweiweiwu',
     'https://github.com/AJNandi',
@@ -251,6 +252,21 @@ export const companyConfig: {
     'https://github.com/JimmyGreaser',
     'https://github.com/virattt',
     'https://github.com/habanzu',
+    // Outreach candidates (validated as strong - explore their connections)
+    'https://github.com/timsuchanek',
+    'https://github.com/RobertCraigie',
+    'https://github.com/NathanFlurry',
+    'https://github.com/DeMoorJasper',
+    'https://github.com/N2D4',
+    'https://github.com/MichaelAlfano',
+    'https://github.com/r2d4',
+    'https://github.com/dominikmoehrle',
+    'https://github.com/edisonqu',
+    'https://github.com/rileytomasek',
+    'https://github.com/Yonom',
+    'https://github.com/kamath',
+    'https://github.com/adamcohenhillel',
+    'https://github.com/tommoor',
   ],
 
   // The full LLM rating prompt (static part).
@@ -270,13 +286,13 @@ Guidelines:
 * For builder_signal: distinguish between genuine builders who ship products with real users/traction and people who churn through many micro-SaaS or short-lived projects without meaningful impact.
 * For hireability: if someone has been running a 1-3 person company with no growth for 3+ years, that's a negative signal (stuck/complacent), not a positive one. If someone just started a new role or company (<6 months ago), they are in the honeymoon phase and very unlikely to leave - score tier 1. Check LinkedIn start dates carefully.
 * For role_fit: we need full-stack WEB engineers who build web applications, not robotics engineers, computer vision researchers, embedded systems engineers, or hardware people. Someone whose career is primarily in robotics/CV/hardware with some minor web projects on the side is NOT a full-stack engineer - score them 0-1.
-* For company_pedigree: distinguish between large established tech companies (LinkedIn, Adobe, Etsy, Salesforce) and companies known for exceptional engineering talent density (Anthropic, Stripe, Jane Street). A career spent entirely at big established tech is a tier 1-2, not tier 3. If you haven't heard of the company, it's tier 0-1.
+* For company_pedigree: traditional/non-tech companies (media, banking, insurance, government, consulting) are tier 0 regardless of brand prestige. Distinguish between large established tech companies (LinkedIn, Adobe, Etsy, Salesforce) and companies known for exceptional engineering talent density (Anthropic, Stripe, Jane Street). A career spent entirely at big established tech is a tier 1-2, not tier 3. If you haven't heard of the company, it's tier 0-1.
 * For seniority_fit: if someone's recent titles are "Staff Engineer", "Tech Lead", or "Engineering Manager" at a big company, they likely have significant managerial responsibilities and may not be a good fit for a hands-on IC role at a Series B. Look at their GitHub activity to verify they still code.
 * For builder_signal and ai_agent_experience: only score high if there is concrete evidence from GitHub repos, stars, or verifiable product launches. Do NOT trust vague web research claims like "10,000 interactions" or "widely used" without corroborating evidence in their repos. A repo with <100 stars is not "significant traction".
 * Be skeptical of web research results - they may contain hallucinated or exaggerated claims. Cross-reference with actual GitHub repos and LinkedIn experience. If the LinkedIn data seems inconsistent with the GitHub profile (wrong person, different career focus), trust GitHub over LinkedIn.
 * Serial indie hackers/bootstrappers who have been running their own small SaaS projects for many years (without ever joining or founding a venture-backed company) are a poor fit. They are unlikely to join a startup as an employee, and their experience building solo projects doesn't translate to the team/scale dynamics of a Series B. Score them low on startup_experience (tier 0-1) and hireability (tier 1-2).
 
-For each criterion, first reason about the evidence, then assign a tier score (0-3). Be honest and consistent - don't inflate.
+For each criterion, first reason about the evidence, then assign a tier score (0-3). Be honest and consistent - don't inflate. When evidence is missing (e.g., no LinkedIn profile, no web research results), default to lower tiers rather than assuming the best. Absence of evidence is not evidence of a positive signal.
 
 {CRITERIA}
 
