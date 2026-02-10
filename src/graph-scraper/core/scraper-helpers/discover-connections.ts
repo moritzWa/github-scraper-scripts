@@ -8,15 +8,24 @@ import { DbGraphUser } from "../../types.js";
 const FOLLOWING_MULTIPLIER = 1.5;
 const FOLLOWER_MULTIPLIER = 0.7;
 
+// Weights for lineage-blended rating
+const PARENT_WEIGHT = 0.7;
+const GRANDPARENT_WEIGHT = 0.3;
+
 export function computePriority(
   parentRating: number,
   edgeDirection: "following" | "followers",
-  childDepth: number
+  childDepth: number,
+  grandparentRating?: number
 ): number {
   const multiplier =
     edgeDirection === "following" ? FOLLOWING_MULTIPLIER : FOLLOWER_MULTIPLIER;
+  // Blend parent and grandparent ratings for lineage-aware priority
+  const effectiveRating = grandparentRating
+    ? parentRating * PARENT_WEIGHT + grandparentRating * GRANDPARENT_WEIGHT
+    : parentRating;
   return (
-    Math.round(((parentRating * multiplier) / Math.sqrt(childDepth)) * 100) /
+    Math.round(((effectiveRating * multiplier) / Math.sqrt(childDepth)) * 100) /
     100
   );
 }
@@ -36,13 +45,15 @@ export async function discoverConnectionsPageByPage(
   ) => AsyncGenerator<string[], void, undefined>,
   octokit: Octokit,
   usersCol: Collection<DbGraphUser>,
-  edgesCol: Collection<any>
+  edgesCol: Collection<any>,
+  grandparentRating?: number
 ) {
   const childDepth = depth + 1;
   const childPriority = computePriority(
     parentRating,
     connectionType,
-    childDepth
+    childDepth,
+    grandparentRating
   );
 
   try {

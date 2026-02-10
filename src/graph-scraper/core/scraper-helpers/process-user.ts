@@ -153,6 +153,11 @@ async function scrapeConnections(
     followers: false,
   };
 
+  // Get best grandparent rating from this user's parentRatings
+  const bestGrandparentRating = userDoc.parentRatings?.length
+    ? Math.max(...userDoc.parentRatings.map((p) => p.rating))
+    : undefined;
+
   // Always scrape following (people this user vouches for)
   if (!connections.following) {
     console.log(`[${username}] Scraping following...`);
@@ -164,7 +169,8 @@ async function scrapeConnections(
       fetchFollowingPaged,
       octokit,
       usersCol,
-      edgesCol
+      edgesCol,
+      bestGrandparentRating
     );
     await usersCol.updateOne(
       { _id: username },
@@ -185,7 +191,8 @@ async function scrapeConnections(
       fetchFollowersPaged,
       octokit,
       usersCol,
-      edgesCol
+      edgesCol,
+      bestGrandparentRating
     );
     await usersCol.updateOne(
       { _id: username },

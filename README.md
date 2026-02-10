@@ -4,7 +4,7 @@ A graph-based developer network scraper that discovers and evaluates engineering
 
 ## Key Features
 
-- **Best-first graph traversal** - Priority queue (not BFS/DFS) explores the most promising branches first. Priority = `parentRating * directionMultiplier / sqrt(depth)`, with "following" edges weighted 1.5x over "follower" edges.
+- **Best-first graph traversal** - Priority queue (not BFS/DFS) explores the most promising branches first. Priority = `(0.7 * parentRating + 0.3 * grandparentRating) * directionMultiplier / sqrt(depth)`. Strong lineages get explored first. "Following" edges weighted 1.5x over "follower" edges.
 - **Company insights for hireability** - Fetches real LinkedIn company data (headcount, growth trends) for founders/execs. A founder at a company growing 100% YoY is unhireable; a founder of a stagnating 3-person company might be ready to move.
 - **LinkedIn profile matching** - LLM-generated query to find LinkedIn profiles by searching Brave with queries built from GitHub/X/email/website data. Skips unsearchable profiles (e.g., first-name-only). Verifies fetched profiles against GitHub data and discards mismatches.
 - **Contribution pattern filters** - Before expensive LinkedIn/LLM calls, filters out candidates based on GitHub activity: minimum contribution threshold, active in 8+ months of the year, and a weekday-coder detector (>85% weekday-only activity suggests they only code at work, not a passionate builder).
@@ -17,9 +17,10 @@ The scraper uses a **priority-queue graph traversal** starting from seed GitHub 
 1. **Seed profiles** are added with maximum priority
 2. Each user is scraped, enriched with LinkedIn/web data, and rated by an LLM against your criteria
 3. High-scoring users' connections are discovered and added to the queue with computed priority
-4. Priority formula: `parentRating * directionMultiplier / sqrt(depth)`
+4. Priority formula: `effectiveRating * directionMultiplier / sqrt(depth)`, where `effectiveRating = 0.7 * parentRating + 0.3 * grandparentRating`
    - "Following" edges get 1.5x (parent vouches for this user - strong signal)
    - "Follower" edges get 0.7x (weaker signal - anyone can follow)
+   - Lineage blending means a strong grandparent boosts priority even if the parent is mediocre
 5. The scraper processes users in priority order, focusing effort on the most promising branches
 
 MongoDB serves as the persistent priority queue, enabling crash recovery and incremental runs.
