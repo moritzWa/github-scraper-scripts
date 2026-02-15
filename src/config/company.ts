@@ -270,6 +270,7 @@ export const companyConfig: {
     'https://github.com/juliusmarminge',
     'https://github.com/mfts',
     'https://github.com/raghavpillai',
+    'https://github.com/xdotli',
     // other ppl i respect
     'https://github.com/samuelstroschein',
     'https://github.com/mitsuhiko',

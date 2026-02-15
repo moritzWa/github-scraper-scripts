@@ -11,10 +11,20 @@ const dbName = process.env.MONGODB_DB;
 const args = process.argv.slice(2).filter((a) => !a.startsWith("--"));
 const count = parseInt(args[0] || "10", 10);
 const nycOnly = process.argv.includes("--nyc");
+const noLinkedin = process.argv.includes("--no-linkedin");
+const requireTwitter = process.argv.includes("--require-twitter");
 const minHireabilityArg = process.argv.find((a) => a.startsWith("--min-hireability="));
 const minHireability = minHireabilityArg
   ? parseInt(minHireabilityArg.split("=")[1], 10)
   : 1;
+const minStartupExpArg = process.argv.find((a) => a.startsWith("--min-startup-exp="));
+const minStartupExp = minStartupExpArg
+  ? parseInt(minStartupExpArg.split("=")[1], 10)
+  : 1;
+const minAiExpArg = process.argv.find((a) => a.startsWith("--min-ai-exp="));
+const minAiExp = minAiExpArg
+  ? parseInt(minAiExpArg.split("=")[1], 10)
+  : 0;
 
 async function main() {
   const client = new MongoClient(mongoUri);
@@ -47,6 +57,18 @@ async function main() {
   }
   if (minHireability > 0) {
     query["criteriaScores.hireability"] = { $gte: minHireability };
+  }
+  if (!noLinkedin) {
+    query.linkedinUrl = { $exists: true, $ne: null };
+  }
+  if (requireTwitter) {
+    query.twitter_username = { $exists: true, $ne: null };
+  }
+  if (minStartupExp > 0) {
+    query["criteriaScores.startup_experience"] = { $gte: minStartupExp };
+  }
+  if (minAiExp > 0) {
+    query["criteriaScores.ai_agent_experience"] = { $gte: minAiExp };
   }
 
   const users = await usersCol

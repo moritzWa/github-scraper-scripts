@@ -3,10 +3,10 @@ import { Collection } from "mongodb";
 import { DbGraphUser } from "../../types.js";
 
 // Priority multipliers for edge direction.
-// "following" = parent follows this user = parent vouches for them (strong signal).
-// "followers" = this user follows the parent = weaker signal (anyone can follow).
-const FOLLOWING_MULTIPLIER = 1.5;
-const FOLLOWER_MULTIPLIER = 0.7;
+// "followers" = this user follows the parent = they chose to follow a high-scorer (strong community signal).
+// "following" = parent follows this user = weaker signal (people follow famous/random accounts).
+const FOLLOWING_MULTIPLIER = 0.8;
+const FOLLOWER_MULTIPLIER = 1.3;
 
 // Weights for lineage-blended rating
 const PARENT_WEIGHT = 0.7;

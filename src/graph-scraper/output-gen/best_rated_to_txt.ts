@@ -61,6 +61,9 @@ async function exportBestRatedToTxt() {
         _id: { $nin: excludeIds },
         engineerArchetype: { $nin: excludedArchetypes },
         reviewStatus: { $exists: false },
+        linkedinUrl: { $exists: true, $ne: null } as any,
+        "criteriaScores.startup_experience": { $gte: 1 },
+        "criteriaScores.hireability": { $gte: 1 },
       })
       .sort({ rating: -1 })
       .toArray();

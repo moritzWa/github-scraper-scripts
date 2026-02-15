@@ -22,6 +22,12 @@ const MIN_PRIORITY = 5;
 const STATS_INTERVAL = 10;
 const SEED_PRIORITY = 100;
 
+// Queue selection: multi-parent quality bonus
+const GOOD_PARENT_THRESHOLD = 35; // parent rating considered "good"
+const GOOD_PARENT_BONUS = 4; // priority bonus per good parent
+const AVG_PARENT_WEIGHT = 0.15; // weight of average parent rating
+const CANDIDATE_POOL_SIZE = 500; // top N by raw priority to re-rank
+
 const SCRAPER_CONFIG: ScraperConfig = {
   maxDepth: MAX_DEPTH,
   minRatingToScrapeConnections: 25,
@@ -174,11 +180,59 @@ async function main() {
       await printStats(usersCol);
     }
 
-    // Fetch next batch sorted by priority (highest first)
+    // Fetch next batch: get top candidates by raw priority, then re-rank
+    // with multi-parent quality bonus (users discovered by many high-scoring
+    // parents are better candidates)
     const pendingUsers = await usersCol
-      .find({ status: "pending", priority: { $gte: MIN_PRIORITY } } as any)
-      .sort({ priority: -1 } as any)
-      .limit(BATCH_SIZE)
+      .aggregate([
+        { $match: { status: "pending", priority: { $gte: MIN_PRIORITY } } },
+        { $sort: { priority: -1 } },
+        { $limit: CANDIDATE_POOL_SIZE },
+        {
+          $addFields: {
+            _goodParentCount: {
+              $cond: [
+                { $isArray: "$parentRatings" },
+                {
+                  $size: {
+                    $filter: {
+                      input: "$parentRatings",
+                      as: "pr",
+                      cond: { $gte: ["$$pr.rating", GOOD_PARENT_THRESHOLD] },
+                    },
+                  },
+                },
+                0,
+              ],
+            },
+            _avgParentRating: {
+              $cond: [
+                {
+                  $and: [
+                    { $isArray: "$parentRatings" },
+                    { $gt: [{ $size: "$parentRatings" }, 0] },
+                  ],
+                },
+                { $avg: "$parentRatings.rating" },
+                0,
+              ],
+            },
+          },
+        },
+        {
+          $addFields: {
+            _effectivePriority: {
+              $add: [
+                "$priority",
+                { $multiply: ["$_goodParentCount", GOOD_PARENT_BONUS] },
+                { $multiply: ["$_avgParentRating", AVG_PARENT_WEIGHT] },
+              ],
+            },
+          },
+        },
+        { $sort: { _effectivePriority: -1 } },
+        { $limit: BATCH_SIZE },
+      ])
       .toArray();
 
     if (pendingUsers.length === 0) {
@@ -196,10 +250,10 @@ async function main() {
       break;
     }
 
-    const priorities = pendingUsers.map((u: any) => u.priority ?? 0);
+    const effPriorities = pendingUsers.map((u: any) => u._effectivePriority ?? u.priority ?? 0);
     console.log(
       `Batch ${batchCount}: ${pendingUsers.length} users ` +
-        `[priority ${Math.min(...priorities).toFixed(1)}-${Math.max(...priorities).toFixed(1)}] ` +
+        `[priority ${Math.min(...effPriorities).toFixed(1)}-${Math.max(...effPriorities).toFixed(1)}] ` +
         `(${pendingUsers.map((u) => u._id).join(", ")})`
     );
 
@@ -211,9 +265,9 @@ async function main() {
 
     try {
       await Promise.all(
-        pendingUsers.map((userDoc) =>
+        pendingUsers.map((userDoc: any) =>
           processUserFromBatch(
-            userDoc,
+            userDoc as DbGraphUser,
             octokit,
             usersCol,
             edgesCol,
