@@ -8,7 +8,13 @@ dotenv.config();
 const mongoUri = process.env.MONGODB_URI || "mongodb://localhost:27017";
 const dbName = process.env.MONGODB_DB;
 
-const count = parseInt(process.argv[2] || "10", 10);
+const args = process.argv.slice(2).filter((a) => !a.startsWith("--"));
+const count = parseInt(args[0] || "10", 10);
+const nycOnly = process.argv.includes("--nyc");
+const minHireabilityArg = process.argv.find((a) => a.startsWith("--min-hireability="));
+const minHireability = minHireabilityArg
+  ? parseInt(minHireabilityArg.split("=")[1], 10)
+  : 1;
 
 async function main() {
   const client = new MongoClient(mongoUri);
@@ -28,14 +34,23 @@ async function main() {
     "None",
   ];
 
+  const query: any = {
+    status: "processed",
+    rating: { $exists: true },
+    _id: { $nin: teamUsernames },
+    reviewStatus: { $exists: false },
+    engineerArchetype: { $nin: excludedArchetypes },
+  };
+
+  if (nycOnly) {
+    query["criteriaScores.location"] = 3;
+  }
+  if (minHireability > 0) {
+    query["criteriaScores.hireability"] = { $gte: minHireability };
+  }
+
   const users = await usersCol
-    .find({
-      status: "processed",
-      rating: { $exists: true },
-      _id: { $nin: teamUsernames } as any,
-      reviewStatus: { $exists: false },
-      engineerArchetype: { $nin: excludedArchetypes },
-    })
+    .find(query)
     .sort({ rating: -1 })
     .limit(count)
     .project({ _id: 1, rating: 1, linkedinUrl: 1, name: 1, company: 1 })

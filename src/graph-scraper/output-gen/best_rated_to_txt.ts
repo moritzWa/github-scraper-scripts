@@ -17,6 +17,8 @@ const excludedArchetypes = [
   "None",
 ];
 
+const NYC_ONLY = process.argv.includes("--nyc");
+
 interface RatedUser {
   _id: string;
   rating: number;
@@ -63,7 +65,11 @@ async function exportBestRatedToTxt() {
       .sort({ rating: -1 })
       .toArray();
 
-    const slicedRatedUsers = ratedUsers.slice(startIndex, endIndex);
+    const filteredUsers = NYC_ONLY
+      ? ratedUsers.filter((u) => u.criteriaScores?.location === 3)
+      : ratedUsers;
+
+    const slicedRatedUsers = filteredUsers.slice(startIndex, endIndex);
 
     // Create output directory if it doesn't exist
     const outputDir = path.join(process.cwd(), "output");

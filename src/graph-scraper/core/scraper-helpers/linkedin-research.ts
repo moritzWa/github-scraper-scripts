@@ -878,9 +878,7 @@ export async function fetchLinkedInProfileUsingBrave(
   const performFetchTask = async () => {
     const searchQuery = optimizedQuery
       ? `site:linkedin.com/in/ ${optimizedQuery}`
-      : `site:linkedin.com/in/ ${user.name || user.login} ${
-          user.email ? `email:${user.email}` : ""
-        } ${user.xBio || user.bio || ""} (Software Engineer)`;
+      : `site:linkedin.com/in/ ${user.name || user.login} Software Engineer`;
 
     try {
       if (!process.env.BRAVE_API_KEY) {
@@ -1033,6 +1031,7 @@ RULES FOR QUERIES:
 5. Extract company names from bio, X bio, or company field (e.g. "@anysphere" -> "Cursor", "@vercel" -> "Vercel")
 6. First name + specific company is OK if the combination is unique (e.g. "Jason Cursor Skiff CTO")
 7. Only fall back to "Software Engineer" if there is truly no company info available
+8. NEVER include open-source project names, library names, or GitHub repo names in the query (e.g. "htmx", "tRPC", "prisma"). Nobody puts these on their LinkedIn profile. Use the company they work at or "Software Engineer" instead.
 
 Format your response exactly as:
 REASONING: [Your detective work here]

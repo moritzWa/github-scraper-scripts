@@ -48,7 +48,7 @@ export const companyConfig: {
       label: 'Startup Experience',
       weight: 3,
       tiers: {
-        0: 'No startup experience or non-technical startup roles',
+        0: 'No startup experience or non-technical startup roles. Also use for someone who has spent their entire career (10+ years) at one or two large corporations (e.g., Bloomberg, IBM, Oracle, Microsoft, Google) without any startup involvement - these candidates are very unlikely to thrive in a fast-moving Series B environment.',
         1: 'Worked at a startup in a hands-on engineering role, but not a well-known or fast-growing one. Indie hackers and solo SaaS builders without significant traction also fall here.',
         2: 'Founding engineer or early engineer at a startup with some validation (known investors, meaningful revenue, or growing team)',
         3: 'Founded or co-founded a productivity/AI/fintech startup with strong validation (tier-1 VC funding, acquisition, significant traction)',
@@ -61,8 +61,8 @@ export const companyConfig: {
       tiers: {
         0: 'No AI or agent experience',
         1: 'General interest, courses, or minor AI or agent projects',
-        2: 'Built AI-powered tools or applied AI or agent in a real product',
-        3: 'Shipped AI agents, RAG systems, text-to-SQL, document processing, or research automation in production',
+        2: 'Built AI-powered tools or applied AI or agent in a real product. Corporate ML/inference infrastructure (model serving, ML pipelines) at large companies falls here, not tier 3.',
+        3: 'Shipped AI agents, RAG systems, text-to-SQL, document processing, or research automation in production. Must be building the AI-powered product itself, not just the infra/platform underneath it.',
       },
     },
     {
@@ -134,7 +134,7 @@ export const companyConfig: {
     {
       key: 'seniority_fit',
       label: 'Seniority Fit',
-      weight: 1,
+      weight: 2,
       tiers: {
         0: 'VP/C-suite at a well-known or large company, famous tech leader, tenured professor - way too senior for a Series B startup',
         1: 'Director at a large company, engineering manager whose recent roles are primarily people management. Staff/tech lead at a big company with managerial responsibilities also falls here - they may struggle to go back to pure IC work.',
@@ -156,10 +156,10 @@ export const companyConfig: {
     {
       key: 'hireability',
       label: 'Hireability',
-      weight: 4,
+      weight: 6,
       tiers: {
         0: 'CEO/CTO/co-founder/VP at a company that is clearly growing (positive headcount growth, >10 employees, or raised significant funding recently). Use company insights data if available. Also: anyone in a senior position (Principal, Staff, Distinguished, Director+) at a rocket-ship AI company (Anthropic, OpenAI, Thinking Machines, Cursor, etc.) - these people are extremely well-compensated and will not leave. These people will not leave their company.',
-        1: 'Co-founder/exec at a funded startup with moderate or unknown growth, or C-suite at an established company. Also: junior/mid-level IC engineer at a rocket-ship AI company (Anthropic, OpenAI, Cursor, etc.) where leaving would be irrational. Also: someone who just started a new role or company (<6 months ago) - they are in the honeymoon phase and very unlikely to leave.',
+        1: 'Co-founder/exec at a funded startup with moderate or unknown growth, or C-suite at an established company. Also: junior/mid-level IC engineer at a rocket-ship AI company (Anthropic, OpenAI, Cursor, etc.) where leaving would be irrational. Also: someone who just started a new role or company (<6 months ago) - they are in the honeymoon phase and very unlikely to leave. Also: someone who has been at the same large company for 10+ years - they are deeply embedded and very unlikely to leave for a startup.',
         2: 'Founder of a small/stagnating/early-stage company (<5 employees, no/negative growth in company insights), recently exited founder, someone whose company shut down. Also use for someone stuck at a tiny company (1-3 employees, no growth) for 3+ years - this signals they may be comfortable/complacent rather than ambitious. Serial indie hackers/bootstrappers who have been running their own small projects for 5+ years are also unlikely to join a venture-backed startup.',
         3: 'Employee (not founder/exec), IC engineer at a normal company, or someone clearly between roles and open to new opportunities. Not at a rocket-ship company. Not stuck at a stagnant company for years. Not a serial indie hacker.',
       },
@@ -167,7 +167,7 @@ export const companyConfig: {
     {
       key: 'role_fit',
       label: 'Role Fit',
-      weight: 1,
+      weight: 2,
       tiers: {
         0: 'Not a relevant engineering role (PM, designer, researcher only, or no engineering background). Also: robotics, embedded systems, hardware, computer vision, or other non-web engineering.',
         1: 'Adjacent engineering role (data engineer, DevOps, ML researcher, mobile-only, or primarily ML/CV engineer who does some web work on the side)',
@@ -267,6 +267,12 @@ export const companyConfig: {
     'https://github.com/kamath',
     'https://github.com/adamcohenhillel',
     'https://github.com/tommoor',
+    'https://github.com/juliusmarminge',
+    'https://github.com/mfts',
+    'https://github.com/raghavpillai',
+    // other ppl i respect
+    'https://github.com/samuelstroschein',
+    'https://github.com/mitsuhiko',
   ],
 
   // The full LLM rating prompt (static part).
