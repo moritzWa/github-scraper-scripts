@@ -9,14 +9,6 @@ config();
 
 const startIndex = 0;
 const endIndex = 200;
-const excludedArchetypes = [
-  "AI researcher/scientist",
-  "frontend",
-  "data engineer",
-  "low-level systems",
-  "None",
-];
-
 const NYC_ONLY = process.argv.includes("--nyc");
 
 interface RatedUser {
@@ -59,7 +51,6 @@ async function exportBestRatedToTxt() {
         status: "processed",
         rating: { $exists: true },
         _id: { $nin: excludeIds },
-        engineerArchetype: { $nin: excludedArchetypes },
         reviewStatus: { $exists: false },
         linkedinUrl: { $exists: true, $ne: null } as any,
         "criteriaScores.startup_experience": { $gte: 1 },
