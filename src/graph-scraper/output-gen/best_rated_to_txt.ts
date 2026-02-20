@@ -55,6 +55,7 @@ async function exportBestRatedToTxt() {
         linkedinUrl: { $exists: true, $ne: null } as any,
         "criteriaScores.startup_experience": { $gte: 1 },
         "criteriaScores.hireability": { $gte: 1 },
+        "criteriaScores.builder_signal": { $gte: 2 },
       })
       .sort({ rating: -1 })
       .toArray();

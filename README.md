@@ -4,8 +4,8 @@ A graph-based developer network scraper that discovers and evaluates engineering
 
 ## Key Features
 
-- **Best-first graph traversal** - Priority queue (not BFS/DFS) explores the most promising branches first. Priority = `(0.7 * parentRating + 0.3 * grandparentRating) * directionMultiplier / sqrt(depth)`. Strong lineages get explored first. "Following" edges weighted 1.5x over "follower" edges.
-- **Company insights for hireability** - Fetches real LinkedIn company data (headcount, growth trends) for founders/execs. A founder at a company growing 100% YoY is unhireable; a founder of a stagnating 3-person company might be ready to move.
+- **Best-first graph traversal** - Priority queue (not BFS/DFS) explores the most promising branches first. Priority = `(0.7 * parentRating + 0.3 * grandparentRating) * directionMultiplier / sqrt(depth)`. Strong lineages get explored first. Currently following-only (follower scraping disabled - too noisy).
+- **Company insights for hireability** - Fetches real LinkedIn company data (headcount, growth trends, founding year) for all users with LinkedIn data. A founder at a company growing 100% YoY is unhireable; a founder of a stagnating 3-person company might be ready to move. Non-founders at shrinking companies also get a smaller bonus.
 - **LinkedIn profile matching** - LLM-generated query to find LinkedIn profiles by searching Brave with queries built from GitHub/X/email/website data. Skips unsearchable profiles (e.g., first-name-only). Verifies fetched profiles against GitHub data and discards mismatches.
 - **Contribution pattern filters** - Before expensive LinkedIn/LLM calls, filters out candidates based on GitHub activity: minimum contribution threshold, active in 8+ months of the year, and a weekday-coder detector (>85% weekday-only activity suggests they only code at work, not a passionate builder).
 - **Structured LLM scoring** - Configurable weighted criteria scored 0-3 with per-criterion reasoning via OpenAI structured output.
@@ -18,10 +18,11 @@ The scraper uses a **priority-queue graph traversal** starting from seed GitHub 
 2. Each user is scraped, enriched with LinkedIn/web data, and rated by an LLM against your criteria
 3. High-scoring users' connections are discovered and added to the queue with computed priority
 4. Priority formula: `effectiveRating * directionMultiplier / sqrt(depth)`, where `effectiveRating = 0.7 * parentRating + 0.3 * grandparentRating`
-   - "Following" edges get 1.5x (parent vouches for this user - strong signal)
-   - "Follower" edges get 0.7x (weaker signal - anyone can follow)
+   - Currently following-only (follower scraping disabled). Following multiplier: 0.8
    - Lineage blending means a strong grandparent boosts priority even if the parent is mediocre
+   - Queue selection also weights by best parent rating: `effectivePriority = priority + maxParentRating`
 5. The scraper processes users in priority order, focusing effort on the most promising branches
+6. Seed profiles (depth 0) bypass all filters and their connections get boosted priority
 
 MongoDB serves as the persistent priority queue, enabling crash recovery and incremental runs.
 
@@ -152,3 +153,41 @@ The scraper exits gracefully when RapidAPI credits are exhausted (HTTP 402/429).
 ## Output
 
 Results are exported to `output/` as text files with ranked profiles, per-criterion scores, and reasoning.
+
+## Iteration History
+
+This section documents the key improvements made to the scraper over time, what problems they solved, and why. Useful context for anyone continuing work on this.
+
+### Scoring improvements
+
+**Criteria weight rebalancing** - Initial uniform weights didn't match actual hiring preferences. Rebalanced to heavily weight startup_experience (5x) and company_pedigree (4x), while disabling experience_level (0x) since it wasn't predictive.
+
+**Profile bonus (computed, no LLM)** - Added bonus points for having a Twitter account (+3), high GitHub followers (+2 for >=200), and high follower/following ratio (+1 for >=5). These are strong signals the LLM can't assess from profile text alone. Max 6 points.
+
+**Stagnation bonus** - Founders of old, non-growing companies are more hireable. Fetches company insights (headcount, growth, founding year) from RapidAPI's company insights endpoint. Founders get up to 6 bonus points (company age + shrinking headcount + tiny team). Later expanded to non-founders (max 3). Uses LinkedIn `start_year` as fallback when `founded_on.year` isn't available from the API.
+
+**Queue post-rating filters** - Added minimum score requirements for specific criteria (startup_experience >= 1, hireability >= 1, builder_signal >= 2) to filter out profiles that pass overall but miss key requirements.
+
+### Queue/priority improvements
+
+**Following-only scraping** - Disabled follower scraping after analysis showed followers are too noisy. Anyone can follow a high-scorer, but who someone chooses to follow is a deliberate signal. This was the single biggest quality improvement.
+
+**Parent rating gating** - The original `MIN_PRIORITY = 5` floor let ~1.1M users through. Analysis showed higher priority actually predicted WORSE quality because the multi-parent bonus was broken. Replaced with `MIN_BEST_PARENT_RATING = 50` - require at least one parent who scored well.
+
+**Multi-parent bonus removed** - Initially boosted priority for users discovered by multiple parents. Data showed this predicted worse quality (users followed by many mediocre people are just popular). Replaced with max-parent-weighted effective priority: `priority + maxParentRating * weight`.
+
+**Depth 1 free pass** - Direct connections of seed profiles bypass the `MIN_BEST_PARENT_RATING` gate since seeds are manually curated and may not score well on automated criteria.
+
+**Seed priority boost** - Seeds often score low on our specific criteria but their connections are valuable. Depth 0 users now pass `Math.max(rating, 60)` as parent rating when discovering connections, so depth 1 users get priority ~48 instead of ~12 and aren't buried behind the existing queue.
+
+**Re-queue filter** - Processed users with unscraped connections were re-queued regardless of score, wasting batch slots. Added `rating >= minRatingToScrapeConnections` to only re-queue high scorers.
+
+### Reliability improvements
+
+**RapidAPI retry logic** - LinkedIn fetch timeouts used to silently return null, causing users to be rated without LinkedIn context. Added retry logic (3 attempts, 5s delay) for transient errors (timeouts, connection resets). After retries exhausted, throws so the user gets re-queued as pending instead of rated with incomplete data.
+
+**Transient error re-queuing** - `processUserFromBatch` now distinguishes transient errors (network timeouts) from permanent failures. Transient errors reset the user to "pending" for retry; permanent failures mark as "ignored".
+
+**Background index building** - Compound index on `{status, parentRatings.rating, priority}` blocked scraper startup on the 1M+ doc collection. Fixed with `{ background: true }`.
+
+**Socket timeout** - Increased MongoDB socket timeout from 45s to 120s to handle slow queries during DB initialization on large collections.

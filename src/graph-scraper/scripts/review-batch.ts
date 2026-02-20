@@ -61,6 +61,8 @@ async function main() {
   if (minAiExp > 0) {
     query["criteriaScores.ai_agent_experience"] = { $gte: minAiExp };
   }
+  // Always require builder_signal >= 2 (100% of outreach candidates have this)
+  query["criteriaScores.builder_signal"] = { $gte: 2 };
 
   const users = await usersCol
     .find(query)

@@ -42,8 +42,33 @@ When the user gives feedback about a profile being ranked too high or too low, u
 
 Test one specific user: `npm run scrape-one <username>`
 
+## Google Sheets API
+
+Auth via `gcloud` (requires prior `gcloud auth login` with a Google account that has sheet access). Then use Sheets API v4:
+```bash
+TOKEN=$(gcloud auth print-access-token)
+
+# Read
+curl -s "https://sheets.googleapis.com/v4/spreadsheets/{SHEET_ID}/values/{SHEET_NAME}" \
+  -H "Authorization: Bearer $TOKEN"
+
+# Write (batch update)
+curl -s -X POST "https://sheets.googleapis.com/v4/spreadsheets/{SHEET_ID}/values:batchUpdate" \
+  -H "Authorization: Bearer $TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{"valueInputOption":"RAW","data":[{"range":"{SHEET_NAME}!A1","values":[["value"]]}]}'
+
+# Append row
+curl -s -X POST "https://sheets.googleapis.com/v4/spreadsheets/{SHEET_ID}/values/{SHEET_NAME}:append?valueInputOption=RAW&insertDataOption=INSERT_ROWS" \
+  -H "Authorization: Bearer $TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{"values":[["col1","col2","col3"]]}'
+```
+
 ## Key Config
 
 - `src/config/company.ts` - scoring criteria, prompts, seed profiles, target archetypes
 - `src/graph-scraper/core/scraper.ts` - scraper constants (batch size, depth, priority thresholds)
-- Scoring: 13 criteria, weighted (hireability 4x, location/startup_experience/company_pedigree 3x, seniority_fit/role_fit 2x, rest 1x), max score 72. tech_stack_fit is weight 1 (lowest, intentionally less impactful)
+- Scoring: 13 criteria, weighted (startup_experience 5x, company_pedigree 4x, hireability/location/ai_agent_experience 3x, role_fit/financial_services/builder_signal 2x, seniority_fit 1x, experience_level 0x, rest 1x) + profile bonus (max 6: Twitter +3, followers>=200 +2, ratio>=5 +1) + stagnation bonus (max 6 for founders at old non-growing companies, max 3 for employees), max score 96
+- Queue filters: linkedin required, startup_experience>=1, hireability>=1, builder_signal>=2
+- Recompute scores after weight changes: `npx tsx src/graph-scraper/scripts/re-rate-users.ts --recompute-weights`
