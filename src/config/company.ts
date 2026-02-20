@@ -46,7 +46,7 @@ export const companyConfig: {
     {
       key: 'startup_experience',
       label: 'Startup Experience',
-      weight: 3,
+      weight: 5,
       tiers: {
         0: 'No startup experience or non-technical startup roles. Also use for someone who has spent their entire career (10+ years) at one or two large corporations (e.g., Bloomberg, IBM, Oracle, Microsoft, Google) without any startup involvement - these candidates are very unlikely to thrive in a fast-moving Series B environment.',
         1: 'Worked at a startup in a hands-on engineering role, but not a well-known or fast-growing one. Indie hackers and solo SaaS builders without significant traction also fall here.',
@@ -57,7 +57,7 @@ export const companyConfig: {
     {
       key: 'ai_agent_experience',
       label: 'AI / Agent Experience',
-
+      weight: 3,
       tiers: {
         0: 'No AI or agent experience',
         1: 'General interest, courses, or minor AI or agent projects',
@@ -112,7 +112,7 @@ export const companyConfig: {
     {
       key: 'builder_signal',
       label: 'Builder Signal',
-
+      weight: 2,
       tiers: {
         0: 'No signal of shipping or building products. Also use for pattern of many short-lived micro-SaaS or side projects (few months each) without meaningful traction or users - this signals lack of follow-through, not building ability.',
         1: 'Some open source contributions or side projects, but nothing with significant adoption or impact',
@@ -134,7 +134,7 @@ export const companyConfig: {
     {
       key: 'seniority_fit',
       label: 'Seniority Fit',
-      weight: 2,
+      weight: 1,
       tiers: {
         0: 'VP/C-suite at a well-known or large company, famous tech leader, tenured professor - way too senior for a Series B startup',
         1: 'Director at a large company, engineering manager whose recent roles are primarily people management. Staff/tech lead at a big company with managerial responsibilities also falls here - they may struggle to go back to pure IC work.',
@@ -145,7 +145,7 @@ export const companyConfig: {
     {
       key: 'experience_level',
       label: 'Experience Level',
-      weight: 1,
+      weight: 0,
       tiers: {
         0: 'Current student or no professional engineering experience at all. Only has personal/university projects.',
         1: 'Current student or recent grad (<1 year out) BUT has founded startups, had high-status internships at venture-backed/tier-1 startups, or has significant open-source/side project output. Also: new grad with <2 years of professional experience.',
@@ -156,7 +156,7 @@ export const companyConfig: {
     {
       key: 'hireability',
       label: 'Hireability',
-      weight: 6,
+      weight: 3,
       tiers: {
         0: 'CEO/CTO/co-founder/VP at a company that is clearly growing (positive headcount growth, >10 employees, or raised significant funding recently). Use company insights data if available. Also: anyone in a senior position (Principal, Staff, Distinguished, Director+) at a rocket-ship AI company (Anthropic, OpenAI, Thinking Machines, Cursor, etc.) - these people are extremely well-compensated and will not leave. These people will not leave their company.',
         1: 'Co-founder/exec at a funded startup with moderate or unknown growth, or C-suite at an established company. Also: junior/mid-level IC engineer at a rocket-ship AI company (Anthropic, OpenAI, Cursor, etc.) where leaving would be irrational. Also: someone who just started a new role or company (<6 months ago) - they are in the honeymoon phase and very unlikely to leave. Also: someone who has been at the same large company for 10+ years - they are deeply embedded and very unlikely to leave for a startup.',
@@ -274,6 +274,33 @@ export const companyConfig: {
     // other ppl i respect
     'https://github.com/samuelstroschein',
     'https://github.com/mitsuhiko',
+    // recruiting contacts + manually added seeds
+    'https://github.com/anirudhhramesh',
+    'https://github.com/ghollbeck',
+    'https://github.com/avrecum',
+    'https://github.com/simonbohnen',
+    'https://github.com/mnida',
+    'https://github.com/bjsi',
+    'https://github.com/annawang7',
+    'https://github.com/stefanbielmeier',
+    'https://github.com/LitMSCTBB',
+    'https://github.com/benjaminshafii',
+    'https://github.com/compuives',
+    'https://github.com/dexhorthy',
+    'https://github.com/antfu',
+    'https://github.com/c45',
+    'https://github.com/matsjfunke',
+    'https://github.com/arnestrickmann',
+    'https://github.com/ZeroSumQuant',
+    'https://github.com/nickscamara',
+    'https://github.com/pirate',
+    'https://github.com/MagMueller',
+    'https://github.com/gregpr07',
+    'https://github.com/Alezander9',
+    'https://github.com/reformedot',
+    'https://github.com/kalil0321',
+    'https://github.com/degtrdg',
+    'https://github.com/ex3ndr',
   ],
 
   // The full LLM rating prompt (static part).
@@ -393,18 +420,110 @@ tech_stack_fit: "TypeScript as primary language, React/Next.js, with some Python
 `,
 };
 
-// Max possible tier sum: each criterion scores 0-3, multiplied by its weight
-companyConfig.maxTierSum = companyConfig.criteria.reduce(
-  (sum, c) => sum + 3 * (c.weight ?? 1),
-  0
-);
+// Bonus points for public presence signals (computed from profile data, no LLM needed).
+// People with a strong public presence (Twitter, GitHub followers) tend to be
+// more sophisticated and better outreach candidates.
+export const MAX_PROFILE_BONUS = 6;
 
-// Compute total score as weighted sum of tier values.
+export function computeProfileBonus(profileData?: {
+  twitter_username?: string | null;
+  followers?: number;
+  following?: number;
+}): number {
+  if (!profileData) return 0;
+  let bonus = 0;
+  if (profileData.twitter_username) bonus += 3;
+  if ((profileData.followers ?? 0) >= 200) bonus += 2;
+  const ratio = (profileData.followers ?? 0) / (profileData.following || 1);
+  if (ratio >= 5) bonus += 1;
+  return bonus;
+}
+
+// Bonus for people at stagnating companies - they're more likely to be hireable.
+// Founders get a larger bonus (they're tied to the company's fate).
+// Employees get a smaller bonus (stagnating employer = might be looking).
+export const MAX_STAGNATION_BONUS = 6;
+
+export function computeStagnationBonus(
+  companyInsights?: {
+    foundedYear?: number | null;
+    employeeCount?: number | null;
+    headcountGrowth6m?: number | null;
+    headcountGrowth1y?: number | null;
+  } | null,
+  founderStartYear?: number | null,
+  isFounder?: boolean
+): number {
+  if (!companyInsights) return 0;
+
+  const currentYear = new Date().getFullYear();
+  const foundedYear = companyInsights.foundedYear ?? founderStartYear;
+
+  const growth1y = companyInsights.headcountGrowth1y;
+  const growth6m = companyInsights.headcountGrowth6m;
+  const employees = companyInsights.employeeCount;
+
+  const hasGrowthData = growth1y != null || growth6m != null;
+  const isSmall = employees != null && employees <= 10;
+  const isStagnating =
+    hasGrowthData && (growth1y ?? 0) <= 5 && (growth6m ?? 0) <= 5;
+  const isShrinking =
+    hasGrowthData && ((growth1y ?? 0) < 0 || (growth6m ?? 0) < 0);
+
+  if (!isStagnating && !isSmall) return 0;
+
+  const companyAge = foundedYear ? currentYear - foundedYear : 0;
+
+  if (isFounder) {
+    // Founders: bigger bonus, company age matters a lot
+    if (companyAge < 2) return 0;
+    let bonus = 0;
+    if (companyAge >= 2) bonus += 2;
+    if (companyAge >= 3) bonus += 2;
+    if (isShrinking) bonus += 1;
+    if (isSmall && employees! <= 5 && companyAge >= 2) bonus += 1;
+    return Math.min(bonus, MAX_STAGNATION_BONUS);
+  } else {
+    // Employees: smaller bonus, company age less important
+    let bonus = 0;
+    if (isShrinking) bonus += 2;
+    else if (isStagnating) bonus += 1;
+    if (isSmall && employees! <= 5) bonus += 1;
+    return Math.min(bonus, 3);
+  }
+}
+
+// Max possible tier sum: each criterion scores 0-3, multiplied by its weight
+companyConfig.maxTierSum =
+  companyConfig.criteria.reduce((sum, c) => sum + 3 * (c.weight ?? 1), 0) +
+  MAX_PROFILE_BONUS +
+  MAX_STAGNATION_BONUS;
+
+// Compute total score as weighted sum of tier values + profile bonus + stagnation bonus.
 // Used for ranking: higher sum = better fit.
 export function computeTotalScore(
-  criteriaScores: Record<string, number>
+  criteriaScores: Record<string, number>,
+  profileData?: {
+    twitter_username?: string | null;
+    followers?: number;
+    following?: number;
+  },
+  companyInsights?: {
+    foundedYear?: number | null;
+    employeeCount?: number | null;
+    headcountGrowth6m?: number | null;
+    headcountGrowth1y?: number | null;
+  } | null,
+  founderStartYear?: number | null,
+  isFounder?: boolean
 ): number {
-  return companyConfig.criteria.reduce((sum, c) => {
+  const criteriaSum = companyConfig.criteria.reduce((sum, c) => {
     return sum + (criteriaScores[c.key] ?? 0) * (c.weight ?? 1);
   }, 0);
+
+  return (
+    criteriaSum +
+    computeProfileBonus(profileData) +
+    computeStagnationBonus(companyInsights, founderStartYear, isFounder)
+  );
 }

@@ -11,6 +11,7 @@ import {
   fetchLinkedInExperienceViaRapidAPI,
   fetchLinkedInProfileUsingBrave,
   findLinkedInUrlInProfileData,
+  FOUNDER_TITLE_KEYWORDS,
   generateLinkedInExperienceSummary,
   generateOptimizedSearchQuery,
 } from "../core/scraper-helpers/linkedin-research.js";
@@ -96,7 +97,25 @@ async function recomputeWeightsOnly() {
     let updated = 0;
 
     for (const user of users) {
-      const newRating = computeTotalScore(user.criteriaScores as Record<string, number>);
+      const currentExp = (user as any).linkedinExperience?.experiences?.find(
+        (e: any) => e.is_current
+      );
+      const founderStartYear = currentExp?.start_year || null;
+      const isFounder = currentExp
+        ? FOUNDER_TITLE_KEYWORDS.some((kw: string) => currentExp.title?.toLowerCase().includes(kw))
+        : false;
+
+      const newRating = computeTotalScore(
+        user.criteriaScores as Record<string, number>,
+        {
+          twitter_username: (user as any).twitter_username,
+          followers: (user as any).followers,
+          following: (user as any).following,
+        },
+        (user as any).currentCompanyInsights,
+        founderStartYear,
+        isFounder,
+      );
       if (newRating !== user.rating) {
         await usersCol.updateOne(
           { _id: user._id },

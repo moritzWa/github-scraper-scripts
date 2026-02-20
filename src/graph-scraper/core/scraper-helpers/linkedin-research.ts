@@ -47,6 +47,7 @@ export interface CompanyInsights {
   employeeCount: number | null;
   headcountGrowth6m: number | null;
   headcountGrowth1y: number | null;
+  foundedYear: number | null;
   linkedinUrl: string;
 }
 
@@ -166,81 +167,103 @@ export async function fetchLinkedInExperienceViaRapidAPI(
     },
   };
 
-  try {
-    const response = await fetch(
-      `https://${RAPIDAPI_HOST}/enrich-lead?linkedin_url=${encodeURIComponent(url)}&include_skills=false&include_certifications=false&include_publications=false&include_honors=false&include_volunteers=false&include_projects=false&include_patents=false&include_courses=false&include_organizations=false&include_profile_status=false&include_company_public_url=true`,
-      options
-    );
+  const MAX_RETRIES = 3;
+  const RETRY_DELAY_MS = 5000;
+  const apiUrl = `https://${RAPIDAPI_HOST}/enrich-lead?linkedin_url=${encodeURIComponent(url)}&include_skills=false&include_certifications=false&include_publications=false&include_honors=false&include_volunteers=false&include_projects=false&include_patents=false&include_courses=false&include_organizations=false&include_profile_status=false&include_company_public_url=true`;
 
-    if (!response.ok) {
-      const errorBody = await response.text();
-      console.error(
-        `Error fetching LinkedIn data for ${username}: ${response.status} ${response.statusText}`
-      );
-      console.error("Error response body:", errorBody);
+  for (let attempt = 1; attempt <= MAX_RETRIES; attempt++) {
+    try {
+      const response = await fetch(apiUrl, options);
 
-      // Throw on credit exhaustion so the scraper can exit gracefully
-      if (response.status === 402 || response.status === 429) {
-        throw new RapidAPICreditsExhaustedError(response.status, errorBody);
+      if (!response.ok) {
+        const errorBody = await response.text();
+        console.error(
+          `Error fetching LinkedIn data for ${username}: ${response.status} ${response.statusText}`
+        );
+        console.error("Error response body:", errorBody);
+
+        // Throw on credit exhaustion so the scraper can exit gracefully
+        if (response.status === 402 || response.status === 429) {
+          throw new RapidAPICreditsExhaustedError(response.status, errorBody);
+        }
+        return null;
       }
-      return null;
+
+      const json = await response.json();
+      if (!json.data) {
+        console.error(`No data in LinkedIn response for ${username}`);
+        return null;
+      }
+
+      // Extract only the fields we need
+      const d = json.data;
+      const profile: LinkedInProfile = {
+        full_name: d.full_name || "",
+        headline: d.headline || "",
+        about: d.about || null,
+        city: d.city || "",
+        country: d.country || "",
+        location: d.location || "",
+        company: d.company || "",
+        company_industry: d.company_industry || "",
+        experiences: (d.experiences || []).map((e: any) => ({
+          company: e.company || "",
+          title: e.title || "",
+          location: e.location || "",
+          description: e.description || "",
+          date_range: e.date_range || "",
+          duration: e.duration || "",
+          start_month: e.start_month || 0,
+          start_year: e.start_year || 0,
+          end_month: e.end_month || "",
+          end_year: e.end_year || "",
+          is_current: e.is_current || false,
+          job_type: e.job_type || "",
+          company_linkedin_url: e.company_linkedin_url || undefined,
+        })),
+        educations: (d.educations || []).map((e: any) => ({
+          school: e.school || "",
+          degree: e.degree || "",
+          field_of_study: e.field_of_study || "",
+          date_range: e.date_range || "",
+          start_year: e.start_year || "",
+          end_year: e.end_year || "",
+        })),
+      };
+
+      return profile;
+    } catch (error: any) {
+      if (error instanceof RapidAPICreditsExhaustedError) throw error;
+
+      const isTransient = error?.cause?.code === "UND_ERR_CONNECT_TIMEOUT" ||
+        error?.code === "UND_ERR_CONNECT_TIMEOUT" ||
+        error?.message?.includes("fetch failed") ||
+        error?.message?.includes("ETIMEDOUT") ||
+        error?.message?.includes("ECONNRESET");
+
+      if (isTransient && attempt < MAX_RETRIES) {
+        console.warn(
+          `[${username}] LinkedIn fetch attempt ${attempt}/${MAX_RETRIES} failed (timeout/network). Retrying in ${RETRY_DELAY_MS / 1000}s...`
+        );
+        await new Promise((r) => setTimeout(r, RETRY_DELAY_MS));
+        continue;
+      }
+
+      // Non-transient error or all retries exhausted - throw so user gets re-queued
+      console.error(
+        `Failed to fetch LinkedIn experience for ${username} after ${attempt} attempts:`,
+        error?.message || error
+      );
+      throw new Error(`LinkedIn fetch failed for ${username}: ${error?.message || error}`);
     }
-
-    const json = await response.json();
-    if (!json.data) {
-      console.error(`No data in LinkedIn response for ${username}`);
-      return null;
-    }
-
-    // Extract only the fields we need
-    const d = json.data;
-    const profile: LinkedInProfile = {
-      full_name: d.full_name || "",
-      headline: d.headline || "",
-      about: d.about || null,
-      city: d.city || "",
-      country: d.country || "",
-      location: d.location || "",
-      company: d.company || "",
-      company_industry: d.company_industry || "",
-      experiences: (d.experiences || []).map((e: any) => ({
-        company: e.company || "",
-        title: e.title || "",
-        location: e.location || "",
-        description: e.description || "",
-        date_range: e.date_range || "",
-        duration: e.duration || "",
-        start_month: e.start_month || 0,
-        start_year: e.start_year || 0,
-        end_month: e.end_month || "",
-        end_year: e.end_year || "",
-        is_current: e.is_current || false,
-        job_type: e.job_type || "",
-        company_linkedin_url: e.company_linkedin_url || undefined,
-      })),
-      educations: (d.educations || []).map((e: any) => ({
-        school: e.school || "",
-        degree: e.degree || "",
-        field_of_study: e.field_of_study || "",
-        date_range: e.date_range || "",
-        start_year: e.start_year || "",
-        end_year: e.end_year || "",
-      })),
-    };
-
-    return profile;
-  } catch (error) {
-    console.error(
-      `Failed to fetch LinkedIn experience for ${username}:`,
-      error
-    );
-    return null;
   }
+
+  return null; // unreachable but satisfies TS
 }
 
 // --- Company Insights ---
 
-const FOUNDER_TITLE_KEYWORDS = [
+export const FOUNDER_TITLE_KEYWORDS = [
   "founder",
   "co-founder",
   "cofounder",
@@ -299,7 +322,7 @@ async function fetchCompanyByLinkedInUrl(
 
 async function fetchCompanyInsightsById(
   companyId: string
-): Promise<{ employeeCount: number | null; headcountGrowth6m: number | null; headcountGrowth1y: number | null } | null> {
+): Promise<{ employeeCount: number | null; headcountGrowth6m: number | null; headcountGrowth1y: number | null; foundedYear: number | null } | null> {
   const apiKey = process.env.RAPIDAPI_KEY;
   if (!apiKey) return null;
 
@@ -342,6 +365,7 @@ async function fetchCompanyInsightsById(
       employeeCount: data.total_employees ?? null,
       headcountGrowth6m: parseGrowth(data.headcount_growth?.["6m"]),
       headcountGrowth1y: parseGrowth(data.headcount_growth?.["1y"]),
+      foundedYear: data.founded_on?.year ?? null,
     };
   } catch (error) {
     if (error instanceof RapidAPICreditsExhaustedError) throw error;
@@ -361,13 +385,6 @@ export async function fetchCurrentEmployerInsights(
     (e) => e.is_current
   );
   if (!currentExp) return null;
-
-  // Check if title contains founder/CEO/CTO keywords
-  const titleLower = currentExp.title.toLowerCase();
-  const isFounderOrExec = FOUNDER_TITLE_KEYWORDS.some((kw) =>
-    titleLower.includes(kw)
-  );
-  if (!isFounderOrExec) return null;
 
   // Skip "Stealth" companies
   const companyLower = currentExp.company.toLowerCase().trim();
@@ -414,16 +431,20 @@ export async function fetchCurrentEmployerInsights(
   const insights = await fetchCompanyInsightsById(companyInfo.companyId);
   if (!insights) return null;
 
+  // Use API founded year, or fall back to founder's start year at the company
+  const foundedYear = insights.foundedYear ?? (currentExp.start_year || null);
+
   const result: CompanyInsights = {
     companyName: companyInfo.companyName || currentExp.company,
     employeeCount: insights.employeeCount,
     headcountGrowth6m: insights.headcountGrowth6m,
     headcountGrowth1y: insights.headcountGrowth1y,
+    foundedYear,
     linkedinUrl: currentExp.company_linkedin_url,
   };
 
   console.log(
-    `[${user.login}] Company insights for ${result.companyName}: ${result.employeeCount} employees, 6m growth: ${result.headcountGrowth6m}%, 1y growth: ${result.headcountGrowth1y}%`
+    `[${user.login}] Company insights for ${result.companyName}: ${result.employeeCount} employees, 6m growth: ${result.headcountGrowth6m}%, 1y growth: ${result.headcountGrowth1y}%, founded: ${result.foundedYear}`
   );
 
   return result;

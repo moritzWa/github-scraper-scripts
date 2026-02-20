@@ -10,6 +10,7 @@ import { UserData } from "../../types.js";
 import { fetchRecentRepositories } from "../../utils/profile-data-fetchers.js";
 import { DbGraphUser } from "../types.js";
 import openai from "./openai.js";
+import { FOUNDER_TITLE_KEYWORDS } from "./scraper-helpers/linkedin-research.js";
 
 config();
 
@@ -116,6 +117,9 @@ const formatEngineerInQuestion = (
         `  Company: ${user.currentCompanyInsights.companyName}`,
         user.currentCompanyInsights.employeeCount != null
           ? `  Employee Count: ${user.currentCompanyInsights.employeeCount}`
+          : null,
+        user.currentCompanyInsights.foundedYear != null
+          ? `  Founded: ${user.currentCompanyInsights.foundedYear} (${new Date().getFullYear() - user.currentCompanyInsights.foundedYear} years old)`
           : null,
         user.currentCompanyInsights.headcountGrowth1y != null
           ? `  1Y Headcount Growth: ${user.currentCompanyInsights.headcountGrowth1y}%`
@@ -290,8 +294,27 @@ export async function rateUserV3(
     criteriaReasonings[key] = val.reasoning;
   }
 
-  // Compute score as simple sum of tier values
-  const score = computeTotalScore(criteriaScores);
+  // Find current role info for stagnation bonus
+  const currentExp = user.linkedinExperience?.experiences?.find(
+    (e) => e.is_current
+  );
+  const founderStartYear = currentExp?.start_year || null;
+  const isFounder = currentExp
+    ? FOUNDER_TITLE_KEYWORDS.some((kw) => currentExp.title.toLowerCase().includes(kw))
+    : false;
+
+  // Compute score as weighted sum of tier values + profile bonus + stagnation bonus
+  const score = computeTotalScore(
+    criteriaScores,
+    {
+      twitter_username: user.twitter_username,
+      followers: user.followers,
+      following: user.following,
+    },
+    user.currentCompanyInsights,
+    founderStartYear,
+    isFounder,
+  );
 
   // Build combined reasoning string from per-criterion reasonings
   const combinedReasoning = Object.entries(criteriaReasonings)
