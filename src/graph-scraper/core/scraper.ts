@@ -18,14 +18,13 @@ const dbName = process.env.MONGODB_DB;
 // --- Configuration ---
 const BATCH_SIZE = 5;
 const MAX_DEPTH = 20;
-const MIN_PRIORITY = 5;
+const MIN_PRIORITY = 0; // effectively no floor - queue is gated by MIN_BEST_PARENT_RATING instead
+const MIN_BEST_PARENT_RATING = 50; // require at least one parent scored >= 50
 const STATS_INTERVAL = 10;
 const SEED_PRIORITY = 100;
 
-// Queue selection: multi-parent quality bonus
-const GOOD_PARENT_THRESHOLD = 35; // parent rating considered "good"
-const GOOD_PARENT_BONUS = 4; // priority bonus per good parent
-const AVG_PARENT_WEIGHT = 0.15; // weight of average parent rating
+// Queue selection: prioritize users whose BEST parent is high-rated
+const MAX_PARENT_WEIGHT = 1; // weight of max parent rating in effective priority
 const CANDIDATE_POOL_SIZE = 500; // top N by raw priority to re-rank
 
 const SCRAPER_CONFIG: ScraperConfig = {
@@ -94,6 +93,7 @@ async function initializeDatabase(usersCol: Collection<DbGraphUser>) {
   console.log("Ensuring indexes...");
   await Promise.all([
     usersCol.createIndex({ status: 1, priority: -1 }),
+    usersCol.createIndex({ status: 1, "parentRatings.rating": -1, priority: -1 }, { background: true }),
     usersCol.createIndex({ rating: 1 }),
   ]);
   console.log("Indexes ready.");
@@ -139,11 +139,11 @@ async function initializeDatabase(usersCol: Collection<DbGraphUser>) {
     );
   }
 
-  // Re-queue processed users whose connections weren't scraped
+  // Re-queue processed users whose connections weren't scraped (only if rated well enough)
   const requeued = await usersCol.updateMany(
     {
       status: "processed",
-      rating: { $exists: true },
+      rating: { $gte: SCRAPER_CONFIG.minRatingToScrapeConnections },
       depth: { $lt: MAX_DEPTH },
       "scrapedConnections.following": { $ne: true },
     },
@@ -161,7 +161,7 @@ async function main() {
   const client = new MongoClient(mongoUri, {
     maxPoolSize: 10,
     serverSelectionTimeoutMS: 5000,
-    socketTimeoutMS: 45000,
+    socketTimeoutMS: 120000,
   });
   await client.connect();
   console.log(`Connected to MongoDB (${dbName})`);
@@ -180,32 +180,25 @@ async function main() {
       await printStats(usersCol);
     }
 
-    // Fetch next batch: get top candidates by raw priority, then re-rank
-    // with multi-parent quality bonus (users discovered by many high-scoring
-    // parents are better candidates)
+    // Fetch next batch: require at least one strong parent, then re-rank
+    // by effective priority that heavily weights the best parent's rating
     const pendingUsers = await usersCol
       .aggregate([
-        { $match: { status: "pending", priority: { $gte: MIN_PRIORITY } } },
+        {
+          $match: {
+            status: "pending",
+            priority: { $gte: MIN_PRIORITY },
+            $or: [
+              { depth: { $lte: 1 } }, // seeds + their direct connections get a free pass
+              { "parentRatings.rating": { $gte: MIN_BEST_PARENT_RATING } },
+            ],
+          },
+        },
         { $sort: { priority: -1 } },
         { $limit: CANDIDATE_POOL_SIZE },
         {
           $addFields: {
-            _goodParentCount: {
-              $cond: [
-                { $isArray: "$parentRatings" },
-                {
-                  $size: {
-                    $filter: {
-                      input: "$parentRatings",
-                      as: "pr",
-                      cond: { $gte: ["$$pr.rating", GOOD_PARENT_THRESHOLD] },
-                    },
-                  },
-                },
-                0,
-              ],
-            },
-            _avgParentRating: {
+            _maxParentRating: {
               $cond: [
                 {
                   $and: [
@@ -213,7 +206,7 @@ async function main() {
                     { $gt: [{ $size: "$parentRatings" }, 0] },
                   ],
                 },
-                { $avg: "$parentRatings.rating" },
+                { $max: "$parentRatings.rating" },
                 0,
               ],
             },
@@ -224,8 +217,7 @@ async function main() {
             _effectivePriority: {
               $add: [
                 "$priority",
-                { $multiply: ["$_goodParentCount", GOOD_PARENT_BONUS] },
-                { $multiply: ["$_avgParentRating", AVG_PARENT_WEIGHT] },
+                { $multiply: ["$_maxParentRating", MAX_PARENT_WEIGHT] },
               ],
             },
           },

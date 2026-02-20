@@ -54,18 +54,33 @@ export async function processUserFromBatch(
       { _id: username },
       { $set: { status: "processed" } }
     );
-  } catch (err) {
+  } catch (err: any) {
     if (err instanceof RapidAPICreditsExhaustedError) throw err;
-    console.error(`[${username}] Error:`, err);
-    await usersCol.updateOne(
-      { _id: username },
-      {
-        $set: {
-          status: "ignored",
-          ignoredReason: IgnoredReason.ERROR_SCRAPING,
-        },
-      }
-    );
+
+    // Transient errors (network timeouts, API issues) - re-queue as pending
+    const isTransient = err?.message?.includes("LinkedIn fetch failed") ||
+      err?.message?.includes("fetch failed") ||
+      err?.message?.includes("ETIMEDOUT") ||
+      err?.message?.includes("ECONNRESET");
+
+    if (isTransient) {
+      console.warn(`[${username}] Transient error, re-queuing: ${err?.message}`);
+      await usersCol.updateOne(
+        { _id: username },
+        { $set: { status: "pending" } }
+      );
+    } else {
+      console.error(`[${username}] Error:`, err);
+      await usersCol.updateOne(
+        { _id: username },
+        {
+          $set: {
+            status: "ignored",
+            ignoredReason: IgnoredReason.ERROR_SCRAPING,
+          },
+        }
+      );
+    }
   }
 }
 
@@ -141,7 +156,7 @@ async function scrapeConnections(
     return;
   }
 
-  if (rating < config.minRatingToScrapeConnections) {
+  if (depth > 0 && rating < config.minRatingToScrapeConnections) {
     console.log(
       `[${username}] Rating ${rating} below threshold (${config.minRatingToScrapeConnections}). Skipping connections.`
     );
@@ -158,13 +173,18 @@ async function scrapeConnections(
     ? Math.max(...userDoc.parentRatings.map((p) => p.rating))
     : undefined;
 
+  // Seeds (depth 0) are manually curated - boost the parent rating passed to
+  // connection discovery so their depth-1 connections get high queue priority,
+  // regardless of the seed's own score.
+  const effectiveParentRating = depth === 0 ? Math.max(rating, 60) : rating;
+
   // Always scrape following (people this user vouches for)
   if (!connections.following) {
     console.log(`[${username}] Scraping following...`);
     await discoverConnectionsPageByPage(
       username,
       depth,
-      rating,
+      effectiveParentRating,
       "following",
       fetchFollowingPaged,
       octokit,
@@ -178,25 +198,9 @@ async function scrapeConnections(
     );
   }
 
-  // Scrape followers only for high-scoring users
-  if (!connections.followers && rating >= config.minRatingToScrapeFollowers) {
-    console.log(
-      `[${username}] High scorer (${rating}) - also scraping followers...`
-    );
-    await discoverConnectionsPageByPage(
-      username,
-      depth,
-      rating,
-      "followers",
-      fetchFollowersPaged,
-      octokit,
-      usersCol,
-      edgesCol,
-      bestGrandparentRating
-    );
-    await usersCol.updateOne(
-      { _id: username },
-      { $set: { "scrapedConnections.followers": true } }
-    );
-  }
+  // Follower scraping disabled - followers are too noisy (random people follow
+  // good engineers, signal is much weaker than "following" direction)
+  // if (!connections.followers && rating >= config.minRatingToScrapeFollowers) {
+  //   ...
+  // }
 }
