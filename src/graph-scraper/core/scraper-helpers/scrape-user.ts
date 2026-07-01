@@ -156,40 +156,30 @@ export async function scrapeUser(
       }
     }
 
-    // Calculate rating for users that passed filters
-    if (!bypassFilters) {
-      try {
-        // First, ensure we have the email
-        if (!user.email) {
-          console.log(`[${username}] Fetching email...`);
-          const userEmail = await fetchUserEmailFromEvents(username, octokit);
-          user.email = userEmail;
-          console.log(
-            `[${username}] Fetched email: ${userEmail || "not found"}`
-          );
-        }
-
-        // Fetch LinkedIn data
-        await fetchLinkedInData(user, usersCol);
-
-        // Get web research info
-        const webResearchInfo = await fetchWebResearchInfo(user);
-
-        // Calculate rating
-        await calculateUserRating(user, webResearchInfo);
-      } catch (error) {
-        if (error instanceof RapidAPICreditsExhaustedError) throw error;
-        console.error(`[${username}] Error calculating rating:`, error);
-        // Continue without rating data if there's an error
+    // Calculate rating
+    try {
+      // First, ensure we have the email
+      if (!user.email) {
+        console.log(`[${username}] Fetching email...`);
+        const userEmail = await fetchUserEmailFromEvents(username, octokit);
+        user.email = userEmail;
+        console.log(
+          `[${username}] Fetched email: ${userEmail || "not found"}`
+        );
       }
-    } else if (depth === 0) {
-      // If bypassing filters (typically for depth 0 seed users), assign a default high rating.
-      console.log(
-        `[${username}] Bypassing filters and assigning default rating as it is a seed user (depth 0).`
-      );
-      user.rating = 15; // Default high rating for seed users
-      user.ratedAt = new Date();
-      user.ratingReasoning = "Seed user (depth 0) - default rating";
+
+      // Fetch LinkedIn data
+      await fetchLinkedInData(user, usersCol);
+
+      // Get web research info
+      const webResearchInfo = await fetchWebResearchInfo(user);
+
+      // Calculate rating
+      await calculateUserRating(user, webResearchInfo);
+    } catch (error) {
+      if (error instanceof RapidAPICreditsExhaustedError) throw error;
+      console.error(`[${username}] Error calculating rating:`, error);
+      // Continue without rating data if there's an error
     }
 
     return { user };

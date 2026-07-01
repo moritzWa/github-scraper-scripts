@@ -119,7 +119,7 @@ export async function fetchLinkedInData(user: GraphUser, usersCol?: Collection<D
     user.linkedinExperience = linkedinExperience;
 
     // Verify the LinkedIn profile matches the GitHub user
-    if (linkedinExperience && !verifyLinkedInMatch(user, linkedinExperience)) {
+    if (linkedinExperience && !(await verifyLinkedInMatch(user, linkedinExperience))) {
       console.log(
         `[${user.login}] LinkedIn profile mismatch detected - discarding LinkedIn data.`
       );
@@ -1014,9 +1014,11 @@ export async function generateOptimizedSearchQuery(
 ): Promise<string> {
   // Get recent repositories if available
   const recentRepos =
-    user.recentRepos
-      ?.slice(0, 2)
-      .map((repo: { name: string }) => repo.name)
+    (user.recentRepositories ?? (user as any).recentRepos)
+      ?.slice(0, 3)
+      .map((repo: { name: string; description?: string }) =>
+        repo.description ? `${repo.name} (${repo.description.slice(0, 60)})` : repo.name
+      )
       .join(", ") || "Not provided";
 
   // Extract a snippet of website content if available (just text, strip HTML)
@@ -1167,42 +1169,108 @@ export function findLinkedInUrlInProfileData(user: UserData): string | null {
 
 /**
  * Verify that a fetched LinkedIn profile actually matches the GitHub user.
+ * Uses LLM verification when available data allows it, with string-matching fallbacks.
  * Returns true if the profile seems correct, false if it's likely a different person.
  */
-function verifyLinkedInMatch(
+async function verifyLinkedInMatch(
   user: GraphUser,
-  linkedin: any
-): boolean {
+  linkedin: LinkedInProfile
+): Promise<boolean> {
+  const githubName = user.name?.toLowerCase().trim();
+  const linkedinName = linkedin.full_name?.toLowerCase().trim();
+
+  // Quick reject: if both have full names and first names don't match at all
+  const githubFirstName = githubName?.split(/\s+/)[0];
+  const linkedinFirstName = linkedinName?.split(/\s+/)[0];
+  if (
+    githubFirstName && linkedinFirstName &&
+    githubFirstName.length > 2 && linkedinFirstName.length > 2 &&
+    githubName?.includes(" ") && linkedinName?.includes(" ") &&
+    githubFirstName !== linkedinFirstName &&
+    !githubFirstName.startsWith(linkedinFirstName) &&
+    !linkedinFirstName.startsWith(githubFirstName)
+  ) {
+    console.log(
+      `[${user.login}] LinkedIn verification FAILED: first name mismatch (GitHub: "${githubName}" vs LinkedIn: "${linkedinName}")`
+    );
+    return false;
+  }
+
+  // LLM-based verification: compare GitHub and LinkedIn profiles holistically
+  // This catches cases where two people share the same name (e.g. "Georg Meinhardt")
+  try {
+    const githubClues = [
+      user.name ? `Name: ${user.name}` : null,
+      user.bio ? `Bio: ${user.bio}` : null,
+      user.company ? `Company: ${user.company}` : null,
+      user.location ? `Location: ${user.location}` : null,
+      user.xBio ? `X/Twitter Bio: ${user.xBio}` : null,
+      user.recentRepositories?.slice(0, 3).map(
+        (r) => `Repo: ${r.name}${r.description ? ` - ${r.description.slice(0, 80)}` : ""} [${r.language || "?"}]`
+      ).join("\n"),
+    ].filter(Boolean).join("\n");
+
+    const linkedinClues = [
+      `Name: ${linkedin.full_name}`,
+      linkedin.headline ? `Headline: ${linkedin.headline}` : null,
+      linkedin.location ? `Location: ${linkedin.location}` : null,
+      linkedin.company ? `Current Company: ${linkedin.company}` : null,
+      linkedin.experiences?.slice(0, 3).map(
+        (e) => `Experience: ${e.title} at ${e.company}${e.date_range ? ` (${e.date_range})` : ""}`
+      ).join("\n"),
+      linkedin.educations?.slice(0, 2).map(
+        (e) => `Education: ${e.school}${e.degree ? ` - ${e.degree}` : ""}`
+      ).join("\n"),
+    ].filter(Boolean).join("\n");
+
+    const prompt = `Are these the same person? Answer YES or NO.
+
+GitHub Profile:
+${githubClues}
+
+LinkedIn Profile:
+${linkedinClues}
+
+IMPORTANT: Only answer NO if there's strong evidence they are DIFFERENT people, such as:
+- Completely different professional fields (e.g. software engineer vs test manager/consultant)
+- Different countries with no overlap
+- Clearly different career trajectories with zero company overlap
+
+When in doubt, answer YES. Minor name spelling differences (e.g. "Ayush" vs "Aayush"), missing data, or simply not enough info to confirm should default to YES.
+
+Answer exactly: YES or NO`;
+
+    const response = await openai.chat.completions.create({
+      model: "gpt-4o-mini",
+      messages: [{ role: "user", content: prompt }],
+      max_tokens: 10,
+    });
+
+    const answer = response.choices[0]?.message?.content?.trim().toUpperCase() || "";
+    const isMatch = answer.startsWith("YES");
+
+    if (!isMatch) {
+      console.log(
+        `[${user.login}] LinkedIn verification FAILED (LLM): GitHub "${user.name}" vs LinkedIn "${linkedin.full_name}" (${linkedin.headline || "no headline"})`
+      );
+    } else {
+      console.log(
+        `[${user.login}] LinkedIn verification passed (LLM): "${linkedin.full_name}"`
+      );
+    }
+
+    return isMatch;
+  } catch (error) {
+    console.warn(`[${user.login}] LLM verification failed, falling back to string matching:`, error);
+  }
+
+  // Fallback: company string matching
   const githubCompany = user.company
     ?.replace(/^@/, "")
     .replace(/[^a-zA-Z0-9\s]/g, "")
     .toLowerCase()
     .trim();
-  const githubName = user.name?.toLowerCase().trim();
-  const linkedinName = linkedin.full_name?.toLowerCase().trim();
 
-  // Check if first names match between GitHub and LinkedIn
-  const githubFirstName = githubName?.split(/\s+/)[0];
-  const linkedinFirstName = linkedinName?.split(/\s+/)[0];
-  const firstNameMatches =
-    githubFirstName &&
-    linkedinFirstName &&
-    githubFirstName.length > 2 &&
-    (githubFirstName === linkedinFirstName ||
-      githubFirstName.startsWith(linkedinFirstName) ||
-      linkedinFirstName.startsWith(githubFirstName));
-
-  // If both have full names and first names don't match, reject
-  if (githubName && linkedinName && githubName.includes(" ") && linkedinName.includes(" ")) {
-    if (!firstNameMatches) {
-      console.log(
-        `[${user.login}] LinkedIn verification FAILED: first name mismatch (GitHub: "${githubName}" vs LinkedIn: "${linkedinName}")`
-      );
-      return false;
-    }
-  }
-
-  // If GitHub has a company field, check if ANY LinkedIn experience mentions it
   if (githubCompany && githubCompany.length > 2) {
     const linkedinCompanies = (linkedin.experiences || [])
       .map((e: any) => e.company?.toLowerCase().replace(/[^a-zA-Z0-9\s]/g, "").trim())
@@ -1214,7 +1282,7 @@ function verifyLinkedInMatch(
 
     if (!companyMatch && linkedinCompanies.length > 0) {
       console.log(
-        `[${user.login}] LinkedIn verification FAILED: company mismatch (GitHub: "${githubCompany}" vs LinkedIn: [${linkedinCompanies.slice(0, 5).join(", ")}]) - likely different person`
+        `[${user.login}] LinkedIn verification FAILED: company mismatch (GitHub: "${githubCompany}" vs LinkedIn: [${linkedinCompanies.slice(0, 5).join(", ")}])`
       );
       return false;
     }

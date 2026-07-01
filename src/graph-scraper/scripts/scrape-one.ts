@@ -67,7 +67,7 @@ if (hasScrapedData) {
   // No DB data (or --fresh) - full scrape from GitHub
   const octokit = new Octokit({ auth: process.env.GITHUB_ACCESS_TOKEN });
   console.log(`Scraping ${username} from GitHub...`);
-  const result = await scrapeUser(octokit, username, 1, false, usersCol);
+  const result = await scrapeUser(octokit, username, 1, true, usersCol);
   user = result.user;
 }
 

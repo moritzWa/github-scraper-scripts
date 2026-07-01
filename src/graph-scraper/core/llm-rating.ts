@@ -66,7 +66,7 @@ const formatEngineerInQuestion = (
   webResearchInfoGemini: string | null
 ) => {
   const reposText = user.recentRepositories
-    ?.slice(0, 3)
+    ?.slice(0, 5)
     .map((repo) => {
       const repoName = `${repo.is_fork ? "[Fork] " : ""}${repo.name}${
         repo.description ? ` (${repo.description.slice(0, 100)})` : ""
@@ -74,7 +74,8 @@ const formatEngineerInQuestion = (
       const relativeTime = formatRelativeTime(repo.last_pushed_at);
       const timeInfo = relativeTime ? ` (pushed ${relativeTime})` : "";
       const langInfo = repo.language ? ` [${repo.language}]` : "";
-      return `- ${repoName}${langInfo}${timeInfo}`;
+      const stars = repo.stargazers_count > 0 ? ` ⭐${repo.stargazers_count}` : "";
+      return `- ${repoName}${langInfo}${stars}${timeInfo}`;
     })
     .join("\n");
 
@@ -89,11 +90,20 @@ const formatEngineerInQuestion = (
     ? [...new Set(locationParts)].join(", ")
     : null;
 
+  // GitHub stats line
+  const ghStats = [
+    user.followers != null ? `${user.followers} followers` : null,
+    user.following != null ? `${user.following} following` : null,
+    user.public_repos != null ? `${user.public_repos} public repos` : null,
+  ].filter(Boolean);
+
   // Group profile information together
   const profileSections = [
     `Name: ${getUserName(user)}`,
     user.company ? `Company: ${user.company}` : null,
     locationStr ? `Location: ${locationStr}` : null,
+    user.bio ? `GitHub Bio: ${user.bio}` : null,
+    ghStats.length > 0 ? `GitHub Stats: ${ghStats.join(", ")}` : null,
     user.xBio ? `X Profile Bio: ${user.xBio}` : null,
     user.websiteContent
       ? `Website Content:\n${user.websiteContent.slice(0, 2000)}${
